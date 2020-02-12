@@ -1,11 +1,21 @@
 from pyspark import SparkContext
 sc =SparkContext()
-
+# cargamos los datos de iris
 from sklearn import datasets
+# esto es un dataset que cargamos desde sklearn
 iris = datasets.load_iris()
-#print(iris)
+print(iris.data)
+print(iris.feature_names)
+
+# invocamos pandas para crear un array de datos y un DF
+# un DF de pandas XD
 import pandas as pd
+# iris.data son los datos de las características
+# las medidas de las flores
+# feature_name son los nombres de cada medida
 iris_df = pd.DataFrame(iris.data, columns = iris.feature_names)
+
+# imprimimos los primeros registros del DF, las primeras rows
 print(iris_df.head())
 print(iris.target)
 iris_df['target'] = iris.target
@@ -36,7 +46,9 @@ plt.show()
 #Haciendo transformaciones
 from pyspark.ml.linalg import Vectors
 from pyspark.ml.feature import VectorAssembler
-
+# esto es una vectorización
+# es meter todas las características en un sólo campo de tipo array
+# así funciona más rápido
 #Creando campos de entrada y salida
 vector_assembler = VectorAssembler(
     inputCols=["sepal length (cm)", "sepal width (cm)", "petal length (cm)", "petal width (cm)"],
@@ -57,15 +69,21 @@ df.show(3)
 (trainingData, testData) = df.randomSplit([0.7, 0.3])
 trainingData.show(3)
 testData.show(3)
-
+# en este caso escogemos el algoritmo de clasificación de árboles de decision
 from pyspark.ml.classification import DecisionTreeClassifier
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 #Creamos el modelo con un clasificador de árboles de decisión
+# Escogemos un algoritmo, en este caso DecisionTreeClassifier
+# pero podría ser otro por ejemplo regresión linear
+# target son las etiquetas, features son las características
 dt = DecisionTreeClassifier(labelCol="target", featuresCol="features")
+# creamos o entrenamos el modelo
 model = dt.fit(trainingData)
+# probamos el modelo a ver si es bueno o no
 predictions = model.transform(testData)
+# mostramos las 5 primeras predicciones, como ejemplo
 predictions.select("prediction", "target").show(5)
-
+# lo importante es que usamos un evaluador de esas predicciones
 evaluator = MulticlassClassificationEvaluator(
     labelCol="target",
     predictionCol="prediction",

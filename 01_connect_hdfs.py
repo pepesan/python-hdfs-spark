@@ -7,6 +7,7 @@ from collections import defaultdict, Counter
 # revisar la configuración del docker-compose.yml
 # este es el puerto rpc del namenode de hadoop
 # por defecto 8020 en la versión 2.7
+# pero puede ser otro
 hdfs = hdfs3.HDFileSystem('localhost', port=8020)
 
 """
@@ -51,9 +52,16 @@ HDFSMap(hdfs, root[, check]) Wrap a HDFileSystem as a mutable mapping.
 listado = hdfs.ls('/user/admin')
 print("listado: "+str(listado))
 #Subida de ficheros
+# origen y destino
+# se sube para luego trabajar dentro del cluster
+# puede ser cualquier tipo de fichero: txt,csv,json...
+# estos ficheros son los datos inicales con los que se trabaja
+# podría ser una exportación de un excel por ejemplo en csv
+# es como hacer un upload a un servidor
 put = hdfs.put('./files/local-file.txt', '/user/admin/remote-file.txt')
 # Coger listado de ficheros
 filenames = []
+# glob pilla el contenido del directorio como un array
 filenames = hdfs.glob('/user/admin/*')
 # Cabecera del 1º fichero
 if (len(filenames)>0):
@@ -63,10 +71,15 @@ if (len(filenames)>0):
 # borramos el fichero
 hdfs.rm('/user/admin/remote-file.txt')
 
+# con esto abrimos un fichero alojado en hdfs
+# con permisos de escritura y en binario
+# es decir creamos un fichero con un contenido
 with hdfs.open('/user/admin/myfile.txt', 'wb') as f:
+    # una vez abierto el fichero escribimos un contenido
     f.write(b'Hello, world!')
-
+# abrimos un fichero en lectura, ojo no tiene "wb"
 with hdfs.open('/user/admin/myfile.txt') as f:
+    #leemos el contenido/recorremos el fichero
     print(f.read())
 
 # borramos el fichero
@@ -75,27 +88,37 @@ hdfs.rm('/user/admin/myfile.txt')
 
 #Subida de ficheros
 put = hdfs.put('./files/el_quijote.txt', '/user/admin/el_quijote.txt')
-
+# pillamos el contenido del directorio
 filenames = hdfs.glob('/user/admin/*')
+# miramos el primer fichero filenames[0]
+# head son las primeras lineas
 print(hdfs.head(filenames[0]))
 
-
+# función que cuenta palabras
 def count_words(file):
     word_counts = defaultdict(int)
     try:
+        # leemos línea a línea
         for line in file:
+            # dividimos la línea es palabras
             for word in line.split():
+                # en un diccionario metemos la palabra como clave
+                # y le sumamos 1 al valor
+                # en cada entrada tendremos una palabra y cuantas hay en el texto
                 word_counts[word] += 1
     #excepción colocada para python 3.7
     except RuntimeError:
         return word_counts
     return word_counts
 
-
+# abrimos el fichero desde HDFS
 with hdfs.open(filenames[0]) as f:
+    # lanzamos la función para obtener los valores por palabra
     counts = count_words(f)
+    # los imprimimos por pantalla
     print("counts: "+str(counts))
 
+# se ordena de mayor a menor
 print(sorted(counts.items(), key=lambda k_v: k_v[1], reverse=True)[:10])
 
 all_counts = Counter()
