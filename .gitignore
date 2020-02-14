@@ -1,2 +1,5 @@
 .idea
 spark-warehouse
+dt_model.model
+files/part*
+streaming/checkpoint

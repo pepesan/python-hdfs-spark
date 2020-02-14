@@ -5,7 +5,7 @@ if __name__ == '__main__':
     # el server lo monta cada empresa en un nombre y puerto
     # esto es un builder :)
     conf = SparkConf()\
-        .setAppName('nombre apliacacion')\
+        .setAppName('nombre aplicacion')\
         .setMaster('spark://127.0.0.1:7077')\
         .setSparkHome('/opt/spark/')
     # es una conexión a Spark

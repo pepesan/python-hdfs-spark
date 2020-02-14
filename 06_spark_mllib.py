@@ -4,8 +4,10 @@ sc =SparkContext()
 from sklearn import datasets
 # esto es un dataset que cargamos desde sklearn
 iris = datasets.load_iris()
-print(iris.data)
-print(iris.feature_names)
+print("Características: "+str(iris.data))
+print("Nombre de Características: " + str(iris.feature_names))
+print("Etiquetas: " + str(iris.target))
+print("Nombres de etiquetas: " + str(iris.target_names))
 
 # invocamos pandas para crear un array de datos y un DF
 # un DF de pandas XD
@@ -21,8 +23,10 @@ print(iris.target)
 iris_df['target'] = iris.target
 print(iris_df)
 #print(iris_df.show())
+
+"""
 import matplotlib.pyplot as plt   #Load the pyplot visualization library
-iris_df['sepal length (cm)'].hist(bins=30)
+iris_df['sepal length (cm)'].hist(bins=90)
 plt.show()
 
 data = iris.data
@@ -31,18 +35,23 @@ target = iris.target
 plt.figure(figsize=(12,5))
 
 # First subplot
-plt.subplot(121)
+plt.subplot(131)
 
 # Visualize the first two columns of data:
 plt.scatter(data[:,0], data[:,1], c=target)
 # Second subplot
-plt.subplot(122)
+plt.subplot(132)
 
 # Visualize the last two columns of data:
-plt.scatter(data[:,2], data[:,3], c=target)
+plt.scatter(data[:,0], data[:,2], c=target)
+# Second subplot
+plt.subplot(133)
+
+# Visualize the last two columns of data:
+plt.scatter(data[:,0], data[:,3], c=target)
 plt.show()
 
-
+"""
 #Haciendo transformaciones
 from pyspark.ml.linalg import Vectors
 from pyspark.ml.feature import VectorAssembler
@@ -76,7 +85,7 @@ from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 # Escogemos un algoritmo, en este caso DecisionTreeClassifier
 # pero podría ser otro por ejemplo regresión linear
 # target son las etiquetas, features son las características
-dt = DecisionTreeClassifier(labelCol="target", featuresCol="features")
+dt = DecisionTreeClassifier(labelCol="target", featuresCol="features", maxDepth=8)
 # creamos o entrenamos el modelo
 model = dt.fit(trainingData)
 # probamos el modelo a ver si es bueno o no
@@ -89,6 +98,11 @@ evaluator = MulticlassClassificationEvaluator(
     predictionCol="prediction",
     metricName="accuracy")
 accuracy = evaluator.evaluate(predictions)
-precision=1.0 - accuracy
+error_precision=1.0 - accuracy
 print("Test Acierto = " + str(accuracy))
-print("Test Error = " + str(precision))
+print("Test Error = " + str(error_precision))
+
+#guardar modelo
+#dt.save("dt_model.model")
+#cargar modelo
+#model2 = DecisionTreeClassifier.load("dt_model.model")
