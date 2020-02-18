@@ -1,6 +1,6 @@
 from pyspark import SparkContext
 sc =SparkContext()
-# cargamos los datos de iris
+# cargamos los datos de cancerDataSet
 from sklearn import datasets
 # esto es un dataset que cargamos desde sklearn
 iris = datasets.load_iris()
@@ -12,7 +12,7 @@ print("Nombres de etiquetas: " + str(iris.target_names))
 # invocamos pandas para crear un array de datos y un DF
 # un DF de pandas XD
 import pandas as pd
-# iris.data son los datos de las características
+# cancerDataSet.data son los datos de las características
 # las medidas de las flores
 # feature_name son los nombres de cada medida
 iris_df = pd.DataFrame(iris.data, columns = iris.feature_names)
@@ -22,11 +22,17 @@ print(iris_df.head())
 print(iris.target)
 iris_df['target'] = iris.target
 print(iris_df)
-#print(iris_df.show())
+#print(cancer_df.show())
 
-"""
+
 import matplotlib.pyplot as plt   #Load the pyplot visualization library
 iris_df['sepal length (cm)'].hist(bins=90)
+plt.show()
+iris_df['sepal width (cm)'].hist(bins=90)
+plt.show()
+iris_df['petal length (cm)'].hist(bins=90)
+plt.show()
+iris_df['petal width (cm)'].hist(bins=90)
 plt.show()
 
 data = iris.data
@@ -51,7 +57,7 @@ plt.subplot(133)
 plt.scatter(data[:,0], data[:,3], c=target)
 plt.show()
 
-"""
+
 #Haciendo transformaciones
 from pyspark.ml.linalg import Vectors
 from pyspark.ml.feature import VectorAssembler

@@ -2,7 +2,9 @@ from pyspark import SparkConf, SparkContext
 from pyspark.sql import SQLContext
 sc= SparkContext()
 sqlContext = SQLContext(sc)
-house_df = sqlContext.read.format('com.databricks.spark.csv').options(header='true', inferschema='true').load('files/boston.csv')
+house_df = sqlContext\
+    .read.format('com.databricks.spark.csv')\
+    .options(header='true', inferschema='true').load('files/boston.csv')
 house_df.take(1)
 
 house_df.cache()
@@ -36,14 +38,18 @@ vectorAssembler = VectorAssembler(inputCols = ['CRIM', 'ZN', 'INDUS', 'CHAS', 'N
 vhouse_df = vectorAssembler.transform(house_df)
 vhouse_df = vhouse_df.select(['features', 'MV'])
 vhouse_df.show(3)
-
-splits = vhouse_df.randomSplit([0.7, 0.3])
+# la seed me permitirá que siempre divida de la misma manera
+# por que si se usa siempre la misma seed siempre da los mismos
+# DF
+splits = vhouse_df.randomSplit([0.7, 0.3], seed=3)
 train_df = splits[0]
 test_df = splits[1]
 
 
 from pyspark.ml.regression import LinearRegression
-lr = LinearRegression(featuresCol = 'features', labelCol='MV', maxIter=10, regParam=0.3, elasticNetParam=0.8)
+lr = LinearRegression(
+    featuresCol = 'features',
+    labelCol='MV', maxIter=10, regParam=0.3, elasticNetParam=0.8)
 lr_model = lr.fit(train_df)
 print("Coefficients: " + str(lr_model.coefficients))
 print("Intercept: " + str(lr_model.intercept))
@@ -86,8 +92,6 @@ dt_evaluator = RegressionEvaluator(
 rmse = dt_evaluator.evaluate(dt_predictions)
 print("Root Mean Squared Error (RMSE) on test data = %g" % rmse)
 
-
-dt_model.featureImportances
 
 house_df.take(1)
 
