@@ -46,7 +46,8 @@ df=df.withColumnRenamed("Unit Cost","UnitCost")
 df=df.withColumnRenamed("Total Revenue","TotalRevenue")
 df=df.withColumnRenamed("Total Cost","TotalCost")
 df=df.withColumnRenamed("Total Profit","TotalProfit")
-
+# Schema del DF
+df.printSchema()
 
 # With this registered as a temp view, it will only be available to this particular notebook. If you'd like other users to be able to query this table, you can also create a table from the DataFrame.
 # Once saved, this table will persist across cluster restarts as well as allow various users across different notebooks to query this data.
@@ -59,9 +60,10 @@ df=df.withColumnRenamed("Total Profit","TotalProfit")
 #permanent_table_name = "ventas3d"
 
 #df.write.format("delta").saveAsTable(permanent_table_name)
+# Particionado de tabla delta
+dfpart=df.write.partitionBy("ItemType").format("delta").save("/mnt/delta/ventasp")
+dfpart.printSchema()
 
-# Schema del DF
-df.printSchema()
 
 #from pyspark.sql.types import DateType
 #df = df.withColumn("OrderDate", df["OrderDate"].cast(DateType()))
