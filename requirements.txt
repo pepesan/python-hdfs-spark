@@ -1,6 +1,6 @@
 hdfs3==0.3.1
 hdfs==2.5.8
-pyspark==2.3.2
+pyspark==3.5.0
 pandas==1.0.1
 scikit_learn==0.22.1
 matplotlib==3.1.3
