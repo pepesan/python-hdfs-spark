@@ -28,6 +28,7 @@ df = sparkSession.createDataFrame(data, schema=mySchema)
 print(df.head())
 # Mostrar los datos
 df.show()
+df.printSchema()
 
 # Filtrar los datos
 df = df.filter(df.edad >= 30)

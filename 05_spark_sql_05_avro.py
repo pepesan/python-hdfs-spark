@@ -7,12 +7,12 @@ from pyspark.sql.types import StructType, StructField, IntegerType, StringType, 
 spark = pyspark.sql.SparkSession.builder.appName("Ejemplo").getOrCreate()
 
 # Read multiline json file
-df = spark.read.option("multiline","true") \
-      .json("files/example.json")
+# Necesitamos pasar el jar
+#df = spark.read.format("avro").load("files/user.avro")
 # Mostrar los datos
-df.show()
+#df.show()
 
-df.printSchema()
+#df.printSchema()
 
 # volcado a fichero
 #df.write.json("files/salida")
