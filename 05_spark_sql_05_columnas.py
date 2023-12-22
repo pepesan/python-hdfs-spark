@@ -21,6 +21,7 @@ df_filtrado = df.select("nombre", "edad")
 df_filtrado.show()
 
 # Filtrar los datos para que solo queden las personas mayores de 25 años
+df_filtrado = df.filter(df["edad"] > 25)
 df_filtrado = df.filter(df.edad > 25)
 
 # Mostrar los datos
