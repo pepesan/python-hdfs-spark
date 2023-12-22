@@ -61,3 +61,21 @@ def merge_ordered(l, r):
 
 df1.groupby('id').cogroup(df2.groupby('id')).applyInPandas(
     merge_ordered, schema='time int, id int, v1 double, v2 string').show()
+
+
+df.createOrReplaceTempView("tableA")
+spark.sql("SELECT count(*) from tableA").show()
+
+
+@pandas_udf("integer")
+def add_one(s: pd.Series) -> pd.Series:
+    return s + 1
+
+spark.udf.register("add_one", add_one)
+spark.sql("SELECT add_one(v1) FROM tableA").show()
+
+
+from pyspark.sql.functions import expr
+
+df.selectExpr('add_one(v1)').show()
+df.select(expr('count(*)') > 0).show()
