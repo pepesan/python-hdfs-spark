@@ -1,0 +1,12 @@
+# Mismas librerías y versiones que pyproject.toml del proyecto, instaladas
+# dentro de la imagen de Spark para que los executors (spark-worker) puedan
+# ejecutar UDFs de Python / pandas_udf / etc. con las mismas libs que usa el
+# driver (Zeppelin, o un script lanzado con `uv run` desde el host).
+hdfs==2.7.3
+matplotlib==3.11.2
+pandas==3.0.6
+plotly==7.1.0
+pyarrow==25.0.1
+pyspark==4.2.0
+scikit-learn==1.9.1
+seaborn==0.13.2

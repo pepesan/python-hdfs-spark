@@ -1,0 +1,219 @@
+{
+  "paragraphs": [
+    {
+      "title": "intro",
+      "text": "%md\n# Zeppelin contra el cluster Spark de este proyecto\n\nEste notebook prueba los tres intérpretes que trae la imagen `zeppelin` de `docker/`:\n- `%spark` (Scala): habla directo con `spark://spark-master:7077`.\n- `%pyspark`: igual, pero en Python (mismo intérprete `/opt/venv-project/bin/python` que usan driver y executors).\n- `%python`: Python plano, sin Spark, con las mismas librerías de `pyproject.toml`.",
+      "user": "anonymous",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "markdown"
+        }
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch1\u003eZeppelin contra el cluster Spark de este proyecto\u003c/h1\u003e\n\u003cp\u003eEste notebook prueba los tres intérpretes que trae la imagen \u003ccode\u003ezeppelin\u003c/code\u003e de \u003ccode\u003edocker/\u003c/code\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003e\u003ccode\u003e%spark\u003c/code\u003e (Scala): habla directo con \u003ccode\u003espark://spark-master:7077\u003c/code\u003e.\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003e%pyspark\u003c/code\u003e: igual, pero en Python (mismo intérprete \u003ccode\u003e/opt/venv-project/bin/python\u003c/code\u003e que usan driver y executors).\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003e%python\u003c/code\u003e: Python plano, sin Spark, con las mismas librerías de \u003ccode\u003epyproject.toml\u003c/code\u003e.\u003c/li\u003e\n\u003c/ul\u003e\n\n\u003c/div\u003e"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1789907683179_704537",
+      "id": "paragraph_1789907683179_704537",
+      "dateCreated": "2026-09-20 12:34:43.179",
+      "dateStarted": "2026-09-20 12:34:43.180",
+      "dateFinished": "2026-09-20 12:34:43.186",
+      "status": "FINISHED"
+    },
+    {
+      "title": "spark-scala",
+      "text": "%spark\nval rdd \u003d sc.parallelize(List(\"spark\", \"rdd\", \"example\", \"sample\", \"example\"))\nprintln(rdd.collect().mkString(\",\"))\nprintln(\"master: \" + sc.master)",
+      "user": "anonymous",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "scala"
+        }
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "spark,rdd,example,sample,example\nmaster: spark://spark-master:7077\nval \u001b[1m\u001b[34mrdd\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.rdd.RDD[String]\u001b[0m \u003d ParallelCollectionRDD[0] at parallelize at \u003cconsole\u003e:2\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d0"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1789907683179_82987484",
+      "id": "paragraph_1789907683179_82987484",
+      "dateCreated": "2026-09-20 12:34:43.179",
+      "dateStarted": "2026-09-20 12:34:43.281",
+      "dateFinished": "2026-09-20 12:34:53.358",
+      "status": "FINISHED"
+    },
+    {
+      "title": "pyspark-df",
+      "text": "%pyspark\n# DataFrame + pandas_udf: prueba que el executor (spark-worker) tiene las\n# mismas librerias que el driver (necesario para pandas_udf/applyInPandas).\nimport pandas as pd\nfrom pyspark.sql.functions import pandas_udf\n\ndf \u003d spark.createDataFrame([(1, \"a\"), (2, \"b\"), (3, \"c\")], [\"id\", \"letra\"])\ndf.show()\n\n@pandas_udf(\"long\")\ndef mas_uno(s: pd.Series) -\u003e pd.Series:\n    return s + 1\n\ndf.select(mas_uno(df.id)).show()\nprint(\"master:\", spark.sparkContext.master)",
+      "user": "anonymous",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "python"
+        }
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "+---+-----+\n| id|letra|\n+---+-----+\n|  1|    a|\n|  2|    b|\n|  3|    c|\n+---+-----+\n\n/opt/spark/python/pyspark/sql/pandas/functions.py:777: FutureWarning: PySpark does not yet fully support pandas \u003e\u003d 3.0.0. Some features may not work correctly. It is recommended to use pandas \u003c 3.0.0 for now.\n  require_minimum_pandas_version()\n/opt/spark/python/pyspark/sql/pandas/typehints.py:60: FutureWarning: PySpark does not yet fully support pandas \u003e\u003d 3.0.0. Some features may not work correctly. It is recommended to use pandas \u003c 3.0.0 for now.\n  require_minimum_pandas_version()\n+-----------+\n|mas_uno(id)|\n+-----------+\n|          2|\n|          3|\n|          4|\n+-----------+\n\nmaster: spark://spark-master:7077\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d1"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d2"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d3"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d4"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1789907683179_132659676",
+      "id": "paragraph_1789907683179_132659676",
+      "dateCreated": "2026-09-20 12:34:43.179",
+      "dateStarted": "2026-09-20 12:34:53.389",
+      "dateFinished": "2026-09-20 12:35:01.565",
+      "status": "FINISHED"
+    },
+    {
+      "title": "pyspark-hive",
+      "text": "%pyspark\n# Spark habla con el mismo metastore Hive del proyecto (zeppelin.spark.useHiveContext\u003dtrue)\nspark.sql(\"SHOW DATABASES\").show()",
+      "user": "anonymous",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "python"
+        }
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "+---------+\n|namespace|\n+---------+\n|  default|\n+---------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1789907683179_1375606627",
+      "id": "paragraph_1789907683179_1375606627",
+      "dateCreated": "2026-09-20 12:34:43.179",
+      "dateStarted": "2026-09-20 12:35:01.595",
+      "dateFinished": "2026-09-20 12:35:01.672",
+      "status": "FINISHED"
+    },
+    {
+      "title": "python-plain",
+      "text": "%python\n# Python plano (sin Spark), con pandas/matplotlib/etc. del venv del proyecto\nimport pandas as pd\npd.DataFrame({\"a\": [1, 2, 3], \"b\": [4, 5, 6]}).describe()",
+      "user": "anonymous",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "python"
+        }
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "         a    b\ncount  3.0  3.0\nmean   2.0  5.0\nstd    1.0  1.0\nmin    1.0  4.0\n25%    1.5  4.5\n50%    2.0  5.0\n75%    2.5  5.5\nmax    3.0  6.0\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1789907683179_1848699465",
+      "id": "paragraph_1789907683179_1848699465",
+      "dateCreated": "2026-09-20 12:34:43.179",
+      "dateStarted": "2026-09-20 12:35:01.695",
+      "dateFinished": "2026-09-20 12:35:01.887",
+      "status": "FINISHED"
+    }
+  ],
+  "name": "01_cluster_spark_hive",
+  "id": "2M2SPK0001",
+  "defaultInterpreterGroup": "spark",
+  "version": "0.12.1",
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {},
+  "config": {
+    "isZeppelinNotebookCronEnable": false
+  },
+  "info": {
+    "inIsolatedMode": false,
+    "isRunning": true,
+    "startTime": "2026-09-20_12-34-43"
+  }
+}

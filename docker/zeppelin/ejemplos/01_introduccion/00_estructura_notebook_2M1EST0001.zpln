@@ -1,0 +1,217 @@
+{
+  "paragraphs": [
+    {
+      "title": "intro",
+      "text": "%md\n# python-hdfs-spark · Estructura de un notebook Zeppelin\n\n**Objetivo:** ver las partes de un notebook (celdas Markdown, código y resultado) antes de usar Zeppelin contra el cluster Spark/HDFS/Hive de este proyecto.",
+      "user": "anonymous",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "markdown"
+        }
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch1\u003epython-hdfs-spark · Estructura de un notebook Zeppelin\u003c/h1\u003e\n\u003cp\u003e\u003cstrong\u003eObjetivo:\u003c/strong\u003e ver las partes de un notebook (celdas Markdown, código y resultado) antes de usar Zeppelin contra el cluster Spark/HDFS/Hive de este proyecto.\u003c/p\u003e\n\n\u003c/div\u003e"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1789907669461_1827479526",
+      "id": "paragraph_1789907669461_1827479526",
+      "dateCreated": "2026-09-20 12:34:29.463",
+      "dateStarted": "2026-09-20 12:34:29.477",
+      "dateFinished": "2026-09-20 12:34:31.468",
+      "status": "FINISHED"
+    },
+    {
+      "title": "md-cells",
+      "text": "%md\n## 1. Celdas Markdown\n\nEsta celda es de tipo `%md`. Sirve para documentar el notebook: qué hace cada paso y por qué. Se renderiza al ejecutarla (`Shift+Enter`).",
+      "user": "anonymous",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "markdown"
+        }
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch2\u003e1. Celdas Markdown\u003c/h2\u003e\n\u003cp\u003eEsta celda es de tipo \u003ccode\u003e%md\u003c/code\u003e. Sirve para documentar el notebook: qué hace cada paso y por qué. Se renderiza al ejecutarla (\u003ccode\u003eShift+Enter\u003c/code\u003e).\u003c/p\u003e\n\n\u003c/div\u003e"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1789907669463_238508356",
+      "id": "paragraph_1789907669463_238508356",
+      "dateCreated": "2026-09-20 12:34:29.463",
+      "dateStarted": "2026-09-20 12:34:31.477",
+      "dateFinished": "2026-09-20 12:34:31.483",
+      "status": "FINISHED"
+    },
+    {
+      "title": "python-cell-1",
+      "text": "%python\n# Celda de código: %python usa el mismo entorno (uv, Python 3.14) que\n# `uv run python \u003cscript\u003e.py` desde el host, con las mismas librerías de\n# pyproject.toml (pandas, pyspark, etc.)\nimport sys\nprint(sys.executable)\nmensaje \u003d \"Cada celda se ejecuta de forma independiente, pero comparte variables con las demas celdas del mismo notebook.\"\nprint(mensaje)",
+      "user": "anonymous",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "python"
+        }
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "/opt/venv-project/bin/python\nCada celda se ejecuta de forma independiente, pero comparte variables con las demas celdas del mismo notebook.\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1789907669463_796591663",
+      "id": "paragraph_1789907669463_796591663",
+      "dateCreated": "2026-09-20 12:34:29.463",
+      "dateStarted": "2026-09-20 12:34:31.578",
+      "dateFinished": "2026-09-20 12:34:34.881",
+      "status": "FINISHED"
+    },
+    {
+      "title": "python-cell-2",
+      "text": "%python\n# Las variables definidas en una celda anterior siguen disponibles aqui\nprint(f\"Longitud del mensaje anterior: {len(mensaje)} caracteres\")",
+      "user": "anonymous",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "python"
+        }
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "Longitud del mensaje anterior: 110 caracteres\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1789907669463_1054945251",
+      "id": "paragraph_1789907669463_1054945251",
+      "dateCreated": "2026-09-20 12:34:29.463",
+      "dateStarted": "2026-09-20 12:34:34.981",
+      "dateFinished": "2026-09-20 12:34:34.986",
+      "status": "FINISHED"
+    },
+    {
+      "title": "results-note",
+      "text": "%md\n## 2. Resultados\n\nDebajo de cada celda de codigo aparece su **resultado** (salida de `print`, tablas, graficos...). Los notebooks `01_introduccion` y `02_spark_cluster` de esta carpeta se versionan en el repo (`docker/zeppelin/ejemplos/`), asi que sus resultados guardados son los de la ultima vez que se ejecutaron.",
+      "user": "anonymous",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "markdown"
+        }
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch2\u003e2. Resultados\u003c/h2\u003e\n\u003cp\u003eDebajo de cada celda de codigo aparece su \u003cstrong\u003eresultado\u003c/strong\u003e (salida de \u003ccode\u003eprint\u003c/code\u003e, tablas, graficos\u0026hellip;). Los notebooks \u003ccode\u003e01_introduccion\u003c/code\u003e y \u003ccode\u003e02_spark_cluster\u003c/code\u003e de esta carpeta se versionan en el repo (\u003ccode\u003edocker/zeppelin/ejemplos/\u003c/code\u003e), asi que sus resultados guardados son los de la ultima vez que se ejecutaron.\u003c/p\u003e\n\n\u003c/div\u003e"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1789907669463_228616077",
+      "id": "paragraph_1789907669463_228616077",
+      "dateCreated": "2026-09-20 12:34:29.463",
+      "dateStarted": "2026-09-20 12:34:35.081",
+      "dateFinished": "2026-09-20 12:34:35.086",
+      "status": "FINISHED"
+    },
+    {
+      "title": "buenas-practicas",
+      "text": "%md\n## 3. Buenas practicas\n\n- Celdas `%md` para explicar el *por que* de cada paso, no solo el que.\n- `Run all paragraphs` de arriba a abajo antes de dar el notebook por bueno.\n- Prefijo numerico (`00_`, `01_`...) en el nombre de fichero para que el orden de trabajo se vea de un vistazo.",
+      "user": "anonymous",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "markdown"
+        }
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch2\u003e3. Buenas practicas\u003c/h2\u003e\n\u003cul\u003e\n\u003cli\u003eCeldas \u003ccode\u003e%md\u003c/code\u003e para explicar el \u003cem\u003epor que\u003c/em\u003e de cada paso, no solo el que.\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003eRun all paragraphs\u003c/code\u003e de arriba a abajo antes de dar el notebook por bueno.\u003c/li\u003e\n\u003cli\u003ePrefijo numerico (\u003ccode\u003e00_\u003c/code\u003e, \u003ccode\u003e01_\u003c/code\u003e\u0026hellip;) en el nombre de fichero para que el orden de trabajo se vea de un vistazo.\u003c/li\u003e\n\u003c/ul\u003e\n\n\u003c/div\u003e"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1789907669463_292566823",
+      "id": "paragraph_1789907669463_292566823",
+      "dateCreated": "2026-09-20 12:34:29.463",
+      "dateStarted": "2026-09-20 12:34:35.181",
+      "dateFinished": "2026-09-20 12:34:35.189",
+      "status": "FINISHED"
+    }
+  ],
+  "name": "00_estructura_notebook",
+  "id": "2M1EST0001",
+  "defaultInterpreterGroup": "spark",
+  "version": "0.12.1",
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {},
+  "config": {
+    "isZeppelinNotebookCronEnable": false
+  },
+  "info": {
+    "inIsolatedMode": false,
+    "isRunning": true,
+    "startTime": "2026-09-20_12-34-29"
+  }
+}

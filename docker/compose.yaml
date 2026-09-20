@@ -1,0 +1,153 @@
+x-hadoop-env: &hadoop-env
+  CORE-SITE.XML_fs.defaultFS: hdfs://namenode:8020
+  CORE-SITE.XML_fs.default.name: hdfs://namenode:8020
+  HDFS-SITE.XML_dfs.namenode.rpc-address: namenode:8020
+  HDFS-SITE.XML_dfs.replication: "1"
+  HDFS-SITE.XML_dfs.namenode.datanode.registration.ip-hostname-check: "false"
+  # Hue habla con HDFS como su propio usuario ("hue") e impersona
+  # (doas=...) al usuario que ha iniciado sesión en Hue. Sin esto, el
+  # namenode lo rechaza con "User: hue is not allowed to impersonate ...".
+  # Entorno de un solo usuario/desarrollo: se permite desde cualquier host.
+  CORE-SITE.XML_hadoop.proxyuser.hue.hosts: "*"
+  CORE-SITE.XML_hadoop.proxyuser.hue.groups: "*"
+
+services:
+  spark-master:
+    build: ./spark/image
+    image: python-hdfs-spark/spark:4.2.0-python3.14
+    container_name: spark-master
+    hostname: spark-master
+    command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.master.Master"]
+    ports:
+      - "7077:7077"   # RPC del master, usado en setMaster('spark://...')
+      - "8080:8080"   # UI web del master
+      - "4040:4040"   # UI web de la aplicación (driver en modo client)
+    volumes:
+      - ../:/opt/project
+    networks:
+      - spark-hdfs-net
+
+  spark-worker:
+    build: ./spark/image
+    image: python-hdfs-spark/spark:4.2.0-python3.14
+    container_name: spark-worker
+    hostname: spark-worker
+    command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.worker.Worker", "spark://spark-master:7077"]
+    environment:
+      SPARK_WORKER_CORES: "2"
+      SPARK_WORKER_MEMORY: "2g"
+    depends_on:
+      - spark-master
+    ports:
+      - "8081:8081"   # UI web del worker
+    volumes:
+      - ../:/opt/project
+    networks:
+      - spark-hdfs-net
+
+  namenode:
+    image: apache/hadoop:3.5.0
+    container_name: namenode
+    hostname: namenode
+    command: ["hdfs", "namenode"]
+    environment:
+      <<: *hadoop-env
+      ENSURE_NAMENODE_DIR: "/tmp/hadoop-hadoop/dfs/name"
+    ports:
+      - "9870:9870"   # UI web del namenode
+      - "8020:8020"   # RPC del namenode (clientes HDFS nativos)
+    volumes:
+      - ./volumes/hdfs/namenode:/tmp/hadoop-hadoop
+    networks:
+      - spark-hdfs-net
+
+  datanode:
+    image: apache/hadoop:3.5.0
+    container_name: datanode
+    hostname: datanode
+    command: ["hdfs", "datanode"]
+    environment:
+      <<: *hadoop-env
+    depends_on:
+      - namenode
+    ports:
+      - "9864:9864"   # UI web del datanode
+    volumes:
+      - ./volumes/hdfs/datanode:/tmp/hadoop-hadoop
+    networks:
+      - spark-hdfs-net
+
+  hive-metastore:
+    image: apache/hive:4.2.1
+    container_name: hive-metastore
+    hostname: hive-metastore
+    environment:
+      SERVICE_NAME: metastore
+      HIVE_CUSTOM_CONF_DIR: /hive_custom_conf
+    depends_on:
+      - namenode
+    ports:
+      - "9083:9083"   # Thrift del metastore
+    volumes:
+      - ./hive/conf:/hive_custom_conf:ro
+      - ./volumes/hive/data:/opt/hive/data
+    networks:
+      - spark-hdfs-net
+
+  hive-server2:
+    image: apache/hive:4.2.1
+    container_name: hive-server2
+    hostname: hive-server2
+    environment:
+      SERVICE_NAME: hiveserver2
+      SERVICE_OPTS: "-Dhive.metastore.uris=thrift://hive-metastore:9083"
+      HIVE_CUSTOM_CONF_DIR: /hive_custom_conf
+      IS_RESUME: "true"
+    depends_on:
+      - hive-metastore
+    ports:
+      - "10000:10000"  # JDBC/Thrift (beeline, Hue)
+      - "10002:10002"  # UI web de HiveServer2
+    volumes:
+      - ./hive/conf:/hive_custom_conf:ro
+    networks:
+      - spark-hdfs-net
+
+  zeppelin:
+    build: ./zeppelin/image
+    image: python-hdfs-spark/zeppelin:python-3.14
+    container_name: zeppelin
+    hostname: zeppelin
+    environment:
+      ZEPPELIN_ADDR: "0.0.0.0"
+      SPARK_MASTER: spark://spark-master:7077
+    depends_on:
+      - spark-master
+      - hive-server2
+    ports:
+      - "8082:8080"   # UI web de Zeppelin (8080/8081 ya usados por Spark)
+    volumes:
+      - ../:/opt/project
+      - ./volumes/zeppelin/notebook:/opt/zeppelin/notebook
+      - ./volumes/zeppelin/logs:/opt/zeppelin/logs
+      - ./zeppelin/ejemplos:/opt/zeppelin/notebook/ejemplos
+    networks:
+      - spark-hdfs-net
+
+  hue:
+    image: gethue/hue@sha256:7d5c1b9f8a79ac987e3a04fba987890dd9cd6055c6c475e63fcb0355455fa4e1
+    container_name: hue
+    hostname: hue
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./hue/hue.ini:/usr/share/hue/desktop/conf/z-hue.ini:ro
+    depends_on:
+      - namenode
+      - hive-server2
+    networks:
+      - spark-hdfs-net
+
+networks:
+  spark-hdfs-net:
+    driver: bridge
