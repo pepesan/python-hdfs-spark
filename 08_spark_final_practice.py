@@ -1,4 +1,11 @@
-
+# Requiere: ninguno (Spark local, sin servicios docker) + el fichero de datos
+# files/1500000_Sales_Records.csv, que NO va en el repo (~187 MB, ver
+# .gitignore). Descargar y colocar así:
+#   curl -Lo /tmp/sales.zip "https://excelbianalytics.com/wp/wp-content/uploads/2017/07/1500000%20Sales%20Records.zip"
+#   unzip -o /tmp/sales.zip -d /tmp/sales
+#   mv "/tmp/sales/1500000 Sales Records.csv" files/1500000_Sales_Records.csv
+# Aun con el fichero, el script falla en la parte de Delta Lake (falta el
+# paquete delta-spark) — ver README.md, sección "Notas de validación".
 import pyspark
 # conexión a spark "local"
 # sólo se usa la biblioteca para acceder a las funciones de spark

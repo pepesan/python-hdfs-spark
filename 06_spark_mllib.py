@@ -1,3 +1,5 @@
+# Requiere: ninguno (Spark local, sin servicios docker). Abre ventanas de
+# matplotlib (plt.show()); en un entorno sin pantalla usar MPLBACKEND=Agg.
 from pyspark import SparkContext
 sc =SparkContext()
 # cargamos los datos de cancerDataSet

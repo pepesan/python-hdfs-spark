@@ -1,3 +1,4 @@
+# Requiere: ninguno (Spark local, sin servicios docker); usa files/boston.csv.
 from pyspark import SparkConf, SparkContext
 from pyspark.sql import SQLContext
 sc= SparkContext()

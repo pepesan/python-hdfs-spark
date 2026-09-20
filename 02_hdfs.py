@@ -1,3 +1,4 @@
+# Requiere: ninguno (todo el cuerpo del script está comentado, es un no-op).
 from pyspark import SparkContext
 
 import sys

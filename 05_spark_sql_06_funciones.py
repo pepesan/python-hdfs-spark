@@ -1,3 +1,4 @@
+# Requiere: ninguno (Spark local, sin servicios docker).
 import pyspark
 import pyspark.sql.functions as F
 from pyspark.sql import SparkSession
@@ -45,7 +46,11 @@ df.groupby('color').avg().show()
 def plus_mean(pandas_df):
     return pandas_df.assign(v1=pandas_df.v1 - pandas_df.v1.mean())
 
-df.groupby('color').applyInPandas(plus_mean, schema=df.schema).show()
+# v1 pasa a double (v1 - media es float), no long como en df.schema: hay que
+# declararlo así o pyspark 4.2.0 rechaza la conversión a Arrow (cast inseguro
+# float64 -> int64).
+plus_mean_schema = 'color string, fruit string, v1 double, v2 long'
+df.groupby('color').applyInPandas(plus_mean, schema=plus_mean_schema).show()
 
 
 df1 = spark.createDataFrame(

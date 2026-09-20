@@ -1,3 +1,4 @@
+# Requiere: ninguno (Spark local, sin servicios docker).
 import pyspark
 import pyspark.sql.functions as F
 from pyspark.sql import SparkSession

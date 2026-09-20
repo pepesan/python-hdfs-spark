@@ -1,4 +1,4 @@
-
+# Requiere: ninguno (Spark local, sin servicios docker).
 import pyspark
 # conexión a spark "local"
 # sólo se usa la biblioteca para acceder a las funciones de spark

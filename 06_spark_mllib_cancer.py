@@ -1,3 +1,4 @@
+# Requiere: ninguno (Spark local, sin servicios docker).
 from pyspark import SparkContext
 sc =SparkContext()
 # cargamos los datos de cancerDataSet

@@ -1,3 +1,5 @@
+# Requiere: docker/01_launch.sh (spark-master, spark-worker) — se conecta a
+# spark://127.0.0.1:7077, el puerto RPC del master publicado por el docker.
 from pyspark import SparkConf, SparkContext
 if __name__ == '__main__':
     # acceso remoto a spark

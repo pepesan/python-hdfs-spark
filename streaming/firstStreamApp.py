@@ -1,3 +1,5 @@
+# Requiere: un servidor TCP local en el puerto 9999 (no es un servicio
+# docker del proyecto), por ejemplo: nc -lk 9999
 from pyspark import SparkContext
 from pyspark.streaming import StreamingContext
 from time import sleep

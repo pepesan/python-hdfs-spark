@@ -1,3 +1,6 @@
+# Requiere: ninguno (Spark local, sin servicios docker). Nota: el paquete
+# graphframes:graphframes:0.6.0-spark2.3-s_2.11 está empaquetado para Spark
+# 2.3/Scala 2.11, incompatible con nuestro Spark 4.2.0/Scala 2.13.
 import os
 os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages graphframes:graphframes:0.6.0-spark2.3-s_2.11 pyspark-shell'
 
