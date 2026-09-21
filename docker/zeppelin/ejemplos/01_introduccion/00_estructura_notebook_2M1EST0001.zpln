@@ -4,11 +4,18 @@
       "title": "intro",
       "text": "%md\n# python-hdfs-spark · Estructura de un notebook Zeppelin\n\n**Objetivo:** ver las partes de un notebook (celdas Markdown, código y resultado) antes de usar Zeppelin contra el cluster Spark/HDFS/Hive de este proyecto.",
       "user": "anonymous",
+      "dateUpdated": "2026-09-21 16:42:15.847",
       "progress": 0,
       "config": {
         "editorSetting": {
-          "language": "markdown"
-        }
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        },
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {}
       },
       "settings": {
         "params": {},
@@ -29,19 +36,26 @@
       "jobName": "paragraph_1789907669461_1827479526",
       "id": "paragraph_1789907669461_1827479526",
       "dateCreated": "2026-09-20 12:34:29.463",
-      "dateStarted": "2026-09-20 12:34:29.477",
-      "dateFinished": "2026-09-20 12:34:31.468",
+      "dateStarted": "2026-09-21 16:42:15.856",
+      "dateFinished": "2026-09-21 16:42:15.861",
       "status": "FINISHED"
     },
     {
       "title": "md-cells",
       "text": "%md\n## 1. Celdas Markdown\n\nEsta celda es de tipo `%md`. Sirve para documentar el notebook: qué hace cada paso y por qué. Se renderiza al ejecutarla (`Shift+Enter`).",
       "user": "anonymous",
+      "dateUpdated": "2026-09-21 16:42:15.956",
       "progress": 0,
       "config": {
         "editorSetting": {
-          "language": "markdown"
-        }
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        },
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {}
       },
       "settings": {
         "params": {},
@@ -62,19 +76,26 @@
       "jobName": "paragraph_1789907669463_238508356",
       "id": "paragraph_1789907669463_238508356",
       "dateCreated": "2026-09-20 12:34:29.463",
-      "dateStarted": "2026-09-20 12:34:31.477",
-      "dateFinished": "2026-09-20 12:34:31.483",
+      "dateStarted": "2026-09-21 16:42:15.958",
+      "dateFinished": "2026-09-21 16:42:15.963",
       "status": "FINISHED"
     },
     {
       "title": "python-cell-1",
       "text": "%python\n# Celda de código: %python usa el mismo entorno (uv, Python 3.14) que\n# `uv run python \u003cscript\u003e.py` desde el host, con las mismas librerías de\n# pyproject.toml (pandas, pyspark, etc.)\nimport sys\nprint(sys.executable)\nmensaje \u003d \"Cada celda se ejecuta de forma independiente, pero comparte variables con las demas celdas del mismo notebook.\"\nprint(mensaje)",
       "user": "anonymous",
+      "dateUpdated": "2026-09-21 16:42:16.059",
       "progress": 0,
       "config": {
         "editorSetting": {
-          "language": "python"
-        }
+          "language": "python",
+          "editOnDblClick": false,
+          "completionSupport": true
+        },
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {}
       },
       "settings": {
         "params": {},
@@ -95,19 +116,26 @@
       "jobName": "paragraph_1789907669463_796591663",
       "id": "paragraph_1789907669463_796591663",
       "dateCreated": "2026-09-20 12:34:29.463",
-      "dateStarted": "2026-09-20 12:34:31.578",
-      "dateFinished": "2026-09-20 12:34:34.881",
+      "dateStarted": "2026-09-21 16:42:16.062",
+      "dateFinished": "2026-09-21 16:42:19.530",
       "status": "FINISHED"
     },
     {
       "title": "python-cell-2",
       "text": "%python\n# Las variables definidas en una celda anterior siguen disponibles aqui\nprint(f\"Longitud del mensaje anterior: {len(mensaje)} caracteres\")",
       "user": "anonymous",
+      "dateUpdated": "2026-09-21 16:42:19.566",
       "progress": 0,
       "config": {
         "editorSetting": {
-          "language": "python"
-        }
+          "language": "python",
+          "editOnDblClick": false,
+          "completionSupport": true
+        },
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {}
       },
       "settings": {
         "params": {},
@@ -128,19 +156,26 @@
       "jobName": "paragraph_1789907669463_1054945251",
       "id": "paragraph_1789907669463_1054945251",
       "dateCreated": "2026-09-20 12:34:29.463",
-      "dateStarted": "2026-09-20 12:34:34.981",
-      "dateFinished": "2026-09-20 12:34:34.986",
+      "dateStarted": "2026-09-21 16:42:19.568",
+      "dateFinished": "2026-09-21 16:42:19.573",
       "status": "FINISHED"
     },
     {
       "title": "results-note",
       "text": "%md\n## 2. Resultados\n\nDebajo de cada celda de codigo aparece su **resultado** (salida de `print`, tablas, graficos...). Los notebooks `01_introduccion` y `02_spark_cluster` de esta carpeta se versionan en el repo (`docker/zeppelin/ejemplos/`), asi que sus resultados guardados son los de la ultima vez que se ejecutaron.",
       "user": "anonymous",
+      "dateUpdated": "2026-09-21 16:42:19.668",
       "progress": 0,
       "config": {
         "editorSetting": {
-          "language": "markdown"
-        }
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        },
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {}
       },
       "settings": {
         "params": {},
@@ -161,19 +196,26 @@
       "jobName": "paragraph_1789907669463_228616077",
       "id": "paragraph_1789907669463_228616077",
       "dateCreated": "2026-09-20 12:34:29.463",
-      "dateStarted": "2026-09-20 12:34:35.081",
-      "dateFinished": "2026-09-20 12:34:35.086",
+      "dateStarted": "2026-09-21 16:42:19.671",
+      "dateFinished": "2026-09-21 16:42:19.676",
       "status": "FINISHED"
     },
     {
       "title": "buenas-practicas",
       "text": "%md\n## 3. Buenas practicas\n\n- Celdas `%md` para explicar el *por que* de cada paso, no solo el que.\n- `Run all paragraphs` de arriba a abajo antes de dar el notebook por bueno.\n- Prefijo numerico (`00_`, `01_`...) en el nombre de fichero para que el orden de trabajo se vea de un vistazo.",
       "user": "anonymous",
+      "dateUpdated": "2026-09-21 16:42:19.770",
       "progress": 0,
       "config": {
         "editorSetting": {
-          "language": "markdown"
-        }
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        },
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {}
       },
       "settings": {
         "params": {},
@@ -194,8 +236,8 @@
       "jobName": "paragraph_1789907669463_292566823",
       "id": "paragraph_1789907669463_292566823",
       "dateCreated": "2026-09-20 12:34:29.463",
-      "dateStarted": "2026-09-20 12:34:35.181",
-      "dateFinished": "2026-09-20 12:34:35.189",
+      "dateStarted": "2026-09-21 16:42:19.773",
+      "dateFinished": "2026-09-21 16:42:19.779",
       "status": "FINISHED"
     }
   ],
@@ -211,7 +253,7 @@
   },
   "info": {
     "inIsolatedMode": false,
-    "isRunning": true,
-    "startTime": "2026-09-20_12-34-29"
+    "startTime": "2026-09-20_12-34-29",
+    "isRunning": true
   }
 }

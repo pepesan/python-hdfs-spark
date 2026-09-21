@@ -1,0 +1,344 @@
+{
+  "paragraphs": [
+    {
+      "title": "intro",
+      "text": "%md\n# Conexiones a fuentes de datos externas\n\nEste notebook recorre las tres formas de conectar Spark (o Python directamente) a un almacén de datos externo al propio cluster que trae este proyecto: **HDFS** (el sistema de ficheros distribuido \"de casa\"), **S3** (almacenamiento de objetos, vía SeaweedFS) y una **base de datos relacional** (PostgreSQL, vía JDBC). Cada bloque de código de aquí ya se validó antes como script independiente (`01_connect_*.py` en la raíz del proyecto) — este notebook es la versión \"para explorar y ejecutar celda a celda\" de esos mismos ejemplos, no una reescritura desde cero.",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:18:44.295",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "<div class=\"markdown-body\">\n<h1>Conexiones a fuentes de datos externas</h1>\n<p>Este notebook recorre las tres formas de conectar Spark (o Python directamente) a un almacén de datos externo al propio cluster que trae este proyecto: <strong>HDFS</strong> (el sistema de ficheros distribuido &ldquo;de casa&rdquo;), <strong>S3</strong> (almacenamiento de objetos, vía SeaweedFS) y una <strong>base de datos relacional</strong> (PostgreSQL, vía JDBC). Cada bloque de código de aquí ya se validó antes como script independiente (<code>01_connect_*.py</code> en la raíz del proyecto) — este notebook es la versión &ldquo;para explorar y ejecutar celda a celda&rdquo; de esos mismos ejemplos, no una reescritura desde cero.</p>\n\n</div>"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029124282_1728478578",
+      "id": "paragraph_1790029124282_1728478578",
+      "dateCreated": "2026-09-21 22:18:44.282",
+      "dateStarted": "2026-09-21 22:18:44.297",
+      "dateFinished": "2026-09-21 22:18:46.154",
+      "status": "FINISHED"
+    },
+    {
+      "title": "md_webhdfs",
+      "text": "%md\n## 1. HDFS vía WebHDFS\n\nHDFS (*Hadoop Distributed File System*) es el sistema de ficheros distribuido del cluster: los datos se reparten en bloques entre varios `datanode` y un `namenode` lleva la cuenta de dónde está cada uno. **WebHDFS** es su API REST sobre HTTP — el cliente Python `hdfs` habla con el `namenode` (puerto 9870) para listar/crear directorios y leer/escribir ficheros, sin necesitar ninguna librería nativa de Hadoop.\n\nAlternativa: el RPC nativo de Hadoop (puerto 8020, vía `pyarrow.fs.HadoopFileSystem`) es más eficiente para grandes volúmenes, pero **no funciona desde Zeppelin** — su librería nativa (`libhdfs.so`) exige una versión de `glibc` más reciente de la que trae la imagen base de Zeppelin, y actualizar la `glibc` del sistema no es seguro (ver `CLAUDE.md`). Ese ejemplo (`01_connect_hdfs_04_rpc_nativo_pyarrow.py`) solo se puede ejecutar dentro de `spark-master`, no aquí.",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:18:47.439",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "<div class=\"markdown-body\">\n<h2>1. HDFS vía WebHDFS</h2>\n<p>HDFS (<em>Hadoop Distributed File System</em>) es el sistema de ficheros distribuido del cluster: los datos se reparten en bloques entre varios <code>datanode</code> y un <code>namenode</code> lleva la cuenta de dónde está cada uno. <strong>WebHDFS</strong> es su API REST sobre HTTP — el cliente Python <code>hdfs</code> habla con el <code>namenode</code> (puerto 9870) para listar/crear directorios y leer/escribir ficheros, sin necesitar ninguna librería nativa de Hadoop.</p>\n<p>Alternativa: el RPC nativo de Hadoop (puerto 8020, vía <code>pyarrow.fs.HadoopFileSystem</code>) es más eficiente para grandes volúmenes, pero <strong>no funciona desde Zeppelin</strong> — su librería nativa (<code>libhdfs.so</code>) exige una versión de <code>glibc</code> más reciente de la que trae la imagen base de Zeppelin, y actualizar la <code>glibc</code> del sistema no es seguro (ver <code>CLAUDE.md</code>). Ese ejemplo (<code>01_connect_hdfs_04_rpc_nativo_pyarrow.py</code>) solo se puede ejecutar dentro de <code>spark-master</code>, no aquí.</p>\n\n</div>"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029127425_1057303382",
+      "id": "paragraph_1790029127425_1057303382",
+      "dateCreated": "2026-09-21 22:18:47.425",
+      "dateStarted": "2026-09-21 22:18:47.440",
+      "dateFinished": "2026-09-21 22:18:47.447",
+      "status": "FINISHED"
+    },
+    {
+      "title": "webhdfs",
+      "text": "%pyspark\nimport hdfs\n\nclient = hdfs.InsecureClient(\"http://namenode:9870\", user=\"hadoop\")\nclient.makedirs(\"/user/admin\")\nprint(\"listado:\", client.list(\"/user/admin\"))",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:18:47.542",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "listado: ['el_quijote.txt']\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029127528_257940721",
+      "id": "paragraph_1790029127528_257940721",
+      "dateCreated": "2026-09-21 22:18:47.528",
+      "dateStarted": "2026-09-21 22:18:47.545",
+      "dateFinished": "2026-09-21 22:18:59.146",
+      "status": "FINISHED"
+    },
+    {
+      "title": "md_s3",
+      "text": "%md\n## 2. S3 (SeaweedFS)\n\n[SeaweedFS](https://github.com/seaweedfs/seaweedfs) es un servidor de almacenamiento de objetos compatible con la API S3 de Amazon — una alternativa a HDFS pensada para guardar ficheros sueltos, no un sistema de ficheros distribuido de propósito general: cada objeto se identifica por un *bucket* + una *clave* (no hay carpetas de verdad, aunque la clave pueda tener forma de ruta). Se usa aquí con `boto3`, el cliente oficial de AWS para Python — funciona igual contra SeaweedFS que contra el S3 real, es el mismo protocolo.\n\nLas credenciales las genera `docker/00_init.sh` de forma aleatoria en cada entorno — nunca están fijas en el repositorio (ver `.gitignore`).",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:19:11.344",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "<div class=\"markdown-body\">\n<h2>2. S3 (SeaweedFS)</h2>\n<p><a href=\"https://github.com/seaweedfs/seaweedfs\">SeaweedFS</a> es un servidor de almacenamiento de objetos compatible con la API S3 de Amazon — una alternativa a HDFS pensada para guardar ficheros sueltos, no un sistema de ficheros distribuido de propósito general: cada objeto se identifica por un <em>bucket</em> + una <em>clave</em> (no hay carpetas de verdad, aunque la clave pueda tener forma de ruta). Se usa aquí con <code>boto3</code>, el cliente oficial de AWS para Python — funciona igual contra SeaweedFS que contra el S3 real, es el mismo protocolo.</p>\n<p>Las credenciales las genera <code>docker/00_init.sh</code> de forma aleatoria en cada entorno — nunca están fijas en el repositorio (ver <code>.gitignore</code>).</p>\n\n</div>"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029151330_303972626",
+      "id": "paragraph_1790029151330_303972626",
+      "dateCreated": "2026-09-21 22:19:11.330",
+      "dateStarted": "2026-09-21 22:19:11.346",
+      "dateFinished": "2026-09-21 22:19:11.354",
+      "status": "FINISHED"
+    },
+    {
+      "title": "s3_conexion",
+      "text": "%pyspark\nimport json\nimport boto3\n\nwith open(\"/opt/project/docker/seaweedfs/s3-config/s3.json\") as f:\n    credenciales = json.load(f)[\"identities\"][0][\"credentials\"][0]\n\ns3 = boto3.client(\n    \"s3\",\n    endpoint_url=\"http://seaweedfs:8333\",\n    aws_access_key_id=credenciales[\"accessKey\"],\n    aws_secret_access_key=credenciales[\"secretKey\"],\n    region_name=\"us-east-1\",\n)\n\nbucket = \"prueba\"\nif bucket not in [b[\"Name\"] for b in s3.list_buckets()[\"Buckets\"]]:\n    s3.create_bucket(Bucket=bucket)\n\ns3.put_object(Bucket=bucket, Key=\"desde_zeppelin.txt\", Body=b\"hola desde zeppelin\")\nprint(s3.get_object(Bucket=bucket, Key=\"desde_zeppelin.txt\")[\"Body\"].read())",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:19:11.447",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "b'hola desde zeppelin'\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029151433_666565720",
+      "id": "paragraph_1790029151433_666565720",
+      "dateCreated": "2026-09-21 22:19:11.433",
+      "dateStarted": "2026-09-21 22:19:11.448",
+      "dateFinished": "2026-09-21 22:19:11.621",
+      "status": "FINISHED"
+    },
+    {
+      "title": "md_s3_modificar",
+      "text": "%md\n### Ciclo subir → descargar → modificar → resubir\n\nUn patrón muy habitual: coger un objeto que ya existe, transformarlo, y guardar el resultado **sobrescribiendo el mismo objeto** (misma clave) — no crear uno nuevo aparte. `put_object` con una clave que ya existe simplemente reemplaza el contenido entero (S3 no tiene \"edición parcial\": para cambiar un byte hay que volver a subir el objeto completo).",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:19:14.594",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "<div class=\"markdown-body\">\n<h3>Ciclo subir → descargar → modificar → resubir</h3>\n<p>Un patrón muy habitual: coger un objeto que ya existe, transformarlo, y guardar el resultado <strong>sobrescribiendo el mismo objeto</strong> (misma clave) — no crear uno nuevo aparte. <code>put_object</code> con una clave que ya existe simplemente reemplaza el contenido entero (S3 no tiene &ldquo;edición parcial&rdquo;: para cambiar un byte hay que volver a subir el objeto completo).</p>\n\n</div>"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029154580_829991183",
+      "id": "paragraph_1790029154580_829991183",
+      "dateCreated": "2026-09-21 22:19:14.580",
+      "dateStarted": "2026-09-21 22:19:14.595",
+      "dateFinished": "2026-09-21 22:19:14.600",
+      "status": "FINISHED"
+    },
+    {
+      "title": "s3_modificar",
+      "text": "%pyspark\nclave = \"desde_zeppelin.txt\"\noriginal = s3.get_object(Bucket=bucket, Key=clave)[\"Body\"].read()\nmodificado = original.decode(\"utf-8\").upper().encode(\"utf-8\")\ns3.put_object(Bucket=bucket, Key=clave, Body=modificado)\n\nreleido = s3.get_object(Bucket=bucket, Key=clave)[\"Body\"].read()\nprint(\"Original: \", original)\nprint(\"Modificado:\", releido)\nassert releido != original\n\ns3.delete_object(Bucket=bucket, Key=clave)",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:19:14.696",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "Original:  b'hola desde zeppelin'\nModificado: b'HOLA DESDE ZEPPELIN'\n{'ResponseMetadata': {'RequestId': '18D776084020D881A15BEF1F', 'HostId': '', 'HTTPStatusCode': 204, 'HTTPHeaders': {'server': 'SeaweedFS 30GB 4.47', 'vary': 'Origin', 'x-amz-request-id': '18D776084020D881A15BEF1F', 'date': 'Mon, 21 Sep 2026 22:19:14 GMT'}, 'RetryAttempts': 0}}\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029154682_561243135",
+      "id": "paragraph_1790029154682_561243135",
+      "dateCreated": "2026-09-21 22:19:14.682",
+      "dateStarted": "2026-09-21 22:19:14.697",
+      "dateFinished": "2026-09-21 22:19:14.712",
+      "status": "FINISHED"
+    },
+    {
+      "title": "md_postgres",
+      "text": "%md\n## 3. Base de datos relacional (PostgreSQL, vía JDBC)\n\nA diferencia de HDFS/S3 (ficheros), aquí la fuente de datos es una tabla de una base de datos, y Spark habla con ella usando **JDBC**, el protocolo estándar que usaría cualquier cliente SQL (DBeaver, DataGrip, `beeline`...). El conector JDBC de PostgreSQL es un jar Java que no viene incluido con Spark — está añadido a este intérprete vía `spark.jars.packages` (Interpreter settings), igual que los de GraphFrames/Delta/Kafka/Avro que se usan en otros notebooks.\n\n`docker/postgres/init/01_empleados.sql` crea la tabla `empleados` (8 filas fijas) la primera vez que arranca el contenedor `postgres`.",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:19:23.150",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "<div class=\"markdown-body\">\n<h2>3. Base de datos relacional (PostgreSQL, vía JDBC)</h2>\n<p>A diferencia de HDFS/S3 (ficheros), aquí la fuente de datos es una tabla de una base de datos, y Spark habla con ella usando <strong>JDBC</strong>, el protocolo estándar que usaría cualquier cliente SQL (DBeaver, DataGrip, <code>beeline</code>&hellip;). El conector JDBC de PostgreSQL es un jar Java que no viene incluido con Spark — está añadido a este intérprete vía <code>spark.jars.packages</code> (Interpreter settings), igual que los de GraphFrames/Delta/Kafka/Avro que se usan en otros notebooks.</p>\n<p><code>docker/postgres/init/01_empleados.sql</code> crea la tabla <code>empleados</code> (8 filas fijas) la primera vez que arranca el contenedor <code>postgres</code>.</p>\n\n</div>"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029163135_1655934465",
+      "id": "paragraph_1790029163135_1655934465",
+      "dateCreated": "2026-09-21 22:19:23.135",
+      "dateStarted": "2026-09-21 22:19:23.151",
+      "dateFinished": "2026-09-21 22:19:23.157",
+      "status": "FINISHED"
+    },
+    {
+      "title": "postgres_jdbc",
+      "text": "%pyspark\npassword = open(\"/opt/project/docker/postgres/.env\").read().split(\"=\")[1].strip()\n\nempleados = spark.read.format(\"jdbc\") \\\n    .option(\"url\", \"jdbc:postgresql://postgres:5432/pyhdfsspark\") \\\n    .option(\"dbtable\", \"empleados\") \\\n    .option(\"user\", \"pyhdfsspark\") \\\n    .option(\"password\", password) \\\n    .option(\"driver\", \"org.postgresql.Driver\") \\\n    .load()\n\nempleados.show()",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:19:23.257",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "+---+------------+------------+--------+----------+\n| id|      nombre|departamento| salario|fecha_alta|\n+---+------------+------------+--------+----------+\n|  1|  Ana García|  Ingeniería|42000.00|2021-03-15|\n|  2|  Bruno Ruiz|  Ingeniería|45500.00|2020-07-01|\n|  3|  Carla Díaz|      Ventas|38000.00|2022-01-10|\n|  4| David López|      Ventas|39500.00|2019-11-20|\n|  5|Elena Torres|   Marketing|41000.00|2023-02-05|\n|  6| Fran Molina|  Ingeniería|51000.00|2018-05-30|\n|  7|  Gema Ortiz|   Marketing|37500.00|2021-09-12|\n|  8|Hugo Navarro|      Ventas|40200.00|2020-12-01|\n+---+------------+------------+--------+----------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=0"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029163242_526743187",
+      "id": "paragraph_1790029163242_526743187",
+      "dateCreated": "2026-09-21 22:19:23.243",
+      "dateStarted": "2026-09-21 22:19:23.259",
+      "dateFinished": "2026-09-21 22:19:26.152",
+      "status": "FINISHED"
+    },
+    {
+      "title": "postgres_agregacion",
+      "text": "%pyspark\n# Una vez cargada la tabla como DataFrame, se trabaja con ella exactamente\n# igual que con cualquier otra fuente (CSV, JSON, HDFS...)\nempleados.groupBy(\"departamento\").avg(\"salario\").orderBy(\"departamento\").show()",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:19:26.409",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "+------------+------------+\n|departamento|avg(salario)|\n+------------+------------+\n|  Ingeniería|46166.666667|\n|   Marketing|39250.000000|\n|      Ventas|39233.333333|\n+------------+------------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=1"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=2"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029166394_1304925474",
+      "id": "paragraph_1790029166394_1304925474",
+      "dateCreated": "2026-09-21 22:19:26.394",
+      "dateStarted": "2026-09-21 22:19:26.411",
+      "dateFinished": "2026-09-21 22:19:28.374",
+      "status": "FINISHED"
+    }
+  ],
+  "name": "01_webhdfs_s3_postgres",
+  "id": "2N45AQZ98",
+  "defaultInterpreterGroup": "spark",
+  "version": "0.12.1",
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {},
+  "config": {
+    "isZeppelinNotebookCronEnable": false
+  },
+  "info": {}
+}

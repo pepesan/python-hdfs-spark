@@ -1,0 +1,423 @@
+{
+  "paragraphs": [
+    {
+      "title": "intro",
+      "text": "%md\n# GraphFrames — grafos sobre DataFrames\n\nTrasladado desde `07_spark_graphx.py` en la raíz del proyecto. **GraphX** es la API de grafos original de Spark, basada en RDDs — de bajo nivel y solo disponible desde Scala/Java, sin API en Python. **GraphFrames** (de terceros, no viene con Spark) expone grafos sobre DataFrames, con API en Python — es lo que se usa aquí.\n\nUn grafo en GraphFrames son dos DataFrames: uno de **vértices** (nodos, columna `id` obligatoria) y otro de **edges** (aristas, columnas `src`/`dst` obligatorias). El conector `io.graphframes:graphframes-spark4_2.13` está añadido vía `spark.jars.packages` — el nombre del artefacto codifica la versión de Spark (spark4) y Scala (2.13) con las que es compatible.",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:25:44.615",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "<div class=\"markdown-body\">\n<h1>GraphFrames — grafos sobre DataFrames</h1>\n<p>Trasladado desde <code>07_spark_graphx.py</code> en la raíz del proyecto. <strong>GraphX</strong> es la API de grafos original de Spark, basada en RDDs — de bajo nivel y solo disponible desde Scala/Java, sin API en Python. <strong>GraphFrames</strong> (de terceros, no viene con Spark) expone grafos sobre DataFrames, con API en Python — es lo que se usa aquí.</p>\n<p>Un grafo en GraphFrames son dos DataFrames: uno de <strong>vértices</strong> (nodos, columna <code>id</code> obligatoria) y otro de <strong>edges</strong> (aristas, columnas <code>src</code>/<code>dst</code> obligatorias). El conector <code>io.graphframes:graphframes-spark4_2.13</code> está añadido vía <code>spark.jars.packages</code> — el nombre del artefacto codifica la versión de Spark (spark4) y Scala (2.13) con las que es compatible.</p>\n\n</div>"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029544601_898137534",
+      "id": "paragraph_1790029544601_898137534",
+      "dateCreated": "2026-09-21 22:25:44.601",
+      "dateStarted": "2026-09-21 22:25:44.617",
+      "dateFinished": "2026-09-21 22:25:44.623",
+      "status": "FINISHED"
+    },
+    {
+      "title": "md_grafo",
+      "text": "%md\n## El grafo de ejemplo\n\n`files/graph_vertices.snappy.parquet` / `files/graph_edges.snappy.parquet` (creados para este proyecto, reutilizables desde cualquier otro ejemplo): dos grupos de personas COMPLETAMENTE conectadas entre sí dentro de cada grupo, unidos solo por un único puente entre grupos — cada arista guardada en ambos sentidos (GraphFrame es un grafo DIRIGIDO).",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:25:44.719",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "<div class=\"markdown-body\">\n<h2>El grafo de ejemplo</h2>\n<p><code>files/graph_vertices.snappy.parquet</code> / <code>files/graph_edges.snappy.parquet</code> (creados para este proyecto, reutilizables desde cualquier otro ejemplo): dos grupos de personas COMPLETAMENTE conectadas entre sí dentro de cada grupo, unidos solo por un único puente entre grupos — cada arista guardada en ambos sentidos (GraphFrame es un grafo DIRIGIDO).</p>\n\n</div>"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029544704_1236250154",
+      "id": "paragraph_1790029544704_1236250154",
+      "dateCreated": "2026-09-21 22:25:44.704",
+      "dateStarted": "2026-09-21 22:25:44.720",
+      "dateFinished": "2026-09-21 22:25:44.726",
+      "status": "FINISHED"
+    },
+    {
+      "title": "cargar_grafo",
+      "text": "%pyspark\nfrom graphframes import GraphFrame\n\nvertices = spark.read.parquet(\"/opt/project/files/graph_vertices.snappy.parquet\")\nedges = spark.read.parquet(\"/opt/project/files/graph_edges.snappy.parquet\")\ngraph = GraphFrame(vertices, edges)\nprint(graph)",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:25:44.824",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "GraphFrame(v:DataFrame[id: string, name: string], e:DataFrame[src: string, dst: string])\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=12"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=13"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029544809_1158582340",
+      "id": "paragraph_1790029544809_1158582340",
+      "dateCreated": "2026-09-21 22:25:44.809",
+      "dateStarted": "2026-09-21 22:25:44.825",
+      "dateFinished": "2026-09-21 22:25:45.299",
+      "status": "FINISHED"
+    },
+    {
+      "title": "md_lpa",
+      "text": "%md\n## Label Propagation (detección de comunidades)\n\nCada nodo empieza con su propia etiqueta y, en cada iteración, adopta la etiqueta más frecuente entre sus vecinos. Con este grafo sería intuitivo esperar exactamente 2 comunidades — pero probado con `maxIter` de 5 a 50 **siempre da 3**: un grupo converge a una sola etiqueta y el otro se parte en dos por un empate estructural (LPA es síncrono, y el desempate depende del valor arbitrario de la etiqueta). No es un bug: más iteraciones no lo arreglan — lección real, no algo prometido de antemano.",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:25:55.179",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "<div class=\"markdown-body\">\n<h2>Label Propagation (detección de comunidades)</h2>\n<p>Cada nodo empieza con su propia etiqueta y, en cada iteración, adopta la etiqueta más frecuente entre sus vecinos. Con este grafo sería intuitivo esperar exactamente 2 comunidades — pero probado con <code>maxIter</code> de 5 a 50 <strong>siempre da 3</strong>: un grupo converge a una sola etiqueta y el otro se parte en dos por un empate estructural (LPA es síncrono, y el desempate depende del valor arbitrario de la etiqueta). No es un bug: más iteraciones no lo arreglan — lección real, no algo prometido de antemano.</p>\n\n</div>"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029555163_138824441",
+      "id": "paragraph_1790029555163_138824441",
+      "dateCreated": "2026-09-21 22:25:55.163",
+      "dateStarted": "2026-09-21 22:25:55.180",
+      "dateFinished": "2026-09-21 22:25:55.185",
+      "status": "FINISHED"
+    },
+    {
+      "title": "lpa",
+      "text": "%pyspark\ncomunidades = graph.labelPropagation(maxIter=10)\ncomunidades.orderBy(\"id\").show()\nprint(\"Comunidades encontradas:\", comunidades.select(\"label\").distinct().count())",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:25:55.284",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "+---+-----+------------+\n| id| name|       label|\n+---+-----+------------+\n|  a|  Ana|670014898176|\n|  b|Bruno|670014898176|\n|  c|Carla|807453851648|\n|  d|David|807453851648|\n|  e|Elena|146028888064|\n|  f| Fran|146028888064|\n|  g| Gema|146028888064|\n|  h| Hugo|146028888064|\n+---+-----+------------+\n\nComunidades encontradas: 3\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=14"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=15"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=16"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=17"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=18"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=19"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=20"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=21"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=22"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=23"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=24"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=25"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=26"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=27"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=28"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=29"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=30"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=31"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=32"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=33"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=34"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=35"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=36"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=37"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=38"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=39"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=40"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029555269_2111738656",
+      "id": "paragraph_1790029555269_2111738656",
+      "dateCreated": "2026-09-21 22:25:55.269",
+      "dateStarted": "2026-09-21 22:25:55.285",
+      "dateFinished": "2026-09-21 22:26:01.253",
+      "status": "FINISHED"
+    },
+    {
+      "title": "md_pagerank",
+      "text": "%md\n## PageRank\n\nEl algoritmo que hizo famoso a Google: importancia de cada nodo según cuántos (y cuán importantes) son los nodos que apuntan a él.",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:26:01.452",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "<div class=\"markdown-body\">\n<h2>PageRank</h2>\n<p>El algoritmo que hizo famoso a Google: importancia de cada nodo según cuántos (y cuán importantes) son los nodos que apuntan a él.</p>\n\n</div>"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029561435_509410962",
+      "id": "paragraph_1790029561435_509410962",
+      "dateCreated": "2026-09-21 22:26:01.435",
+      "dateStarted": "2026-09-21 22:26:01.453",
+      "dateFinished": "2026-09-21 22:26:01.457",
+      "status": "FINISHED"
+    },
+    {
+      "title": "pagerank",
+      "text": "%pyspark\nresultado = graph.pageRank(resetProbability=0.15, maxIter=10)\nresultado.vertices.select(\"id\", \"name\", \"pagerank\").orderBy(\"pagerank\", ascending=False).show()",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:26:01.561",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "+---+-----+------------------+\n| id| name|          pagerank|\n+---+-----+------------------+\n|  e|Elena| 1.198443579765906|\n|  c|Carla| 1.198443579765906|\n|  f| Fran|0.9338521400780315|\n|  g| Gema|0.9338521400780315|\n|  a|  Ana|0.9338521400780315|\n|  d|David|0.9338521400780315|\n|  h| Hugo|0.9338521400780315|\n|  b|Bruno|0.9338521400780315|\n+---+-----+------------------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=41"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=42"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=43"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=44"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=45"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=46"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=47"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=48"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=49"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=50"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=51"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=52"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=53"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=54"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=55"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=56"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=57"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=58"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=59"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=60"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=61"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=62"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=63"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=64"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=65"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=66"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=67"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029561547_169690738",
+      "id": "paragraph_1790029561547_169690738",
+      "dateCreated": "2026-09-21 22:26:01.547",
+      "dateStarted": "2026-09-21 22:26:01.562",
+      "dateFinished": "2026-09-21 22:26:06.186",
+      "status": "FINISHED"
+    }
+  ],
+  "name": "01_graphframes",
+  "id": "2N318GX6B",
+  "defaultInterpreterGroup": "spark",
+  "version": "0.12.1",
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {},
+  "config": {
+    "isZeppelinNotebookCronEnable": false
+  },
+  "info": {}
+}

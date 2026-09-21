@@ -8,6 +8,12 @@ cd "$(dirname "$0")"
 docker compose down -v
 
 rm -rf volumes/hdfs/namenode/* volumes/hdfs/namenode/.[!.]* \
-       volumes/hdfs/datanode/* volumes/hdfs/datanode/.[!.]* 2>/dev/null || true
+       volumes/hdfs/datanode/* volumes/hdfs/datanode/.[!.]* \
+       volumes/seaweedfs/* volumes/seaweedfs/.[!.]* \
+       volumes/postgres/* volumes/postgres/.[!.]* \
+       volumes/kafka/* volumes/kafka/.[!.]* 2>/dev/null || true
+rm -f seaweedfs/s3-config/s3.json postgres/.env hue/hue.ini
 
-echo "Contenedores eliminados y volúmenes de docker/volumes/hdfs vaciados."
+echo "Contenedores eliminados; volúmenes de docker/volumes/{hdfs,seaweedfs,postgres,kafka}" \
+     "vaciados; credenciales S3 de SeaweedFS y contraseña de postgres borradas" \
+     "(00_init.sh generará unas nuevas)."

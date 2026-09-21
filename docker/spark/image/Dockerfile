@@ -39,4 +39,49 @@ RUN uv venv --python 3.14 /opt/venv-project && \
 ENV PYSPARK_PYTHON=/opt/venv-project/bin/python
 ENV PYSPARK_DRIVER_PYTHON=/opt/venv-project/bin/python
 
+# --- HDFS nativo (RPC 8020) para pyarrow.fs.HadoopFileSystem ---
+# pyarrow habla HDFS por RPC nativo (puerto 8020, no WebHDFS) vía libhdfs,
+# un puente JNI que no trae ni esta imagen ni los jars hadoop-client-*
+# que ya usa Spark internamente (esos son para el propio acceso a HDFS de
+# la JVM de Spark, no exponen JNI). Hace falta una distribución completa
+# de Hadoop; se recorta a lo imprescindible para no disparar el tamaño de
+# la imagen: share/hadoop/{common,hdfs} (jars del cliente HDFS) +
+# lib/native/libhdfs.so* (las otras libs nativas del tarball — libhdfspp,
+# nativetask — pesan >200MB y pyarrow no las usa).
+#
+# El libhdfs.so oficial de Hadoop 3.5.0 está enlazado contra un libstdc++
+# más reciente del que trae Ubuntu 22.04 (falla al cargar con
+# "GLIBCXX_3.4.32 not found"). Se actualiza libstdc++6 vía el PPA
+# ubuntu-toolchain-r/test — es una biblioteca hacia atrás compatible, no
+# rompe nada que ya usara la versión antigua (JVM, numpy, etc.).
+RUN apt-get update -qq && \
+    apt-get install -y -qq software-properties-common >/dev/null && \
+    add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
+    apt-get update -qq && \
+    apt-get install -y -qq --only-upgrade libstdc++6 && \
+    apt-get purge -y -qq software-properties-common && \
+    apt-get autoremove -y -qq && \
+    rm -rf /var/lib/apt/lists/*
+
+ENV HADOOP_VERSION=3.5.0
+ENV HADOOP_HOME=/opt/hadoop-${HADOOP_VERSION}
+RUN curl -fsSL -o /tmp/hadoop.tar.gz \
+      "https://dlcdn.apache.org/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz" && \
+    tar xzf /tmp/hadoop.tar.gz -C /tmp && \
+    mkdir -p "${HADOOP_HOME}/share/hadoop" "${HADOOP_HOME}/lib/native" "${HADOOP_HOME}/etc" && \
+    cp -r "/tmp/hadoop-${HADOOP_VERSION}/share/hadoop/common" "${HADOOP_HOME}/share/hadoop/" && \
+    cp -r "/tmp/hadoop-${HADOOP_VERSION}/share/hadoop/hdfs" "${HADOOP_HOME}/share/hadoop/" && \
+    cp -r "/tmp/hadoop-${HADOOP_VERSION}/etc/hadoop" "${HADOOP_HOME}/etc/" && \
+    cp -P /tmp/hadoop-${HADOOP_VERSION}/lib/native/libhdfs.so* "${HADOOP_HOME}/lib/native/" && \
+    rm -rf /tmp/hadoop.tar.gz "/tmp/hadoop-${HADOOP_VERSION}" \
+           "${HADOOP_HOME}"/share/hadoop/common/hadoop-common-*-tests.jar \
+           "${HADOOP_HOME}"/share/hadoop/hdfs/hadoop-hdfs-*-tests.jar && \
+    chmod -R a+rX "${HADOOP_HOME}"
+
+ENV ARROW_LIBHDFS_DIR=${HADOOP_HOME}/lib/native
+# Wildcards "/*" al final: la JVM los expande a todos los .jar del
+# directorio al arrancar, no hace falta listar cada jar (más corto y
+# resistente a cambios de versión de las dependencias transitivas).
+ENV CLASSPATH="${HADOOP_HOME}/etc/hadoop:${HADOOP_HOME}/share/hadoop/common/*:${HADOOP_HOME}/share/hadoop/common/lib/*:${HADOOP_HOME}/share/hadoop/hdfs/*:${HADOOP_HOME}/share/hadoop/hdfs/lib/*"
+
 USER spark

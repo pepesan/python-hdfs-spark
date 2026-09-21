@@ -9,5 +9,10 @@ files/part*
 files/1500000_Sales_Records.csv
 streaming/checkpoint
 docker/volumes
+docker/seaweedfs/s3-config/s3.json
+docker/postgres/.env
+docker/hue/hue.ini
 PLAN.md
 CLAUDE.md
+.claude
+.junie

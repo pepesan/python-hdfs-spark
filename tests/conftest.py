@@ -38,6 +38,48 @@ def hdfs_up():
         )
 
 
+@pytest.fixture(scope="session")
+def s3_up():
+    """El servicio seaweedfs del docker/compose.yaml está arriba."""
+    if not _port_open("localhost", 8333):
+        pytest.skip("SeaweedFS de docker/ no está levantado (docker/01_launch.sh)")
+    if not (PROJECT_ROOT / "docker/seaweedfs/s3-config/s3.json").exists():
+        pytest.skip(
+            "Faltan las credenciales S3 (docker/00_init.sh no se ha ejecutado, "
+            "ver README.md)"
+        )
+
+
+@pytest.fixture(scope="session")
+def postgres_up():
+    """El servicio postgres del docker/compose.yaml está arriba."""
+    if not _port_open("localhost", 5432):
+        pytest.skip("Postgres de docker/ no está levantado (docker/01_launch.sh)")
+    if not (PROJECT_ROOT / "docker/postgres/.env").exists():
+        pytest.skip(
+            "Falta la contraseña de postgres (docker/00_init.sh no se ha "
+            "ejecutado, ver README.md)"
+        )
+
+
+@pytest.fixture(scope="session")
+def kafka_up():
+    """El servicio kafka del docker/compose.yaml está arriba."""
+    if not _port_open("localhost", 9092):
+        pytest.skip("Kafka de docker/ no está levantado (docker/01_launch.sh)")
+
+
+@pytest.fixture(scope="session")
+def sales_dataset_present():
+    """files/1500000_Sales_Records.csv no va en el repo (~187MB, ver
+    .gitignore) — hay que descargarlo a mano (ver README.md)."""
+    if not (PROJECT_ROOT / "files/1500000_Sales_Records.csv").exists():
+        pytest.skip(
+            "Falta files/1500000_Sales_Records.csv (no va en el repo por "
+            "tamaño, ver README.md para descargarlo)"
+        )
+
+
 @pytest.fixture
 def run_script():
     """Ejecuta un script del proyecto tal cual lo haría el usuario desde la
@@ -53,6 +95,25 @@ def run_script():
             [sys.executable, script_name],
             cwd=PROJECT_ROOT,
             env=env,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+        )
+
+    return _run
+
+
+@pytest.fixture
+def run_script_in_spark_master():
+    """Ejecuta un script DENTRO del contenedor spark-master vía spark-submit
+    (docker/04_exec_spark.sh), para los scripts que no pueden correr desde
+    el venv del host (p. ej. los que dependen de libhdfs.so, solo presente
+    en esa imagen — ver 01_connect_hdfs_04_rpc_nativo_pyarrow.py)."""
+
+    def _run(script_name: str, timeout: int = 180) -> subprocess.CompletedProcess:
+        return subprocess.run(
+            ["./04_exec_spark.sh", script_name],
+            cwd=PROJECT_ROOT / "docker",
             capture_output=True,
             text=True,
             timeout=timeout,

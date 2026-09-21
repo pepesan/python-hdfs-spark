@@ -131,6 +131,17 @@ services:
       - ./volumes/zeppelin/notebook:/opt/zeppelin/notebook
       - ./volumes/zeppelin/logs:/opt/zeppelin/logs
       - ./zeppelin/ejemplos:/opt/zeppelin/notebook/ejemplos
+      # Persiste conf/ (interpreter.json en particular) para no tener que
+      # reaplicar zeppelin.spark.enableSupportedVersionCheck=false /
+      # zeppelin.pyspark.useIPython=false tras cada --force-recreate. OJO:
+      # bind-montar solo interpreter.json (un único fichero) rompe la
+      # escritura atómica de Zeppelin ("Device or resource busy" al hacer
+      # rename sobre un fichero bind-mounted) — hay que montar el
+      # directorio completo, sembrado con TODOS sus ficheros (no solo
+      # interpreter.json), para que el rename ocurra dentro del propio
+      # directorio y no sobre el inodo bind-mounted. Ver docker/00_init.sh
+      # (siembra desde zeppelin/conf-seed/ la primera vez) y CLAUDE.md.
+      - ./volumes/zeppelin/conf:/opt/zeppelin/conf
     networks:
       - spark-hdfs-net
 
@@ -141,10 +152,111 @@ services:
     ports:
       - "8888:8888"
     volumes:
+      # hue.ini es generado por docker/00_init.sh a partir de
+      # hue.ini.template (versionado) — trae, entre otras cosas, la
+      # conexión a "postgres" con su contraseña, que por eso no puede ser
+      # un fichero fijo en git. Ver docker/postgres más abajo.
       - ./hue/hue.ini:/usr/share/hue/desktop/conf/z-hue.ini:ro
     depends_on:
       - namenode
       - hive-server2
+      - postgres
+    networks:
+      - spark-hdfs-net
+
+  postgres:
+    # BBDD relacional de ejemplo — para el ejemplo de Spark que lee vía
+    # JDBC (01_connect_postgres.py en la raíz del proyecto) y para
+    # consultar desde Hue (registrada como conexión en hue.ini.template).
+    image: postgres:16-alpine
+    container_name: postgres
+    hostname: postgres
+    env_file:
+      - ./postgres/.env
+    environment:
+      POSTGRES_USER: pyhdfsspark
+      POSTGRES_DB: pyhdfsspark
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data
+      # Solo se ejecuta la primera vez que arranca (volumen de datos
+      # vacío) — la imagen oficial de postgres lo hace así, no en cada
+      # arranque.
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pyhdfsspark -d pyhdfsspark"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - spark-hdfs-net
+
+  seaweedfs:
+    # Servidor S3 (SeaweedFS), como alternativa a HDFS para subir datos.
+    # Modo "server" de un solo nodo (master+volume+filer en el mismo
+    # proceso, con -s3): suficiente para este proyecto, sin necesidad de
+    # replicación/alta disponibilidad. Puertos de host remapeados porque
+    # 8080 (spark-master) y 8888 (hue) ya están ocupados en este
+    # docker-compose — los puertos INTERNOS del contenedor siguen siendo
+    # los estándar de SeaweedFS (9333/8080/8888/8333).
+    image: chrislusf/seaweedfs
+    container_name: seaweedfs
+    hostname: seaweedfs
+    command: >
+      server -dir=/data -ip.bind=0.0.0.0
+      -master.port=9333 -volume.port=8080 -volume.max=0
+      -filer -filer.port=8888
+      -s3 -s3.port=8333 -s3.config=/etc/seaweedfs/s3.json
+    ports:
+      - "9337:9333"   # API/UI del master
+      - "8085:8080"   # API/UI del volume server
+      - "8889:8888"   # API/UI del filer
+      - "8333:8333"   # API S3
+    volumes:
+      - ./volumes/seaweedfs:/data
+      - ./seaweedfs/s3-config/s3.json:/etc/seaweedfs/s3.json:ro
+    networks:
+      - spark-hdfs-net
+
+  kafka:
+    # Un solo broker en modo KRaft (sin ZooKeeper, ya no hace falta desde
+    # Kafka 4.x) — lo más simple posible para el ejemplo de streaming
+    # (streaming/03_structured_streaming_kafka.py). Sin autenticación ni
+    # réplicas, cluster de desarrollo de un solo nodo.
+    image: apache/kafka:4.3.1
+    container_name: kafka
+    hostname: kafka
+    environment:
+      KAFKA_NODE_ID: "1"
+      KAFKA_PROCESS_ROLES: broker,controller
+      # Dos listeners PLAINTEXT porque hay dos tipos de cliente distintos:
+      # "PLAINTEXT" (puerto 9092, publicado al host) para clientes que se
+      # ejecutan en el HOST, como streaming/02_kafka_productor.py o
+      # streaming/03_structured_streaming_kafka.py lanzados con
+      # `python ...`; "PLAINTEXT_INTERNAL" (puerto 29092, NO publicado al
+      # host, solo accesible dentro de la red docker) para clientes que
+      # corren DENTRO de otro contenedor del compose, como Zeppelin
+      # (%pyspark). Kafka, tras la conexión inicial, le dice al cliente a
+      # qué dirección reconectarse para leer/escribir datos de verdad —
+      # esa dirección tiene que ser una que el cliente pueda resolver.
+      # Con un solo listener anunciado como "localhost:9092", un cliente
+      # desde OTRO contenedor (Zeppelin) conecta bien al principio (el
+      # nombre "kafka" si resuelve), pero luego Kafka le manda
+      # reconectarse a "localhost", que dentro de ESE contenedor no
+      # apunta a Kafka — la consulta no da error, pero no llegan datos
+      # nunca (fallo silencioso, sin excepción).
+      KAFKA_LISTENERS: PLAINTEXT://:9092,PLAINTEXT_INTERNAL://:29092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+    ports:
+      - "9092:9092"
+    volumes:
+      - ./volumes/kafka:/tmp/kraft-combined-logs
     networks:
       - spark-hdfs-net
 

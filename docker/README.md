@@ -1,4 +1,4 @@
-# Entorno Docker: Spark + HDFS + Hive + Zeppelin + Hue
+# Entorno Docker: Spark + HDFS + Hive + Zeppelin + Hue + SeaweedFS
 
 Este `compose.yaml` levanta todo el entorno del proyecto. Los servicios
 tienen dependencias reales entre ellos (Hive necesita HDFS, Zeppelin/Hue
@@ -14,14 +14,14 @@ ver el `README.md` de la raíz del proyecto. Este fichero es solo sobre
 
 | Script | Qué hace |
 |---|---|
-| `00_init.sh` | Crea `docker/volumes/` (bind mounts) con los permisos correctos. Solo hace falta la primera vez, o tras `20_destroy.sh`. |
+| `00_init.sh` | Crea `docker/volumes/` (bind mounts) con los permisos correctos y genera credenciales S3 nuevas para SeaweedFS. Solo hace falta la primera vez, o tras `20_destroy.sh`. |
 | `01_launch.sh` | `docker compose up -d` de **todos** los servicios. |
 | `02_ps.sh` | Estado de los contenedores. |
 | `03_logs.sh [servicio]` | Logs (todos, o de uno). |
 | `04_exec_spark.sh [script.py]` | Shell en `spark-master`, o `spark-submit` de un script del proyecto. |
 | `05_stop.sh [servicio ...]` | Para contenedores sin borrarlos. |
 | `06_start.sh [servicio ...]` | Vuelve a arrancarlos tras un `05_stop.sh`. |
-| `20_destroy.sh` | `docker compose down -v` y además vacía `docker/volumes/hdfs/*` (reset completo). |
+| `20_destroy.sh` | `docker compose down -v`, vacía `docker/volumes/{hdfs,seaweedfs}/*` y borra las credenciales S3 generadas (reset completo). |
 
 Todos aceptan nombres de servicio de `docker compose` como argumento cuando
 tiene sentido (`docker compose` por debajo), así que también se puede usar
@@ -85,11 +85,30 @@ docker compose up -d hive-server2
 primera vez, `hive-server2` puede tardar en quedar operativo o reintentar la
 conexión — revisar sus logs si `beeline`/Hue no consiguen conectar.
 
-### 4. Módulo de notebooks/UI: Zeppelin y Hue
+### 4. Módulo BBDD: Postgres
+
+Independiente del resto (no depende de HDFS/Spark/Hive) — usado por
+`../01_connect_postgres_07.py` (Spark vía JDBC) y registrado como conexión
+en Hue (paso 5):
+
+```bash
+docker compose up -d postgres
+```
+
+La contraseña la genera `00_init.sh` (paso 0) en `docker/postgres/.env` —
+si no existe todavía, ejecutar `./00_init.sh` antes de levantar este
+servicio. La tabla de ejemplo (`empleados`) la crea
+`docker/postgres/init/01_empleados.sql` la primera vez que arranca el
+contenedor (volumen de datos vacío) — no se vuelve a ejecutar en arranques
+posteriores, ni aunque se cambie el `.sql`.
+
+### 5. Módulo de notebooks/UI: Zeppelin y Hue
 
 Necesitan Spark (Zeppelin, para `%spark`) y Hive (ambos, para consultar
-tablas). La imagen de `zeppelin` necesita que `python-hdfs-spark/spark:...`
-(paso 2) ya esté construida, porque copia de ahí Spark/el JDK/el venv:
+tablas). Hue además necesita Postgres arriba (paso 4) para poder conectar
+con él desde el Editor. La imagen de `zeppelin` necesita que
+`python-hdfs-spark/spark:...` (paso 2) ya esté construida, porque copia de
+ahí Spark/el JDK/el venv:
 
 ```bash
 docker compose build zeppelin   # solo hace falta la primera vez o si cambia el Dockerfile
@@ -97,12 +116,48 @@ docker compose up -d zeppelin hue
 ```
 
 - Zeppelin: <http://localhost:8082> — el ajuste de versión de Spark
-  (`zeppelin.spark.enableSupportedVersionCheck=false`) y de bootstrap de
-  `%pyspark` (`zeppelin.pyspark.useIPython=false`) no persisten solos tras
-  un `--force-recreate`/rebuild: si `%spark`/`%pyspark` fallan al abrir,
-  revisar esos dos ajustes en Interpreter settings (o ver `CLAUDE.md`).
+  (`zeppelin.spark.enableSupportedVersionCheck=false`), de bootstrap de
+  `%pyspark` (`zeppelin.pyspark.useIPython=false`) y los jars de los
+  conectores externos (`spark.jars.packages`: GraphFrames, Delta, Kafka,
+  el driver JDBC de Postgres, Avro) están persistidos en
+  `docker/volumes/zeppelin/conf/` (sembrado por `00_init.sh` la primera
+  vez) — ya no hace falta reaplicarlos tras un `--force-recreate`/rebuild
+  (ver `CLAUDE.md` si aun así `%spark`/`%pyspark` fallan al abrir, o si
+  falla el `import` de un paquete Python de esos conectores: hay que
+  mantener `docker/spark/image/requirements.txt` sincronizado a mano con
+  `pyproject.toml`, no se hace solo).
 - Hue: <http://localhost:8888> — el primer acceso pide crear un usuario
-  (queda como superusuario de esa instancia).
+  (queda como superusuario de esa instancia). La conexión a `postgres` ya
+  aparece en el desplegable de bases de datos del Editor (`hue.ini`
+  generado por `00_init.sh`, ver README.md de la raíz).
+
+### 6. Módulo S3: SeaweedFS
+
+Independiente del resto (no depende de HDFS/Spark/Hive, es una alternativa
+a HDFS para subir datos):
+
+```bash
+docker compose up -d seaweedfs
+```
+
+Las credenciales S3 las genera `00_init.sh` (paso 0) en
+`docker/seaweedfs/s3-config/s3.json` — si no existen todavía, ejecutar
+`./00_init.sh` antes de levantar este servicio (el contenedor arranca sin
+ese fichero, pero la API S3 lo necesita para autenticar). API S3 en
+<http://localhost:8333>, ver `../01_connect_s3_05.py` en la raíz del proyecto.
+
+### 7. Módulo streaming: Kafka
+
+Independiente del resto (no depende de HDFS/Spark/Hive):
+
+```bash
+docker compose up -d kafka
+```
+
+Un solo broker en modo KRaft (sin ZooKeeper), sin autenticación. Los
+topics se crean solos al escribir en ellos (no hace falta crearlos a
+mano). Ver `../streaming/02_kafka_productor.py` y
+`../streaming/03_structured_streaming_kafka.py` en la raíz del proyecto.
 
 ### Levantar todo de una vez
 

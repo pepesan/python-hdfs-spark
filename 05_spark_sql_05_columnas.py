@@ -77,6 +77,44 @@ df_modificada = df_modificada.drop("edad_masiva")
 df_modificada.show()
 df_modificada.printSchema()
 
+# Renombrar una columna
+df_renombrada = df.withColumnRenamed("nombre", "nombre_completo")
+df_renombrada.show()
+
+# Cambiar el tipo de una columna (cast)
+# aquí no hace falta (edad ya es numérico en el JSON), pero es habitual
+# cuando el dato viene como texto — ver 05_spark_sql_07_limpieza_datos.py
+df_cast = df.withColumn("edad", df.edad.cast(DoubleType()))
+df_cast.printSchema()
+
+# Columna calculada con condición (equivalente a un CASE WHEN de SQL)
+df_categorias = df.withColumn(
+    "categoria_edad",
+    F.when(df.edad < 30, "joven")
+     .when(df.edad < 40, "adulto")
+     .otherwise("mayor")
+)
+df_categorias.show()
+
+# Quitar filas duplicadas (por todas las columnas, o solo por algunas)
+df_sin_duplicados = df.dropDuplicates()
+df_sin_duplicados_pais = df.dropDuplicates(["pais"])
+df_sin_duplicados_pais.show()
+
+# Varios agregados a la vez, con alias para cada columna resultado
+df_resumen = df.groupBy("pais").agg(
+    F.count("*").alias("num_personas"),
+    F.avg("edad").alias("edad_media"),
+    F.min("edad").alias("edad_min"),
+    F.max("edad").alias("edad_max"),
+)
+df_resumen.show()
+
+# selectExpr: seleccionar/transformar columnas con expresiones SQL en texto,
+# alternativa a encadenar select()/withColumn() con la API de columnas
+df_expr = df.selectExpr("nombre", "edad", "edad * 2 AS edad_doble", "upper(pais) AS pais_mayusculas")
+df_expr.show()
+
 
 
 

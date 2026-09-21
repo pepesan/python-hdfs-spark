@@ -1,0 +1,423 @@
+{
+  "paragraphs": [
+    {
+      "title": "intro",
+      "text": "%md\n# MLlib: clusterización, detección de anomalías y recomendación\n\nTrasladado desde `06_spark_mllib_clustering.py`, `06_spark_mllib_anomalias.py` y `06_spark_mllib_recomendacion.py`. Completa los 5 tipos de problema de ML más habituales junto con `06_spark_mllib.py`/`_cancer.py` (clasificación) y `06_spark_mllib_boston.py` (regresión, no traídos aquí por ser prácticamente iguales a los de clusterización/anomalías en estructura).",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:39:20.143",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "<div class=\"markdown-body\">\n<h1>MLlib: clusterización, detección de anomalías y recomendación</h1>\n<p>Trasladado desde <code>06_spark_mllib_clustering.py</code>, <code>06_spark_mllib_anomalias.py</code> y <code>06_spark_mllib_recomendacion.py</code>. Completa los 5 tipos de problema de ML más habituales junto con <code>06_spark_mllib.py</code>/<code>_cancer.py</code> (clasificación) y <code>06_spark_mllib_boston.py</code> (regresión, no traídos aquí por ser prácticamente iguales a los de clusterización/anomalías en estructura).</p>\n\n</div>"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790030360123_92262047",
+      "id": "paragraph_1790030360123_92262047",
+      "dateCreated": "2026-09-21 22:39:20.123",
+      "dateStarted": "2026-09-21 22:39:20.148",
+      "dateFinished": "2026-09-21 22:39:22.129",
+      "status": "FINISHED"
+    },
+    {
+      "title": "md_clustering",
+      "text": "%md\n## 1. Clusterización (K-Means) — aprendizaje NO supervisado\n\nA diferencia de clasificación/regresión, aquí no se le da al algoritmo ninguna etiqueta: K-Means agrupa por su cuenta las flores del dataset Iris que se parecen entre sí, y solo al final se compara con la especie real (que el modelo nunca vio) para evaluar qué tal ha acertado \"a ciegas\".",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:39:30.840",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "<div class=\"markdown-body\">\n<h2>1. Clusterización (K-Means) — aprendizaje NO supervisado</h2>\n<p>A diferencia de clasificación/regresión, aquí no se le da al algoritmo ninguna etiqueta: K-Means agrupa por su cuenta las flores del dataset Iris que se parecen entre sí, y solo al final se compara con la especie real (que el modelo nunca vio) para evaluar qué tal ha acertado &ldquo;a ciegas&rdquo;.</p>\n\n</div>"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790030370824_1351624706",
+      "id": "paragraph_1790030370824_1351624706",
+      "dateCreated": "2026-09-21 22:39:30.824",
+      "dateStarted": "2026-09-21 22:39:30.841",
+      "dateFinished": "2026-09-21 22:39:30.848",
+      "status": "FINISHED"
+    },
+    {
+      "title": "clustering",
+      "text": "%pyspark\nfrom sklearn import datasets\nimport pandas as pd\nfrom pyspark.ml.feature import VectorAssembler\nfrom pyspark.ml.clustering import KMeans\nfrom pyspark.ml.evaluation import ClusteringEvaluator\n\niris = datasets.load_iris()\niris_df = pd.DataFrame(iris.data, columns=iris.feature_names)\niris_df[\"especie_real\"] = iris.target\ndf = spark.createDataFrame(iris_df)\n\nva = VectorAssembler(inputCols=iris.feature_names, outputCol=\"features\")\ndf_features = va.transform(df)\n\nkmeans = KMeans(featuresCol=\"features\", predictionCol=\"cluster\", k=3, seed=42)\nmodelo = kmeans.fit(df_features)\nresultado = modelo.transform(df_features)\n\nevaluador = ClusteringEvaluator(featuresCol=\"features\", predictionCol=\"cluster\")\nprint(f\"Silhouette score: {evaluador.evaluate(resultado):.3f}\")\nresultado.groupBy(\"especie_real\", \"cluster\").count().orderBy(\"especie_real\", \"cluster\").show()",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:39:30.945",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "/opt/spark/python/pyspark/sql/pandas/conversion.py:659: FutureWarning: PySpark does not yet fully support pandas >= 3.0.0. Some features may not work correctly. It is recommended to use pandas < 3.0.0 for now.\n  require_minimum_pandas_version()\n/opt/spark/python/pyspark/sql/pandas/conversion.py:936: FutureWarning: PySpark does not yet fully support pandas >= 3.0.0. Some features may not work correctly. It is recommended to use pandas < 3.0.0 for now.\n  require_minimum_pandas_version()\nSilhouette score: 0.734\n+------------+-------+-----+\n|especie_real|cluster|count|\n+------------+-------+-----+\n|           0|      1|   50|\n|           1|      0|   47|\n|           1|      2|    3|\n|           2|      0|   14|\n|           2|      2|   36|\n+------------+-------+-----+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=0"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=1"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=2"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=3"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=4"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=5"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=6"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=7"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=8"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=9"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=10"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=11"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=12"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=13"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=14"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=15"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=16"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=17"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=18"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=19"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=20"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=21"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=22"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=23"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=24"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=25"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790030370930_93528188",
+      "id": "paragraph_1790030370930_93528188",
+      "dateCreated": "2026-09-21 22:39:30.930",
+      "dateStarted": "2026-09-21 22:39:30.947",
+      "dateFinished": "2026-09-21 22:39:51.020",
+      "status": "FINISHED"
+    },
+    {
+      "title": "md_anomalias",
+      "text": "%md\n## 2. Detección de anomalías\n\nMLlib no trae un algoritmo específico para esto — se construye con una técnica real y muy usada: la distancia de cada punto al \"centro de la normalidad\" (la media) como puntuación de rareza. Datos sintéticos (lecturas de temperatura/vibración de una máquina) con 3 anomalías inyectadas a propósito.",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:40:00.347",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "<div class=\"markdown-body\">\n<h2>2. Detección de anomalías</h2>\n<p>MLlib no trae un algoritmo específico para esto — se construye con una técnica real y muy usada: la distancia de cada punto al &ldquo;centro de la normalidad&rdquo; (la media) como puntuación de rareza. Datos sintéticos (lecturas de temperatura/vibración de una máquina) con 3 anomalías inyectadas a propósito.</p>\n\n</div>"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790030400332_464448457",
+      "id": "paragraph_1790030400332_464448457",
+      "dateCreated": "2026-09-21 22:40:00.332",
+      "dateStarted": "2026-09-21 22:40:00.349",
+      "dateFinished": "2026-09-21 22:40:00.354",
+      "status": "FINISHED"
+    },
+    {
+      "title": "anomalias",
+      "text": "%pyspark\nimport numpy as np\nimport pyspark.sql.functions as F\n\nrng = np.random.default_rng(42)\nnormales = rng.normal(loc=[50.0, 2.0], scale=[3.0, 0.3], size=(200, 2))\nanomalias_reales = np.array([[95.0, 2.1], [51.0, 9.0], [88.0, 8.5]])\ndatos = np.vstack([normales, anomalias_reales])\nes_anomalia_real = np.array([False] * len(normales) + [True] * len(anomalias_reales))\n\npdf = pd.DataFrame(datos, columns=[\"temperatura\", \"vibracion\"])\npdf[\"es_anomalia_real\"] = es_anomalia_real\ndf_sensores = spark.createDataFrame(pdf)\n\ncentro = df_sensores.select(F.mean(\"temperatura\").alias(\"t\"), F.mean(\"vibracion\").alias(\"v\")).first()\ndistancia = F.sqrt(F.pow(df_sensores.temperatura - centro[\"t\"], 2) + F.pow(df_sensores.vibracion - centro[\"v\"], 2))\nresultado_an = df_sensores.withColumn(\"distancia_al_centro\", distancia)\n\nstats = resultado_an.select(F.mean(\"distancia_al_centro\").alias(\"media\"), F.stddev(\"distancia_al_centro\").alias(\"sd\")).first()\numbral = stats[\"media\"] + 3 * stats[\"sd\"]\nresultado_an = resultado_an.withColumn(\"es_anomalia_detectada\", resultado_an.distancia_al_centro > umbral)\n\nresultado_an.filter(resultado_an.es_anomalia_detectada) \\\n    .select(\"temperatura\", \"vibracion\", \"distancia_al_centro\", \"es_anomalia_real\") \\\n    .orderBy(F.desc(\"distancia_al_centro\")).show()",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:40:00.452",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "/opt/spark/python/pyspark/sql/pandas/conversion.py:659: FutureWarning: PySpark does not yet fully support pandas >= 3.0.0. Some features may not work correctly. It is recommended to use pandas < 3.0.0 for now.\n  require_minimum_pandas_version()\n/opt/spark/python/pyspark/sql/pandas/conversion.py:936: FutureWarning: PySpark does not yet fully support pandas >= 3.0.0. Some features may not work correctly. It is recommended to use pandas < 3.0.0 for now.\n  require_minimum_pandas_version()\n+-----------+---------+-------------------+----------------+\n|temperatura|vibracion|distancia_al_centro|es_anomalia_real|\n+-----------+---------+-------------------+----------------+\n|       95.0|      2.1| 44.521072652978354|            true|\n|       88.0|      8.5|  38.07014950348721|            true|\n+-----------+---------+-------------------+----------------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=26"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=27"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=28"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=29"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=30"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=31"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=32"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790030400438_1990182115",
+      "id": "paragraph_1790030400438_1990182115",
+      "dateCreated": "2026-09-21 22:40:00.438",
+      "dateStarted": "2026-09-21 22:40:00.453",
+      "dateFinished": "2026-09-21 22:40:01.125",
+      "status": "FINISHED"
+    },
+    {
+      "title": "md_als",
+      "text": "%md\n## 3. Sistemas de recomendación (ALS)\n\nFiltrado colaborativo: rellenar los huecos de una matriz usuario × producto a partir de las valoraciones que SÍ existen — \"a usuarios que se parecen les gustan cosas parecidas\", sin saber nada del contenido de cada producto. Películas de ciencia ficción vs. romance, con gustos claramente diferenciados por usuario a propósito.",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:40:12.256",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "<div class=\"markdown-body\">\n<h2>3. Sistemas de recomendación (ALS)</h2>\n<p>Filtrado colaborativo: rellenar los huecos de una matriz usuario × producto a partir de las valoraciones que SÍ existen — &ldquo;a usuarios que se parecen les gustan cosas parecidas&rdquo;, sin saber nada del contenido de cada producto. Películas de ciencia ficción vs. romance, con gustos claramente diferenciados por usuario a propósito.</p>\n\n</div>"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790030412241_408073321",
+      "id": "paragraph_1790030412241_408073321",
+      "dateCreated": "2026-09-21 22:40:12.241",
+      "dateStarted": "2026-09-21 22:40:12.258",
+      "dateFinished": "2026-09-21 22:40:12.262",
+      "status": "FINISHED"
+    },
+    {
+      "title": "als",
+      "text": "%pyspark\nfrom pyspark.ml.recommendation import ALS\nfrom pyspark.ml.evaluation import RegressionEvaluator\n\npeliculas = {0: \"Matrix\", 1: \"Inception\", 2: \"Interstellar\", 3: \"Titanic\", 4: \"El Diario de Noa\", 5: \"La La Land\"}\n\nvaloraciones = spark.createDataFrame([\n    (0, 0, 5.0), (0, 1, 4.0),\n    (1, 0, 4.0), (1, 1, 5.0), (1, 2, 5.0),\n    (2, 0, 5.0), (2, 2, 4.0),\n    (0, 3, 1.0), (1, 4, 2.0), (2, 5, 1.0),\n    (3, 3, 5.0), (3, 4, 4.0),\n    (4, 4, 5.0), (4, 5, 5.0), (4, 3, 4.0),\n    (5, 5, 4.0), (5, 3, 5.0),\n    (3, 0, 1.0), (4, 1, 2.0), (5, 2, 1.0),\n], [\"usuario\", \"pelicula\", \"valoracion\"])\n\n(entrenamiento, prueba) = valoraciones.randomSplit([0.8, 0.2], seed=42)\nals = ALS(userCol=\"usuario\", itemCol=\"pelicula\", ratingCol=\"valoracion\", rank=4, maxIter=10, regParam=0.1, seed=42, coldStartStrategy=\"drop\")\nmodelo_als = als.fit(entrenamiento)\n\nevaluador_als = RegressionEvaluator(metricName=\"rmse\", labelCol=\"valoracion\", predictionCol=\"prediction\")\nprint(f\"RMSE: {evaluador_als.evaluate(modelo_als.transform(prueba)):.3f}\")\n\nrecs = modelo_als.recommendForAllUsers(2)\nprint(\"Recomendaciones para el usuario 0 (fan de ciencia ficcion, nunca valoro Interstellar):\")\nfor r in recs.filter(recs.usuario == 0).first().recommendations:\n    nombre_pelicula = peliculas[r[\"pelicula\"]]\n    print(\"  \" + nombre_pelicula + \": \" + str(round(r[\"rating\"], 2)))",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:40:21.805",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "RMSE: 1.390\nRecomendaciones para el usuario 0 (fan de ciencia ficcion, nunca valoro Interstellar):\n  Matrix: 4.9\n  Inception: 3.98\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=33"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=34"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=35"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=36"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=37"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=38"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=39"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=40"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=41"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=42"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=43"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=44"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id=45"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790030421791_661175761",
+      "id": "paragraph_1790030421791_661175761",
+      "dateCreated": "2026-09-21 22:40:21.791",
+      "dateStarted": "2026-09-21 22:40:21.807",
+      "dateFinished": "2026-09-21 22:40:28.452",
+      "status": "FINISHED"
+    },
+    {
+      "title": "md_als_nota",
+      "text": "%md\n**Nota real**: el resultado exacto (qué 2 películas concretas salen recomendadas) puede variar entre ejecuciones en clusters con distinto número de particiones/executors — `randomSplit()` con una `seed` fija es determinista DENTRO del mismo plan de particionado, pero no está garantizado que dé exactamente la misma partición entrenamiento/prueba en un cluster real (varios executors) que en local (`local[*]`, un solo proceso) — el script `.py` equivalente, ejecutado en local, sí da siempre las mismas 2 películas. Lo que SÍ es constante en cualquier ejecución: las recomendaciones para el usuario 0 son siempre de ciencia ficción, nunca de romance — el patrón de gustos aprendido es el mismo, aunque el orden/particionado interno cambie el resultado exacto del split.",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:40:48.028",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "<div class=\"markdown-body\">\n<p><strong>Nota real</strong>: el resultado exacto (qué 2 películas concretas salen recomendadas) puede variar entre ejecuciones en clusters con distinto número de particiones/executors — <code>randomSplit()</code> con una <code>seed</code> fija es determinista DENTRO del mismo plan de particionado, pero no está garantizado que dé exactamente la misma partición entrenamiento/prueba en un cluster real (varios executors) que en local (<code>local[*]</code>, un solo proceso) — el script <code>.py</code> equivalente, ejecutado en local, sí da siempre las mismas 2 películas. Lo que SÍ es constante en cualquier ejecución: las recomendaciones para el usuario 0 son siempre de ciencia ficción, nunca de romance — el patrón de gustos aprendido es el mismo, aunque el orden/particionado interno cambie el resultado exacto del split.</p>\n\n</div>"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790030448013_1766909003",
+      "id": "paragraph_1790030448013_1766909003",
+      "dateCreated": "2026-09-21 22:40:48.014",
+      "dateStarted": "2026-09-21 22:40:48.030",
+      "dateFinished": "2026-09-21 22:40:48.036",
+      "status": "FINISHED"
+    }
+  ],
+  "name": "01_clustering_anomalias_recomendacion",
+  "id": "2N2GCGU51",
+  "defaultInterpreterGroup": "spark",
+  "version": "0.12.1",
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {},
+  "config": {
+    "isZeppelinNotebookCronEnable": false
+  },
+  "info": {}
+}

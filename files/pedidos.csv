@@ -1,0 +1,6 @@
+id_pedido,id_cliente,producto,importe
+1,1,Portátil,899.99
+2,1,Ratón,19.99
+3,2,Teclado,49.99
+4,3,Monitor,199.99
+5,99,Producto fantasma,10.00

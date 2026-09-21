@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "nombre": "Juan",
+    "telefonos": ["600111222", "911234567"],
+    "direccion": {"calle": "Gran Vía 1", "ciudad": "Madrid", "cp": "28013"}
+  },
+  {
+    "id": 2,
+    "nombre": "María",
+    "telefonos": ["600333444"],
+    "direccion": {"calle": "Rambla 20", "ciudad": "Barcelona", "cp": "08002"}
+  },
+  {
+    "id": 3,
+    "nombre": "Pedro",
+    "telefonos": [],
+    "direccion": {"calle": "Av. Corrientes 500", "ciudad": "Buenos Aires", "cp": "C1043"}
+  },
+  {
+    "id": 4,
+    "nombre": "Luis",
+    "telefonos": ["600555666", "600777888", "911999000"],
+    "direccion": {"calle": "Calle Mayor 8", "ciudad": "Madrid", "cp": "28012"}
+  }
+]

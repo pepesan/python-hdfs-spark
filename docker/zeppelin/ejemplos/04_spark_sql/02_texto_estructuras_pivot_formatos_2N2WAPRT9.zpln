@@ -1,0 +1,701 @@
+{
+  "paragraphs": [
+    {
+      "title": "intro",
+      "text": "%md\n# Spark SQL / DataFrame API — parte 2: texto, estructuras, pivot y formatos\n\nSegunda parte del recorrido por la API de DataFrames (ver `01_seleccion_limpieza_joins_ventanas_fechas`). Aquí: funciones de texto, datos anidados (arrays/structs), tablas dinámicas (pivot), operaciones de conjuntos, y para terminar, escritura a disco en distintos formatos (incluido Avro, que necesita un jar aparte).",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:22:04.223",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch1\u003eSpark SQL / DataFrame API — parte 2: texto, estructuras, pivot y formatos\u003c/h1\u003e\n\u003cp\u003eSegunda parte del recorrido por la API de DataFrames (ver \u003ccode\u003e01_seleccion_limpieza_joins_ventanas_fechas\u003c/code\u003e). Aquí: funciones de texto, datos anidados (arrays/structs), tablas dinámicas (pivot), operaciones de conjuntos, y para terminar, escritura a disco en distintos formatos (incluido Avro, que necesita un jar aparte).\u003c/p\u003e\n\n\u003c/div\u003e"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029324209_1412463868",
+      "id": "paragraph_1790029324209_1412463868",
+      "dateCreated": "2026-09-21 22:22:04.209",
+      "dateStarted": "2026-09-21 22:22:04.225",
+      "dateFinished": "2026-09-21 22:22:06.097",
+      "status": "FINISHED"
+    },
+    {
+      "title": "md_texto",
+      "text": "%md\n## 1. Funciones de texto\n\n`files/addresses.csv` trae comillas dentro de campos y una coma dentro de un campo entrecomillado — un CSV \"real\" y descuidado. **Ojo**: el escape de comillas por defecto de Spark es `\\` (barra invertida), no `\"\"` (el estándar RFC 4180 que usa este fichero) — sin `option(\"escape\", \"\\\"\")` el parseo sale mal en silencio, sin ningún error (ver `CLAUDE.md`).",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:22:07.374",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch2\u003e1. Funciones de texto\u003c/h2\u003e\n\u003cp\u003e\u003ccode\u003efiles/addresses.csv\u003c/code\u003e trae comillas dentro de campos y una coma dentro de un campo entrecomillado — un CSV \u0026ldquo;real\u0026rdquo; y descuidado. \u003cstrong\u003eOjo\u003c/strong\u003e: el escape de comillas por defecto de Spark es \u003ccode\u003e\\\u003c/code\u003e (barra invertida), no \u003ccode\u003e\u0026quot;\u0026quot;\u003c/code\u003e (el estándar RFC 4180 que usa este fichero) — sin \u003ccode\u003eoption(\u0026quot;escape\u0026quot;, \u0026quot;\\\u0026quot;\u0026quot;)\u003c/code\u003e el parseo sale mal en silencio, sin ningún error (ver \u003ccode\u003eCLAUDE.md\u003c/code\u003e).\u003c/p\u003e\n\n\u003c/div\u003e"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029327360_478879322",
+      "id": "paragraph_1790029327360_478879322",
+      "dateCreated": "2026-09-21 22:22:07.360",
+      "dateStarted": "2026-09-21 22:22:07.375",
+      "dateFinished": "2026-09-21 22:22:07.382",
+      "status": "FINISHED"
+    },
+    {
+      "title": "texto",
+      "text": "%pyspark\nimport pyspark.sql.functions as F\n\npersonas \u003d spark.read.option(\"escape\", \"\\\"\").csv(\"/opt/project/files/addresses.csv\") \\\n    .toDF(\"nombre\", \"apellido\", \"direccion\", \"ciudad\", \"estado\", \"cp\")\n\npersonas \u003d personas.withColumn(\"estado\", F.trim(\"estado\")).withColumn(\"cp\", F.trim(\"cp\"))\npersonas.withColumn(\"nombre_sin_comillas\", F.regexp_replace(\"nombre\", \"\\\"\", \"\")) \\\n    .select(\"nombre\", \"nombre_sin_comillas\", \"estado\").show(truncate\u003dFalse)",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:22:28.218",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "+---------------------+-------------------+------+\n|nombre               |nombre_sin_comillas|estado|\n+---------------------+-------------------+------+\n|John                 |John               |NJ    |\n|Jack                 |Jack               |PA    |\n|John \"Da Man\"        |John Da Man        |NJ    |\n|Stephen              |Stephen            |SD    |\n|NULL                 |NULL               |SD    |\n|Joan \"the bone\", Anne|Joan the bone, Anne|CO    |\n+---------------------+-------------------+------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d1"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d2"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029348204_355399525",
+      "id": "paragraph_1790029348204_355399525",
+      "dateCreated": "2026-09-21 22:22:28.204",
+      "dateStarted": "2026-09-21 22:22:28.220",
+      "dateFinished": "2026-09-21 22:22:29.427",
+      "status": "FINISHED"
+    },
+    {
+      "title": "md_anidados",
+      "text": "%md\n## 2. Datos anidados (arrays y structs)\n\nMuy habitual al leer JSON: cada persona trae una lista de teléfonos (array) y una dirección con varios campos dentro (struct), en vez de columnas sueltas. `explode()` convierte un array en varias filas — una persona SIN teléfonos desaparece del resultado (a diferencia de `explode_outer()`, que la conserva con NULL).",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:22:52.988",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch2\u003e2. Datos anidados (arrays y structs)\u003c/h2\u003e\n\u003cp\u003eMuy habitual al leer JSON: cada persona trae una lista de teléfonos (array) y una dirección con varios campos dentro (struct), en vez de columnas sueltas. \u003ccode\u003eexplode()\u003c/code\u003e convierte un array en varias filas — una persona SIN teléfonos desaparece del resultado (a diferencia de \u003ccode\u003eexplode_outer()\u003c/code\u003e, que la conserva con NULL).\u003c/p\u003e\n\n\u003c/div\u003e"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029372974_1961593553",
+      "id": "paragraph_1790029372974_1961593553",
+      "dateCreated": "2026-09-21 22:22:52.975",
+      "dateStarted": "2026-09-21 22:22:52.990",
+      "dateFinished": "2026-09-21 22:22:52.994",
+      "status": "FINISHED"
+    },
+    {
+      "title": "anidados",
+      "text": "%pyspark\npersonas_anidado \u003d spark.read.option(\"multiline\", \"true\").json(\"/opt/project/files/personas_anidado.json\")\npersonas_anidado.printSchema()\n\nprint(\"explode: Pedro (sin telefonos) desaparece\")\npersonas_anidado.select(\"nombre\", F.explode(\"telefonos\").alias(\"telefono\")).show()\n\nprint(\"explode_outer: Pedro reaparece con NULL\")\npersonas_anidado.select(\"nombre\", F.explode_outer(\"telefonos\").alias(\"telefono\")).show()",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:22:53.092",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "root\n |-- direccion: struct (nullable \u003d true)\n |    |-- calle: string (nullable \u003d true)\n |    |-- ciudad: string (nullable \u003d true)\n |    |-- cp: string (nullable \u003d true)\n |-- id: long (nullable \u003d true)\n |-- nombre: string (nullable \u003d true)\n |-- telefonos: array (nullable \u003d true)\n |    |-- element: string (containsNull \u003d true)\n\nexplode: Pedro (sin telefonos) desaparece\n+------+---------+\n|nombre| telefono|\n+------+---------+\n|  Juan|600111222|\n|  Juan|911234567|\n| María|600333444|\n|  Luis|600555666|\n|  Luis|600777888|\n|  Luis|911999000|\n+------+---------+\n\nexplode_outer: Pedro reaparece con NULL\n+------+---------+\n|nombre| telefono|\n+------+---------+\n|  Juan|600111222|\n|  Juan|911234567|\n| María|600333444|\n| Pedro|     NULL|\n|  Luis|600555666|\n|  Luis|600777888|\n|  Luis|911999000|\n+------+---------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d3"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d4"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d5"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029373078_728094131",
+      "id": "paragraph_1790029373078_728094131",
+      "dateCreated": "2026-09-21 22:22:53.078",
+      "dateStarted": "2026-09-21 22:22:53.093",
+      "dateFinished": "2026-09-21 22:22:54.051",
+      "status": "FINISHED"
+    },
+    {
+      "title": "md_pivot",
+      "text": "%md\n## 3. Pivot\n\nConvertir valores de una columna en columnas nuevas, con una agregación en cada celda — el mismo concepto que una tabla dinámica de una hoja de cálculo.",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:22:56.241",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch2\u003e3. Pivot\u003c/h2\u003e\n\u003cp\u003eConvertir valores de una columna en columnas nuevas, con una agregación en cada celda — el mismo concepto que una tabla dinámica de una hoja de cálculo.\u003c/p\u003e\n\n\u003c/div\u003e"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029376227_1658018087",
+      "id": "paragraph_1790029376227_1658018087",
+      "dateCreated": "2026-09-21 22:22:56.227",
+      "dateStarted": "2026-09-21 22:22:56.243",
+      "dateFinished": "2026-09-21 22:22:56.246",
+      "status": "FINISHED"
+    },
+    {
+      "title": "pivot",
+      "text": "%pyspark\nventas \u003d spark.createDataFrame([\n    (\"Ana\", \"Q1\", 1000), (\"Ana\", \"Q2\", 1500),\n    (\"Bruno\", \"Q1\", 800), (\"Bruno\", \"Q3\", 1200),\n], [\"vendedor\", \"trimestre\", \"importe\"])\n\nventas.groupBy(\"vendedor\").pivot(\"trimestre\", [\"Q1\", \"Q2\", \"Q3\", \"Q4\"]).agg(F.sum(\"importe\")).orderBy(\"vendedor\").show()",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:22:56.344",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "+--------+----+----+----+----+\n|vendedor|  Q1|  Q2|  Q3|  Q4|\n+--------+----+----+----+----+\n|     Ana|1000|1500|NULL|NULL|\n|   Bruno| 800|NULL|1200|NULL|\n+--------+----+----+----+----+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d6"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d7"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d8"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029376330_872737714",
+      "id": "paragraph_1790029376330_872737714",
+      "dateCreated": "2026-09-21 22:22:56.330",
+      "dateStarted": "2026-09-21 22:22:56.345",
+      "dateFinished": "2026-09-21 22:22:58.477",
+      "status": "FINISHED"
+    },
+    {
+      "title": "md_conjuntos",
+      "text": "%md\n## 4. Operaciones de conjuntos\n\n`union()` junta filas SIN quitar duplicados (a diferencia del `UNION` de SQL) — hace falta `.distinct()` explícito para eso. Y junta por POSICIÓN de columna, no por nombre: si el orden de columnas no coincide entre los dos DataFrames, el resultado queda mal mezclado SIN ningún error (`unionByName()` es la alternativa segura).",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:22:59.487",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch2\u003e4. Operaciones de conjuntos\u003c/h2\u003e\n\u003cp\u003e\u003ccode\u003eunion()\u003c/code\u003e junta filas SIN quitar duplicados (a diferencia del \u003ccode\u003eUNION\u003c/code\u003e de SQL) — hace falta \u003ccode\u003e.distinct()\u003c/code\u003e explícito para eso. Y junta por POSICIÓN de columna, no por nombre: si el orden de columnas no coincide entre los dos DataFrames, el resultado queda mal mezclado SIN ningún error (\u003ccode\u003eunionByName()\u003c/code\u003e es la alternativa segura).\u003c/p\u003e\n\n\u003c/div\u003e"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029379474_1715777300",
+      "id": "paragraph_1790029379474_1715777300",
+      "dateCreated": "2026-09-21 22:22:59.474",
+      "dateStarted": "2026-09-21 22:22:59.488",
+      "dateFinished": "2026-09-21 22:22:59.492",
+      "status": "FINISHED"
+    },
+    {
+      "title": "conjuntos",
+      "text": "%pyspark\na \u003d spark.createDataFrame([(1, \"Ana\", \"Madrid\")], [\"id\", \"nombre\", \"ciudad\"])\nb_mal_orden \u003d spark.createDataFrame([(2, \"Barcelona\", \"Bruno\")], [\"id\", \"ciudad\", \"nombre\"])\n\nprint(\"union(): mal mezclado (nombre \u003c-\u003e ciudad intercambiados), SIN error\")\na.union(b_mal_orden).show()\n\nprint(\"unionByName(): bien colocado por nombre de columna\")\na.unionByName(b_mal_orden).show()",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:22:59.592",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "union(): mal mezclado (nombre \u003c-\u003e ciudad intercambiados), SIN error\n+---+---------+------+\n| id|   nombre|ciudad|\n+---+---------+------+\n|  1|      Ana|Madrid|\n|  2|Barcelona| Bruno|\n+---+---------+------+\n\nunionByName(): bien colocado por nombre de columna\n+---+------+---------+\n| id|nombre|   ciudad|\n+---+------+---------+\n|  1|   Ana|   Madrid|\n|  2| Bruno|Barcelona|\n+---+------+---------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d9"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d10"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d11"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d12"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029379578_1957824473",
+      "id": "paragraph_1790029379578_1957824473",
+      "dateCreated": "2026-09-21 22:22:59.578",
+      "dateStarted": "2026-09-21 22:22:59.593",
+      "dateFinished": "2026-09-21 22:23:00.100",
+      "status": "FINISHED"
+    },
+    {
+      "title": "md_escritura",
+      "text": "%md\n## 5. Escritura a disco y particionado\n\n`partitionBy(\"pais\")` crea una carpeta por cada país en vez de un único fichero — así, al releer filtrando por país, Spark puede saltarse carpetas enteras sin ni siquiera abrirlas. Escribimos en HDFS (`hdfs://namenode:8020/...`), no en una ruta local: en Zeppelin el driver y los executors son contenedores DISTINTOS, y solo HDFS es un almacén realmente compartido con permisos correctos entre ambos (ver `CLAUDE.md`).",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:23:13.469",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch2\u003e5. Escritura a disco y particionado\u003c/h2\u003e\n\u003cp\u003e\u003ccode\u003epartitionBy(\u0026quot;pais\u0026quot;)\u003c/code\u003e crea una carpeta por cada país en vez de un único fichero — así, al releer filtrando por país, Spark puede saltarse carpetas enteras sin ni siquiera abrirlas. Escribimos en HDFS (\u003ccode\u003ehdfs://namenode:8020/...\u003c/code\u003e), no en una ruta local: en Zeppelin el driver y los executors son contenedores DISTINTOS, y solo HDFS es un almacén realmente compartido con permisos correctos entre ambos (ver \u003ccode\u003eCLAUDE.md\u003c/code\u003e).\u003c/p\u003e\n\n\u003c/div\u003e"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029393454_1230699711",
+      "id": "paragraph_1790029393454_1230699711",
+      "dateCreated": "2026-09-21 22:23:13.454",
+      "dateStarted": "2026-09-21 22:23:13.470",
+      "dateFinished": "2026-09-21 22:23:13.474",
+      "status": "FINISHED"
+    },
+    {
+      "title": "escritura",
+      "text": "%pyspark\nclientes \u003d spark.read.option(\"header\", \"true\").option(\"inferSchema\", \"true\").csv(\"/opt/project/files/sql.csv\")\nruta \u003d \"hdfs://namenode:8020/tmp/zeppelin_clientes_parquet\"\nclientes.write.partitionBy(\"pais\").mode(\"overwrite\").parquet(ruta)\n\nreleido \u003d spark.read.parquet(ruta)\nreleido.orderBy(\"id\").show()",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:23:25.666",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "+---+--------+----+---------+\n| id|  nombre|edad|     pais|\n+---+--------+----+---------+\n|  1|    Juan|  25|   España|\n|  2|   María|  30|   México|\n|  3|   Pedro|  40|Argentina|\n|  4|Patricia|  40|   España|\n|  5|    Jose|  35|Argentina|\n|  6|  Miguel|  32|   España|\n+---+--------+----+---------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d14"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d15"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d16"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d17"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d18"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029405652_723030039",
+      "id": "paragraph_1790029405652_723030039",
+      "dateCreated": "2026-09-21 22:23:25.653",
+      "dateStarted": "2026-09-21 22:23:25.667",
+      "dateFinished": "2026-09-21 22:23:28.732",
+      "status": "FINISHED"
+    },
+    {
+      "title": "md_avro",
+      "text": "%md\n## 6. Avro\n\nFormato binario con schema explícito (como Parquet), pensado sobre todo para streaming/mensajería (Kafka lo usa mucho). El conector no viene incluido en Spark — está añadido a este intérprete vía `spark.jars.packages` (versión `4.2.0-preview5`: todavía no hay una release estable publicada para Spark 4.2.0, ver `CLAUDE.md`).",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:23:13.682",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch2\u003e6. Avro\u003c/h2\u003e\n\u003cp\u003eFormato binario con schema explícito (como Parquet), pensado sobre todo para streaming/mensajería (Kafka lo usa mucho). El conector no viene incluido en Spark — está añadido a este intérprete vía \u003ccode\u003espark.jars.packages\u003c/code\u003e (versión \u003ccode\u003e4.2.0-preview5\u003c/code\u003e: todavía no hay una release estable publicada para Spark 4.2.0, ver \u003ccode\u003eCLAUDE.md\u003c/code\u003e).\u003c/p\u003e\n\n\u003c/div\u003e"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029393664_1893436433",
+      "id": "paragraph_1790029393664_1893436433",
+      "dateCreated": "2026-09-21 22:23:13.664",
+      "dateStarted": "2026-09-21 22:23:13.684",
+      "dateFinished": "2026-09-21 22:23:13.688",
+      "status": "FINISHED"
+    },
+    {
+      "title": "avro",
+      "text": "%pyspark\nusuarios \u003d spark.read.format(\"avro\").load(\"/opt/project/files/users.avro\")\nusuarios.show()",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:23:13.788",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "+------+--------------+----------------+\n|  name|favorite_color|favorite_numbers|\n+------+--------------+----------------+\n|Alyssa|          NULL|  [3, 9, 15, 20]|\n|   Ben|           red|              []|\n+------+--------------+----------------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d13"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029393773_1738825407",
+      "id": "paragraph_1790029393773_1738825407",
+      "dateCreated": "2026-09-21 22:23:13.773",
+      "dateStarted": "2026-09-21 22:23:13.789",
+      "dateFinished": "2026-09-21 22:23:14.052",
+      "status": "FINISHED"
+    },
+    {
+      "title": "md_rendimiento",
+      "text": "%md\n## 7. Rendimiento: explain() y broadcast join\n\n`explain()` muestra el plan de ejecución SIN ejecutar nada (las transformaciones son \"perezosas\"). Con datasets pequeños, Spark ya elige un `BroadcastHashJoin` él solo (copia el lado pequeño entero a todas las máquinas en vez de repartir ambos lados) — `F.broadcast()` sirve para FORZAR qué lado se copia, útil cuando Spark no lo adivina bien solo.",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:23:16.934",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch2\u003e7. Rendimiento: explain() y broadcast join\u003c/h2\u003e\n\u003cp\u003e\u003ccode\u003eexplain()\u003c/code\u003e muestra el plan de ejecución SIN ejecutar nada (las transformaciones son \u0026ldquo;perezosas\u0026rdquo;). Con datasets pequeños, Spark ya elige un \u003ccode\u003eBroadcastHashJoin\u003c/code\u003e él solo (copia el lado pequeño entero a todas las máquinas en vez de repartir ambos lados) — \u003ccode\u003eF.broadcast()\u003c/code\u003e sirve para FORZAR qué lado se copia, útil cuando Spark no lo adivina bien solo.\u003c/p\u003e\n\n\u003c/div\u003e"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029396918_1819746524",
+      "id": "paragraph_1790029396918_1819746524",
+      "dateCreated": "2026-09-21 22:23:16.918",
+      "dateStarted": "2026-09-21 22:23:16.935",
+      "dateFinished": "2026-09-21 22:23:16.939",
+      "status": "FINISHED"
+    },
+    {
+      "title": "rendimiento",
+      "text": "%pyspark\npedidos \u003d spark.read.option(\"header\", \"true\").option(\"inferSchema\", \"true\").csv(\"/opt/project/files/pedidos.csv\")\nclientes.join(F.broadcast(pedidos), clientes.id \u003d\u003d pedidos.id_cliente).explain()",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:23:31.835",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\u003d\u003d Physical Plan \u003d\u003d\nAdaptiveSparkPlan isFinalPlan\u003dfalse\n+- BroadcastHashJoin [id#267], [id_cliente#313], Inner, BuildRight, false, false\n   :- Filter isnotnull(id#267)\n   :  +- FileScan csv [id#267,nombre#268,edad#269,pais#270] Batched: false, DataFilters: [isnotnull(id#267)], Format: CSV, Location: InMemoryFileIndex(1 paths)[file:/opt/project/files/sql.csv], PartitionFilters: [], PushedFilters: [IsNotNull(id)], ReadSchema: struct\u003cid:int,nombre:string,edad:int,pais:string\u003e\n   +- BroadcastExchange HashedRelationBroadcastMode(List(cast(input[1, int, false] as bigint)),false), [plan_id\u003d400]\n      +- Filter isnotnull(id_cliente#313)\n         +- FileScan csv [id_pedido#312,id_cliente#313,producto#314,importe#315] Batched: false, DataFilters: [isnotnull(id_cliente#313)], Format: CSV, Location: InMemoryFileIndex(1 paths)[file:/opt/project/files/pedidos.csv], PartitionFilters: [], PushedFilters: [IsNotNull(id_cliente)], ReadSchema: struct\u003cid_pedido:int,id_cliente:int,producto:string,importe:double\u003e\n\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d19"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d20"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029411821_1305346045",
+      "id": "paragraph_1790029411821_1305346045",
+      "dateCreated": "2026-09-21 22:23:31.821",
+      "dateStarted": "2026-09-21 22:23:31.836",
+      "dateFinished": "2026-09-21 22:23:32.053",
+      "status": "FINISHED"
+    },
+    {
+      "title": "md_delta",
+      "text": "%md\n## 8. Delta Lake\n\nDelta es un formato de TABLA que añade, por encima de Parquet, un log de transacciones (ACID, versionado, \"time travel\") — a diferencia de escribir un Parquet suelto, con Delta se puede hacer `UPDATE`/`DELETE`/`MERGE` sobre los datos ya escritos, algo que Parquet por sí solo no soporta. El conector `delta-spark` está añadido vía `spark.jars.packages`, igual que Avro/Kafka/GraphFrames/el driver JDBC de Postgres.",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:24:38.144",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch2\u003e8. Delta Lake\u003c/h2\u003e\n\u003cp\u003eDelta es un formato de TABLA que añade, por encima de Parquet, un log de transacciones (ACID, versionado, \u0026ldquo;time travel\u0026rdquo;) — a diferencia de escribir un Parquet suelto, con Delta se puede hacer \u003ccode\u003eUPDATE\u003c/code\u003e/\u003ccode\u003eDELETE\u003c/code\u003e/\u003ccode\u003eMERGE\u003c/code\u003e sobre los datos ya escritos, algo que Parquet por sí solo no soporta. El conector \u003ccode\u003edelta-spark\u003c/code\u003e está añadido vía \u003ccode\u003espark.jars.packages\u003c/code\u003e, igual que Avro/Kafka/GraphFrames/el driver JDBC de Postgres.\u003c/p\u003e\n\n\u003c/div\u003e"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029478121_1027011317",
+      "id": "paragraph_1790029478121_1027011317",
+      "dateCreated": "2026-09-21 22:24:38.121",
+      "dateStarted": "2026-09-21 22:24:38.152",
+      "dateFinished": "2026-09-21 22:24:40.104",
+      "status": "FINISHED"
+    },
+    {
+      "title": "delta",
+      "text": "%pyspark\nclientes \u003d spark.read.option(\"header\", \"true\").option(\"inferSchema\", \"true\").csv(\"/opt/project/files/sql.csv\")\nruta_delta \u003d \"hdfs://namenode:8020/tmp/zeppelin_delta_ejemplo\"\nclientes.write.format(\"delta\").mode(\"overwrite\").save(ruta_delta)\n\nreleido_delta \u003d spark.read.format(\"delta\").load(ruta_delta)\nprint(\"Filas en la tabla Delta:\", releido_delta.count())\nreleido_delta.orderBy(\"id\").show()",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-21 22:24:58.771",
+      "progress": 0,
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "Filas en la tabla Delta: 6\n+---+--------+----+---------+\n| id|  nombre|edad|     pais|\n+---+--------+----+---------+\n|  1|    Juan|  25|   España|\n|  2|   María|  30|   México|\n|  3|   Pedro|  40|Argentina|\n|  4|Patricia|  40|   España|\n|  5|    Jose|  35|Argentina|\n|  6|  Miguel|  32|   España|\n+---+--------+----+---------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d0"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d1"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d2"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d3"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d4"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d5"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d6"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d7"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d8"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d9"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d10"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d11"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790029498756_286161132",
+      "id": "paragraph_1790029498756_286161132",
+      "dateCreated": "2026-09-21 22:24:58.756",
+      "dateStarted": "2026-09-21 22:24:58.773",
+      "dateFinished": "2026-09-21 22:25:15.576",
+      "status": "FINISHED"
+    }
+  ],
+  "name": "02_texto_estructuras_pivot_formatos",
+  "id": "2N2WAPRT9",
+  "defaultInterpreterGroup": "spark",
+  "version": "0.12.1",
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {},
+  "config": {
+    "isZeppelinNotebookCronEnable": false
+  },
+  "info": {}
+}

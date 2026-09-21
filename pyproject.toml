@@ -3,14 +3,23 @@ name = "python-hdfs-spark"
 version = "0.1.0"
 requires-python = ">=3.14"
 dependencies = [
+    "boto3==1.42.0",
+    "delta-spark==4.4.0",
+    "graphframes-py==0.12.2",
     "hdfs==2.7.3",
+    "kafka-python==3.0.11",
     "matplotlib==3.11.2",
+    "networkx==3.7",
     "pandas==3.0.6",
     "plotly==7.1.0",
     "pyarrow==25.0.1",
     "pyspark==4.2.0",
+    "python-louvain==0.16",
     "scikit-learn==1.9.1",
     "seaborn==0.13.2",
+    "texttable==1.7.0",
+    "tqdm==4.70.1",
+    "typing-extensions==4.16.0",
 ]
 
 [dependency-groups]

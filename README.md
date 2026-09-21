@@ -73,7 +73,7 @@ solo que "no ha fallado"). Los tests que dependen del cluster Docker
 `docker/01_launch.sh` no está levantado. Ver `tests/test_examples.py` para el
 detalle de qué se comprueba en cada caso.
 
-## Entorno Docker (Spark + HDFS + Hive + Zeppelin + Hue)
+## Entorno Docker (Spark + HDFS + Hive + Zeppelin + Hue + SeaweedFS + Postgres)
 
 En `docker/` hay un `compose.yaml` que levanta:
 
@@ -86,7 +86,10 @@ En `docker/` hay un `compose.yaml` que levanta:
 | `hive-metastore`| `apache/hive:4.2.1`                           | Metastore de Hive (Derby embebido)          |
 | `hive-server2`  | `apache/hive:4.2.1`                           | HiveServer2 (JDBC/Thrift + UI web)          |
 | `zeppelin`      | `python-hdfs-spark/zeppelin:python-3.14` (build propio) | Notebooks (`%spark`, `%pyspark`, `%python`) |
-| `hue`           | `gethue/hue@sha256:7d5c1b9f...`               | UI web para explorar HDFS y consultar Hive  |
+| `hue`           | `gethue/hue@sha256:7d5c1b9f...`               | UI web para explorar HDFS, Hive y Postgres  |
+| `seaweedfs`     | `chrislusf/seaweedfs`                         | Servidor S3 (alternativa a HDFS), un solo nodo |
+| `postgres`      | `postgres:16-alpine`                          | BBDD relacional de ejemplo (tabla `empleados`) |
+| `kafka`         | `apache/kafka:4.3.1`                          | Broker Kafka de un solo nodo (modo KRaft, sin ZooKeeper) |
 
 La imagen de `spark-master`/`spark-worker` (`docker/spark/image/`) extiende
 `apache/spark:4.2.0-python3` con un venv `uv` (Python 3.14 + las mismas
@@ -95,6 +98,26 @@ librerías que `pyproject.toml`), para que los executors puedan ejecutar
 `zeppelin` (`docker/zeppelin/image/`) reutiliza esa misma imagen (copia
 `/opt/spark`, el JDK y el venv) para que Zeppelin hable exactamente el mismo
 protocolo Spark que el cluster.
+
+### Uso: arrancar y destruir el entorno
+
+```bash
+docker/00_init.sh      # (solo la primera vez, o tras 20_destroy.sh) crea los
+                        # volúmenes (docker/volumes/) y genera las credenciales
+                        # de SeaweedFS y postgres (y la conexión de Hue a postgres)
+docker/01_launch.sh    # levanta TODOS los servicios (docker compose up -d)
+docker/02_ps.sh        # ver estado de los contenedores
+docker/03_logs.sh [servicio]         # ver logs (todos, o de uno)
+docker/04_exec_spark.sh [script.py]  # shell en spark-master, o spark-submit de un script
+docker/05_stop.sh [servicio ...]     # parar sin borrar datos
+docker/06_start.sh [servicio ...]    # volver a arrancar tras un 05_stop.sh
+docker/20_destroy.sh   # BORRA TODO: contenedores + volúmenes + credenciales
+                        # generadas (hay que repetir 00_init.sh después)
+```
+
+Para arrancar por módulos (recomendado la primera vez, para diagnosticar
+capa por capa) en vez de todo de golpe con `01_launch.sh`, ver
+`docker/README.md`.
 
 ### Puertos publicados en el host
 
@@ -112,6 +135,12 @@ protocolo Spark que el cluster.
 | hive-server2   | 10002  | UI web de HiveServer2                                                |
 | zeppelin       | 8082   | UI web de Zeppelin (8080/8081 ya los usa Spark)                     |
 | hue            | 8888   | UI web de Hue                                                        |
+| seaweedfs      | 9337   | UI/API del master de SeaweedFS (9333 interno, remapeado por si hay otro compose de SeaweedFS levantado en paralelo) |
+| seaweedfs      | 8085   | UI/API del volume server (8080 interno, remapeado — 8080 ya lo usa spark-master) |
+| seaweedfs      | 8889   | UI/API del filer (8888 interno, remapeado — 8888 ya lo usa Hue)     |
+| seaweedfs      | 8333   | **API S3** (usada por `01_connect_s3*.py`)                          |
+| postgres       | 5432   | **BBDD relacional** (usada por `01_connect_postgres_07.py` y desde Hue) |
+| kafka          | 9092   | **Broker Kafka** (usado por `streaming/02_kafka_productor.py` y `streaming/03_structured_streaming_kafka.py`) |
 
 ### Credenciales
 
@@ -128,10 +157,27 @@ en `beeline -n ...` o en Hue es solo un identificador de sesión). Hue no
 trae usuario por defecto: se crea uno la primera vez que se accede a
 <http://localhost:8888> (queda como superusuario de esa instancia de Hue).
 
+Las credenciales S3 de SeaweedFS son distintas: `docker/00_init.sh` las
+genera aleatoriamente en `docker/seaweedfs/s3-config/s3.json` (identidad
+`pepesan`, permisos Admin/Read/Write) y las imprime por pantalla — no están
+fijas en ningún fichero versionado. `01_connect_s3_05.py`/
+`01_connect_s3_06_ficheros.py` las leen directamente de ese fichero.
+
+La contraseña de `postgres` también la genera `docker/00_init.sh`
+(usuario/BBDD fijos: `pyhdfsspark`) y se usa en dos sitios que tienen que
+coincidir: `docker/postgres/.env` (el propio contenedor) y
+`docker/hue/hue.ini` (la conexión que Hue tiene configurada hacia él,
+visible en el desplegable de bases de datos del Editor de Hue) — ninguno
+de los dos ficheros reales está en git, solo sus plantillas
+(`*.template`). `01_connect_postgres_07.py` la lee directamente de
+`docker/postgres/.env`.
+
 ### Notebooks de ejemplo de Zeppelin
 
 `docker/zeppelin/ejemplos/` se monta dentro de Zeppelin y se versiona en el
-repo:
+repo, organizado por área de la API de PySpark (igual que los scripts de
+la raíz, pero como notebooks — cada uno con celdas `%md` explicando el
+contexto antes del código, no solo código suelto):
 
 - `01_introduccion/00_estructura_notebook` — partes de un notebook Zeppelin
   (celdas Markdown/código/resultado), genérico.
@@ -139,6 +185,38 @@ repo:
   (con `pandas_udf`, para comprobar que executor y driver comparten
   librerías) contra `spark://spark-master:7077`, `SHOW DATABASES` contra el
   metastore Hive, y `%python` plano.
+- `03_conexiones/01_webhdfs_s3_postgres` — HDFS (WebHDFS), S3 (SeaweedFS,
+  incluido el ciclo subir/modificar/resubir) y una BBDD relacional
+  (PostgreSQL vía JDBC).
+- `04_spark_sql/01_seleccion_limpieza_joins_ventanas_fechas` y
+  `02_texto_estructuras_pivot_formatos` — recorrido completo de la API de
+  DataFrames: selección/agregación, limpieza de datos, joins, window
+  functions, fechas, funciones de texto, datos anidados, pivot,
+  operaciones de conjuntos, escritura/particionado, Avro y Delta Lake.
+- `05_mllib/01_clustering_anomalias_recomendacion` — clusterización
+  (K-Means sobre Iris), detección de anomalías (distancia al centro de la
+  normalidad) y sistemas de recomendación (ALS, filtrado colaborativo).
+  Junto con `06_spark_mllib.py`/`_cancer.py` (clasificación) y
+  `06_spark_mllib_boston.py` (regresión) cubre los 5 tipos de problema de
+  ML más habituales.
+- `06_graph/01_graphframes` — GraphFrames (label propagation, PageRank).
+- `07_streaming/01_rate_y_kafka` — Structured Streaming con la fuente
+  "rate" y con Kafka real (productor + consumidor).
+
+Los ejemplos que usan un conector externo (GraphFrames/Delta/Kafka/JDBC-
+Postgres/Avro) necesitan sus jars añadidos al intérprete `spark`
+(`spark.jars.packages` en Interpreter settings) — están persistidos en
+`docker/zeppelin/conf-seed/interpreter.json`, no hace falta reaplicarlos.
+Detalle de las 3 trampas no obvias al portar estos ejemplos a Zeppelin
+(paquete Python que falta en el venv de la imagen, rutas de escritura que
+solo el driver ve, Kafka con un solo listener) en `CLAUDE.md`.
+
+**`01_connect_hdfs_04_rpc_nativo_pyarrow.py`, `01_connect_s3_*` (el resto),
+`08_spark_final_practice.py` y `label_propagation/` no tienen notebook
+equivalente**: el primero no funciona desde Zeppelin por incompatibilidad
+de `glibc` (ver más abajo); los demás son variaciones de patrones ya
+cubiertos en los notebooks de arriba, o (en el caso de `label_propagation/`)
+no usan Spark en absoluto.
 
 ### Nota: el worker de Spark solo tiene 2 cores/2 GB
 
@@ -149,46 +227,6 @@ sin recursos a cualquier otra aplicación que intente conectarse al mismo
 cluster (p. ej. `04_spark_remote.py` desde el host se quedaría colgado
 esperando executors). Si pasa esto, reinicia el intérprete de Spark desde
 Zeppelin (Interpreter settings → spark → restart) para liberar el worker.
-
-### 1. Crear los volúmenes (bind mounts)
-
-```bash
-docker/00_init.sh
-```
-
-Crea `docker/volumes/hdfs/{namenode,datanode}` en el host (datos persistentes
-de HDFS entre reinicios) con permisos para el usuario del contenedor.
-
-### 2. Levantar el entorno
-
-```bash
-docker/01_launch.sh
-```
-
-### 3. Ver el estado / los logs
-
-```bash
-docker/02_ps.sh
-docker/03_logs.sh            # todos los servicios
-docker/03_logs.sh namenode   # solo uno
-```
-
-### 4. Ejecutar código dentro del cluster
-
-```bash
-docker/04_exec_spark.sh                       # shell dentro de spark-master
-docker/04_exec_spark.sh 05_spark_sql.py        # spark-submit de un script del proyecto
-```
-
-### 5. Parar y limpiar
-
-```bash
-docker/20_destroy.sh
-```
-
-Para los contenedores (`docker compose down -v`) **y además vacía**
-`docker/volumes/hdfs/*`, para poder repetir `00_init.sh` + `01_launch.sh`
-desde cero.
 
 ### Paso manual necesario: resolver "datanode" desde el host
 
@@ -207,6 +245,45 @@ Sin este paso, operaciones de solo listado/metadatos (`client.list(...)`)
 funcionan igualmente, pero `client.upload(...)` / `client.read(...)` /
 `client.write(...)` fallan con `NameResolutionError` al intentar conectar a
 `datanode`.
+
+## `label_propagation/` — detección de comunidades sin Spark
+
+Detección de comunidades (algoritmo *label propagation*) puro en Python
+con `networkx`, sin `pyspark`, sobre un dataset real (red de páginas de
+Facebook de políticos, `files/politician_edges.csv`, ~5900 nodos) — sirve
+de comparación frente al `labelPropagation` de GraphFrames en
+`07_spark_graphx.py` (mismo algoritmo, implementación distinta). A
+diferencia del resto de scripts, hay que ejecutarlo desde DENTRO de la
+carpeta (rutas relativas propias):
+
+```bash
+cd label_propagation
+python label_propagation.py
+```
+
+## `streaming/` — Structured Streaming
+
+Tres scripts, a ejecutar en orden si se quiere seguir el hilo completo
+(o sueltos, el primero no depende de nada):
+
+- **`01_structured_streaming_rate.py`** — introducción a Structured
+  Streaming con la fuente "rate" (Spark genera los datos él solo, sin
+  nada externo). Ejecutar sin más: `python streaming/01_structured_streaming_rate.py`.
+- **`02_kafka_productor.py`** — productor Kafka sencillo (no usa
+  `pyspark`), envía unas frases fijas a un topic. Requiere
+  `docker/01_launch.sh` (servicio `kafka`).
+- **`03_structured_streaming_kafka.py`** — cuenta palabras en tiempo real
+  leyendo de Kafka (la fuente de streaming "real" más habitual, a
+  diferencia de "rate"). Requiere `kafka` arriba y mensajes en el topic
+  (`02_kafka_productor.py` antes o en paralelo) — no termina solo, es
+  streaming de verdad (`Ctrl+C` para pararlo).
+
+```bash
+docker/01_launch.sh  # si no está ya arriba (necesita el servicio kafka)
+cd streaming
+python 02_kafka_productor.py
+python 03_structured_streaming_kafka.py   # se queda corriendo, Ctrl+C para salir
+```
 
 ## Datos de ejemplo que hay que descargar aparte
 

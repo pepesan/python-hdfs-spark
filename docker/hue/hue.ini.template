@@ -1,6 +1,11 @@
 # Configuración añadida sobre la de por defecto de la imagen (Hue carga
 # todos los *.ini de desktop/conf/ en orden alfabético; "z-hue.ini" se
 # aplica el último, así que sus valores ganan sobre los de por defecto).
+#
+# Esta es la PLANTILLA (versionada) — docker/00_init.sh genera el hue.ini
+# real (gitignored) sustituyendo __POSTGRES_PASSWORD__ por la contraseña
+# generada para el servicio "postgres" del compose (la misma que usa ese
+# contenedor), para no dejar ninguna contraseña en un fichero versionado.
 
 [desktop]
   [[database]]
@@ -23,3 +28,7 @@
     [[[hive]]]
       name=Hive
       interface=hiveserver2
+    [[[postgresql]]]
+      name=PostgreSQL
+      interface=sqlalchemy
+      options='{"url": "postgresql://pyhdfsspark:__POSTGRES_PASSWORD__@postgres:5432/pyhdfsspark"}'
