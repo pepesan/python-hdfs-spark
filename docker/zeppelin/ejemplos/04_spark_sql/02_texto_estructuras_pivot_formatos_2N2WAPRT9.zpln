@@ -4,9 +4,21 @@
       "title": "intro",
       "text": "%md\n# Spark SQL / DataFrame API — parte 2: texto, estructuras, pivot y formatos\n\nSegunda parte del recorrido por la API de DataFrames (ver `01_seleccion_limpieza_joins_ventanas_fechas`). Aquí: funciones de texto, datos anidados (arrays/structs), tablas dinámicas (pivot), operaciones de conjuntos, y para terminar, escritura a disco en distintos formatos (incluido Avro, que necesita un jar aparte).",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:22:04.223",
+      "dateUpdated": "2026-09-22 09:06:04.467",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -26,17 +38,29 @@
       "jobName": "paragraph_1790029324209_1412463868",
       "id": "paragraph_1790029324209_1412463868",
       "dateCreated": "2026-09-21 22:22:04.209",
-      "dateStarted": "2026-09-21 22:22:04.225",
-      "dateFinished": "2026-09-21 22:22:06.097",
+      "dateStarted": "2026-09-22 09:06:04.469",
+      "dateFinished": "2026-09-22 09:06:04.472",
       "status": "FINISHED"
     },
     {
       "title": "md_texto",
       "text": "%md\n## 1. Funciones de texto\n\n`files/addresses.csv` trae comillas dentro de campos y una coma dentro de un campo entrecomillado — un CSV \"real\" y descuidado. **Ojo**: el escape de comillas por defecto de Spark es `\\` (barra invertida), no `\"\"` (el estándar RFC 4180 que usa este fichero) — sin `option(\"escape\", \"\\\"\")` el parseo sale mal en silencio, sin ningún error (ver `CLAUDE.md`).",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:22:07.374",
+      "dateUpdated": "2026-09-22 09:06:04.569",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -56,17 +80,30 @@
       "jobName": "paragraph_1790029327360_478879322",
       "id": "paragraph_1790029327360_478879322",
       "dateCreated": "2026-09-21 22:22:07.360",
-      "dateStarted": "2026-09-21 22:22:07.375",
-      "dateFinished": "2026-09-21 22:22:07.382",
+      "dateStarted": "2026-09-22 09:06:04.571",
+      "dateFinished": "2026-09-22 09:06:04.575",
       "status": "FINISHED"
     },
     {
       "title": "texto",
       "text": "%pyspark\nimport pyspark.sql.functions as F\n\npersonas \u003d spark.read.option(\"escape\", \"\\\"\").csv(\"/opt/project/files/addresses.csv\") \\\n    .toDF(\"nombre\", \"apellido\", \"direccion\", \"ciudad\", \"estado\", \"cp\")\n\npersonas \u003d personas.withColumn(\"estado\", F.trim(\"estado\")).withColumn(\"cp\", F.trim(\"cp\"))\npersonas.withColumn(\"nombre_sin_comillas\", F.regexp_replace(\"nombre\", \"\\\"\", \"\")) \\\n    .select(\"nombre\", \"nombre_sin_comillas\", \"estado\").show(truncate\u003dFalse)",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:22:28.218",
+      "dateUpdated": "2026-09-22 09:06:04.671",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -89,10 +126,10 @@
           "group": "spark",
           "values": [
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d1"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d47"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d2"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d48"
             }
           ],
           "interpreterSettingId": "spark"
@@ -102,17 +139,29 @@
       "jobName": "paragraph_1790029348204_355399525",
       "id": "paragraph_1790029348204_355399525",
       "dateCreated": "2026-09-21 22:22:28.204",
-      "dateStarted": "2026-09-21 22:22:28.220",
-      "dateFinished": "2026-09-21 22:22:29.427",
+      "dateStarted": "2026-09-22 09:06:04.672",
+      "dateFinished": "2026-09-22 09:06:04.895",
       "status": "FINISHED"
     },
     {
       "title": "md_anidados",
       "text": "%md\n## 2. Datos anidados (arrays y structs)\n\nMuy habitual al leer JSON: cada persona trae una lista de teléfonos (array) y una dirección con varios campos dentro (struct), en vez de columnas sueltas. `explode()` convierte un array en varias filas — una persona SIN teléfonos desaparece del resultado (a diferencia de `explode_outer()`, que la conserva con NULL).",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:22:52.988",
+      "dateUpdated": "2026-09-22 09:06:04.973",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -132,17 +181,30 @@
       "jobName": "paragraph_1790029372974_1961593553",
       "id": "paragraph_1790029372974_1961593553",
       "dateCreated": "2026-09-21 22:22:52.975",
-      "dateStarted": "2026-09-21 22:22:52.990",
-      "dateFinished": "2026-09-21 22:22:52.994",
+      "dateStarted": "2026-09-22 09:06:04.975",
+      "dateFinished": "2026-09-22 09:06:04.978",
       "status": "FINISHED"
     },
     {
       "title": "anidados",
       "text": "%pyspark\npersonas_anidado \u003d spark.read.option(\"multiline\", \"true\").json(\"/opt/project/files/personas_anidado.json\")\npersonas_anidado.printSchema()\n\nprint(\"explode: Pedro (sin telefonos) desaparece\")\npersonas_anidado.select(\"nombre\", F.explode(\"telefonos\").alias(\"telefono\")).show()\n\nprint(\"explode_outer: Pedro reaparece con NULL\")\npersonas_anidado.select(\"nombre\", F.explode_outer(\"telefonos\").alias(\"telefono\")).show()",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:22:53.092",
+      "dateUpdated": "2026-09-22 09:06:05.074",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -165,13 +227,13 @@
           "group": "spark",
           "values": [
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d3"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d49"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d4"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d50"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d5"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d51"
             }
           ],
           "interpreterSettingId": "spark"
@@ -181,17 +243,29 @@
       "jobName": "paragraph_1790029373078_728094131",
       "id": "paragraph_1790029373078_728094131",
       "dateCreated": "2026-09-21 22:22:53.078",
-      "dateStarted": "2026-09-21 22:22:53.093",
-      "dateFinished": "2026-09-21 22:22:54.051",
+      "dateStarted": "2026-09-22 09:06:05.076",
+      "dateFinished": "2026-09-22 09:06:05.510",
       "status": "FINISHED"
     },
     {
       "title": "md_pivot",
       "text": "%md\n## 3. Pivot\n\nConvertir valores de una columna en columnas nuevas, con una agregación en cada celda — el mismo concepto que una tabla dinámica de una hoja de cálculo.",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:22:56.241",
+      "dateUpdated": "2026-09-22 09:06:05.576",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -211,17 +285,30 @@
       "jobName": "paragraph_1790029376227_1658018087",
       "id": "paragraph_1790029376227_1658018087",
       "dateCreated": "2026-09-21 22:22:56.227",
-      "dateStarted": "2026-09-21 22:22:56.243",
-      "dateFinished": "2026-09-21 22:22:56.246",
+      "dateStarted": "2026-09-22 09:06:05.578",
+      "dateFinished": "2026-09-22 09:06:05.581",
       "status": "FINISHED"
     },
     {
       "title": "pivot",
       "text": "%pyspark\nventas \u003d spark.createDataFrame([\n    (\"Ana\", \"Q1\", 1000), (\"Ana\", \"Q2\", 1500),\n    (\"Bruno\", \"Q1\", 800), (\"Bruno\", \"Q3\", 1200),\n], [\"vendedor\", \"trimestre\", \"importe\"])\n\nventas.groupBy(\"vendedor\").pivot(\"trimestre\", [\"Q1\", \"Q2\", \"Q3\", \"Q4\"]).agg(F.sum(\"importe\")).orderBy(\"vendedor\").show()",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:22:56.344",
+      "dateUpdated": "2026-09-22 09:06:05.678",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -244,13 +331,13 @@
           "group": "spark",
           "values": [
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d6"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d52"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d7"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d53"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d8"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d54"
             }
           ],
           "interpreterSettingId": "spark"
@@ -260,17 +347,29 @@
       "jobName": "paragraph_1790029376330_872737714",
       "id": "paragraph_1790029376330_872737714",
       "dateCreated": "2026-09-21 22:22:56.330",
-      "dateStarted": "2026-09-21 22:22:56.345",
-      "dateFinished": "2026-09-21 22:22:58.477",
+      "dateStarted": "2026-09-22 09:06:05.680",
+      "dateFinished": "2026-09-22 09:06:06.139",
       "status": "FINISHED"
     },
     {
       "title": "md_conjuntos",
       "text": "%md\n## 4. Operaciones de conjuntos\n\n`union()` junta filas SIN quitar duplicados (a diferencia del `UNION` de SQL) — hace falta `.distinct()` explícito para eso. Y junta por POSICIÓN de columna, no por nombre: si el orden de columnas no coincide entre los dos DataFrames, el resultado queda mal mezclado SIN ningún error (`unionByName()` es la alternativa segura).",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:22:59.487",
+      "dateUpdated": "2026-09-22 09:06:06.180",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -290,17 +389,30 @@
       "jobName": "paragraph_1790029379474_1715777300",
       "id": "paragraph_1790029379474_1715777300",
       "dateCreated": "2026-09-21 22:22:59.474",
-      "dateStarted": "2026-09-21 22:22:59.488",
-      "dateFinished": "2026-09-21 22:22:59.492",
+      "dateStarted": "2026-09-22 09:06:06.182",
+      "dateFinished": "2026-09-22 09:06:06.185",
       "status": "FINISHED"
     },
     {
       "title": "conjuntos",
       "text": "%pyspark\na \u003d spark.createDataFrame([(1, \"Ana\", \"Madrid\")], [\"id\", \"nombre\", \"ciudad\"])\nb_mal_orden \u003d spark.createDataFrame([(2, \"Barcelona\", \"Bruno\")], [\"id\", \"ciudad\", \"nombre\"])\n\nprint(\"union(): mal mezclado (nombre \u003c-\u003e ciudad intercambiados), SIN error\")\na.union(b_mal_orden).show()\n\nprint(\"unionByName(): bien colocado por nombre de columna\")\na.unionByName(b_mal_orden).show()",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:22:59.592",
+      "dateUpdated": "2026-09-22 09:06:06.282",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -323,16 +435,16 @@
           "group": "spark",
           "values": [
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d9"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d55"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d10"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d56"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d11"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d57"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d12"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d58"
             }
           ],
           "interpreterSettingId": "spark"
@@ -342,17 +454,29 @@
       "jobName": "paragraph_1790029379578_1957824473",
       "id": "paragraph_1790029379578_1957824473",
       "dateCreated": "2026-09-21 22:22:59.578",
-      "dateStarted": "2026-09-21 22:22:59.593",
-      "dateFinished": "2026-09-21 22:23:00.100",
+      "dateStarted": "2026-09-22 09:06:06.284",
+      "dateFinished": "2026-09-22 09:06:06.716",
       "status": "FINISHED"
     },
     {
       "title": "md_escritura",
       "text": "%md\n## 5. Escritura a disco y particionado\n\n`partitionBy(\"pais\")` crea una carpeta por cada país en vez de un único fichero — así, al releer filtrando por país, Spark puede saltarse carpetas enteras sin ni siquiera abrirlas. Escribimos en HDFS (`hdfs://namenode:8020/...`), no en una ruta local: en Zeppelin el driver y los executors son contenedores DISTINTOS, y solo HDFS es un almacén realmente compartido con permisos correctos entre ambos (ver `CLAUDE.md`).",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:23:13.469",
+      "dateUpdated": "2026-09-22 09:06:06.784",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -372,17 +496,30 @@
       "jobName": "paragraph_1790029393454_1230699711",
       "id": "paragraph_1790029393454_1230699711",
       "dateCreated": "2026-09-21 22:23:13.454",
-      "dateStarted": "2026-09-21 22:23:13.470",
-      "dateFinished": "2026-09-21 22:23:13.474",
+      "dateStarted": "2026-09-22 09:06:06.786",
+      "dateFinished": "2026-09-22 09:06:06.789",
       "status": "FINISHED"
     },
     {
       "title": "escritura",
       "text": "%pyspark\nclientes \u003d spark.read.option(\"header\", \"true\").option(\"inferSchema\", \"true\").csv(\"/opt/project/files/sql.csv\")\nruta \u003d \"hdfs://namenode:8020/tmp/zeppelin_clientes_parquet\"\nclientes.write.partitionBy(\"pais\").mode(\"overwrite\").parquet(ruta)\n\nreleido \u003d spark.read.parquet(ruta)\nreleido.orderBy(\"id\").show()",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:23:25.666",
+      "dateUpdated": "2026-09-22 09:06:06.886",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -405,19 +542,19 @@
           "group": "spark",
           "values": [
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d14"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d59"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d15"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d60"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d16"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d61"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d17"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d62"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d18"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d63"
             }
           ],
           "interpreterSettingId": "spark"
@@ -427,17 +564,29 @@
       "jobName": "paragraph_1790029405652_723030039",
       "id": "paragraph_1790029405652_723030039",
       "dateCreated": "2026-09-21 22:23:25.653",
-      "dateStarted": "2026-09-21 22:23:25.667",
-      "dateFinished": "2026-09-21 22:23:28.732",
+      "dateStarted": "2026-09-22 09:06:06.888",
+      "dateFinished": "2026-09-22 09:06:09.110",
       "status": "FINISHED"
     },
     {
       "title": "md_avro",
       "text": "%md\n## 6. Avro\n\nFormato binario con schema explícito (como Parquet), pensado sobre todo para streaming/mensajería (Kafka lo usa mucho). El conector no viene incluido en Spark — está añadido a este intérprete vía `spark.jars.packages` (versión `4.2.0-preview5`: todavía no hay una release estable publicada para Spark 4.2.0, ver `CLAUDE.md`).",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:23:13.682",
+      "dateUpdated": "2026-09-22 09:06:09.189",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -457,17 +606,30 @@
       "jobName": "paragraph_1790029393664_1893436433",
       "id": "paragraph_1790029393664_1893436433",
       "dateCreated": "2026-09-21 22:23:13.664",
-      "dateStarted": "2026-09-21 22:23:13.684",
-      "dateFinished": "2026-09-21 22:23:13.688",
+      "dateStarted": "2026-09-22 09:06:09.191",
+      "dateFinished": "2026-09-22 09:06:09.194",
       "status": "FINISHED"
     },
     {
       "title": "avro",
       "text": "%pyspark\nusuarios \u003d spark.read.format(\"avro\").load(\"/opt/project/files/users.avro\")\nusuarios.show()",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:23:13.788",
+      "dateUpdated": "2026-09-22 09:06:09.291",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -490,7 +652,7 @@
           "group": "spark",
           "values": [
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d13"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d64"
             }
           ],
           "interpreterSettingId": "spark"
@@ -500,17 +662,29 @@
       "jobName": "paragraph_1790029393773_1738825407",
       "id": "paragraph_1790029393773_1738825407",
       "dateCreated": "2026-09-21 22:23:13.773",
-      "dateStarted": "2026-09-21 22:23:13.789",
-      "dateFinished": "2026-09-21 22:23:14.052",
+      "dateStarted": "2026-09-22 09:06:09.293",
+      "dateFinished": "2026-09-22 09:06:09.535",
       "status": "FINISHED"
     },
     {
       "title": "md_rendimiento",
       "text": "%md\n## 7. Rendimiento: explain() y broadcast join\n\n`explain()` muestra el plan de ejecución SIN ejecutar nada (las transformaciones son \"perezosas\"). Con datasets pequeños, Spark ya elige un `BroadcastHashJoin` él solo (copia el lado pequeño entero a todas las máquinas en vez de repartir ambos lados) — `F.broadcast()` sirve para FORZAR qué lado se copia, útil cuando Spark no lo adivina bien solo.",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:23:16.934",
+      "dateUpdated": "2026-09-22 09:06:09.593",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -530,17 +704,30 @@
       "jobName": "paragraph_1790029396918_1819746524",
       "id": "paragraph_1790029396918_1819746524",
       "dateCreated": "2026-09-21 22:23:16.918",
-      "dateStarted": "2026-09-21 22:23:16.935",
-      "dateFinished": "2026-09-21 22:23:16.939",
+      "dateStarted": "2026-09-22 09:06:09.595",
+      "dateFinished": "2026-09-22 09:06:09.598",
       "status": "FINISHED"
     },
     {
       "title": "rendimiento",
       "text": "%pyspark\npedidos \u003d spark.read.option(\"header\", \"true\").option(\"inferSchema\", \"true\").csv(\"/opt/project/files/pedidos.csv\")\nclientes.join(F.broadcast(pedidos), clientes.id \u003d\u003d pedidos.id_cliente).explain()",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:23:31.835",
+      "dateUpdated": "2026-09-22 09:06:09.695",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -550,7 +737,7 @@
         "msg": [
           {
             "type": "TEXT",
-            "data": "\u003d\u003d Physical Plan \u003d\u003d\nAdaptiveSparkPlan isFinalPlan\u003dfalse\n+- BroadcastHashJoin [id#267], [id_cliente#313], Inner, BuildRight, false, false\n   :- Filter isnotnull(id#267)\n   :  +- FileScan csv [id#267,nombre#268,edad#269,pais#270] Batched: false, DataFilters: [isnotnull(id#267)], Format: CSV, Location: InMemoryFileIndex(1 paths)[file:/opt/project/files/sql.csv], PartitionFilters: [], PushedFilters: [IsNotNull(id)], ReadSchema: struct\u003cid:int,nombre:string,edad:int,pais:string\u003e\n   +- BroadcastExchange HashedRelationBroadcastMode(List(cast(input[1, int, false] as bigint)),false), [plan_id\u003d400]\n      +- Filter isnotnull(id_cliente#313)\n         +- FileScan csv [id_pedido#312,id_cliente#313,producto#314,importe#315] Batched: false, DataFilters: [isnotnull(id_cliente#313)], Format: CSV, Location: InMemoryFileIndex(1 paths)[file:/opt/project/files/pedidos.csv], PartitionFilters: [], PushedFilters: [IsNotNull(id_cliente)], ReadSchema: struct\u003cid_pedido:int,id_cliente:int,producto:string,importe:double\u003e\n\n\n"
+            "data": "\u003d\u003d Physical Plan \u003d\u003d\nAdaptiveSparkPlan isFinalPlan\u003dfalse\n+- BroadcastHashJoin [id#709], [id_cliente#772], Inner, BuildRight, false, false\n   :- Filter isnotnull(id#709)\n   :  +- FileScan csv [id#709,nombre#710,edad#711,pais#712] Batched: false, DataFilters: [isnotnull(id#709)], Format: CSV, Location: InMemoryFileIndex(1 paths)[file:/opt/project/files/sql.csv], PartitionFilters: [], PushedFilters: [IsNotNull(id)], ReadSchema: struct\u003cid:int,nombre:string,edad:int,pais:string\u003e\n   +- BroadcastExchange HashedRelationBroadcastMode(List(cast(input[1, int, false] as bigint)),false), [plan_id\u003d1347]\n      +- Filter isnotnull(id_cliente#772)\n         +- FileScan csv [id_pedido#771,id_cliente#772,producto#773,importe#774] Batched: false, DataFilters: [isnotnull(id_cliente#772)], Format: CSV, Location: InMemoryFileIndex(1 paths)[file:/opt/project/files/pedidos.csv], PartitionFilters: [], PushedFilters: [IsNotNull(id_cliente)], ReadSchema: struct\u003cid_pedido:int,id_cliente:int,producto:string,importe:double\u003e\n\n\n"
           }
         ]
       },
@@ -563,10 +750,10 @@
           "group": "spark",
           "values": [
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d19"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d65"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d20"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d66"
             }
           ],
           "interpreterSettingId": "spark"
@@ -576,17 +763,29 @@
       "jobName": "paragraph_1790029411821_1305346045",
       "id": "paragraph_1790029411821_1305346045",
       "dateCreated": "2026-09-21 22:23:31.821",
-      "dateStarted": "2026-09-21 22:23:31.836",
-      "dateFinished": "2026-09-21 22:23:32.053",
+      "dateStarted": "2026-09-22 09:06:09.697",
+      "dateFinished": "2026-09-22 09:06:09.840",
       "status": "FINISHED"
     },
     {
       "title": "md_delta",
       "text": "%md\n## 8. Delta Lake\n\nDelta es un formato de TABLA que añade, por encima de Parquet, un log de transacciones (ACID, versionado, \"time travel\") — a diferencia de escribir un Parquet suelto, con Delta se puede hacer `UPDATE`/`DELETE`/`MERGE` sobre los datos ya escritos, algo que Parquet por sí solo no soporta. El conector `delta-spark` está añadido vía `spark.jars.packages`, igual que Avro/Kafka/GraphFrames/el driver JDBC de Postgres.",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:24:38.144",
+      "dateUpdated": "2026-09-22 09:06:09.897",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -606,17 +805,30 @@
       "jobName": "paragraph_1790029478121_1027011317",
       "id": "paragraph_1790029478121_1027011317",
       "dateCreated": "2026-09-21 22:24:38.121",
-      "dateStarted": "2026-09-21 22:24:38.152",
-      "dateFinished": "2026-09-21 22:24:40.104",
+      "dateStarted": "2026-09-22 09:06:09.899",
+      "dateFinished": "2026-09-22 09:06:09.902",
       "status": "FINISHED"
     },
     {
       "title": "delta",
       "text": "%pyspark\nclientes \u003d spark.read.option(\"header\", \"true\").option(\"inferSchema\", \"true\").csv(\"/opt/project/files/sql.csv\")\nruta_delta \u003d \"hdfs://namenode:8020/tmp/zeppelin_delta_ejemplo\"\nclientes.write.format(\"delta\").mode(\"overwrite\").save(ruta_delta)\n\nreleido_delta \u003d spark.read.format(\"delta\").load(ruta_delta)\nprint(\"Filas en la tabla Delta:\", releido_delta.count())\nreleido_delta.orderBy(\"id\").show()",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:24:58.771",
+      "dateUpdated": "2026-09-22 09:06:09.999",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -639,40 +851,46 @@
           "group": "spark",
           "values": [
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d0"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d67"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d1"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d68"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d2"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d69"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d3"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d70"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d4"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d71"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d5"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d72"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d6"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d73"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d7"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d74"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d8"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d75"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d9"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d76"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d10"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d77"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d11"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d78"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d79"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d80"
             }
           ],
           "interpreterSettingId": "spark"
@@ -682,8 +900,8 @@
       "jobName": "paragraph_1790029498756_286161132",
       "id": "paragraph_1790029498756_286161132",
       "dateCreated": "2026-09-21 22:24:58.756",
-      "dateStarted": "2026-09-21 22:24:58.773",
-      "dateFinished": "2026-09-21 22:25:15.576",
+      "dateStarted": "2026-09-22 09:06:10.001",
+      "dateFinished": "2026-09-22 09:06:22.207",
       "status": "FINISHED"
     }
   ],
@@ -697,5 +915,7 @@
   "config": {
     "isZeppelinNotebookCronEnable": false
   },
-  "info": {}
+  "info": {
+    "isRunning": true
+  }
 }

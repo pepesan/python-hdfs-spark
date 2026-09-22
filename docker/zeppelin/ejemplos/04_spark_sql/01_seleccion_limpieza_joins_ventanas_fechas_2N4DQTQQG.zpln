@@ -4,9 +4,21 @@
       "title": "intro",
       "text": "%md\n# Spark SQL / DataFrame API — parte 1: selección, limpieza, joins, ventanas, fechas\n\nRecorrido por la API de DataFrames de Spark, trasladado desde los scripts `05_spark_sql_*.py` de la raíz del proyecto (cada uno validado por separado antes de traerlo aquí). Esta primera parte cubre las operaciones más habituales del día a día; la segunda parte (`02_texto_estructuras_formatos`) cubre funciones de texto, datos anidados, pivot, operaciones de conjuntos, escritura a disco y rendimiento.",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:20:49.390",
+      "dateUpdated": "2026-09-22 09:05:47.743",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -16,7 +28,7 @@
         "msg": [
           {
             "type": "HTML",
-            "data": "<div class=\"markdown-body\">\n<h1>Spark SQL / DataFrame API — parte 1: selección, limpieza, joins, ventanas, fechas</h1>\n<p>Recorrido por la API de DataFrames de Spark, trasladado desde los scripts <code>05_spark_sql_*.py</code> de la raíz del proyecto (cada uno validado por separado antes de traerlo aquí). Esta primera parte cubre las operaciones más habituales del día a día; la segunda parte (<code>02_texto_estructuras_formatos</code>) cubre funciones de texto, datos anidados, pivot, operaciones de conjuntos, escritura a disco y rendimiento.</p>\n\n</div>"
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch1\u003eSpark SQL / DataFrame API — parte 1: selección, limpieza, joins, ventanas, fechas\u003c/h1\u003e\n\u003cp\u003eRecorrido por la API de DataFrames de Spark, trasladado desde los scripts \u003ccode\u003e05_spark_sql_*.py\u003c/code\u003e de la raíz del proyecto (cada uno validado por separado antes de traerlo aquí). Esta primera parte cubre las operaciones más habituales del día a día; la segunda parte (\u003ccode\u003e02_texto_estructuras_formatos\u003c/code\u003e) cubre funciones de texto, datos anidados, pivot, operaciones de conjuntos, escritura a disco y rendimiento.\u003c/p\u003e\n\n\u003c/div\u003e"
           }
         ]
       },
@@ -26,17 +38,29 @@
       "jobName": "paragraph_1790029249372_1845794811",
       "id": "paragraph_1790029249372_1845794811",
       "dateCreated": "2026-09-21 22:20:49.372",
-      "dateStarted": "2026-09-21 22:20:49.397",
-      "dateFinished": "2026-09-21 22:20:51.361",
+      "dateStarted": "2026-09-22 09:05:47.744",
+      "dateFinished": "2026-09-22 09:05:47.748",
       "status": "FINISHED"
     },
     {
       "title": "md_columnas",
       "text": "%md\n## 1. Selección, filtrado, agregación y columnas calculadas\n\nLas operaciones básicas de cualquier consulta: elegir columnas (`select`), filtrar filas (`filter`/`where`), agrupar y agregar (`groupBy`+`agg`), crear columnas nuevas a partir de otras (`withColumn`), y condicionales tipo `CASE WHEN` (`when`/`otherwise`).",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:20:52.548",
+      "dateUpdated": "2026-09-22 09:05:47.844",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -46,7 +70,7 @@
         "msg": [
           {
             "type": "HTML",
-            "data": "<div class=\"markdown-body\">\n<h2>1. Selección, filtrado, agregación y columnas calculadas</h2>\n<p>Las operaciones básicas de cualquier consulta: elegir columnas (<code>select</code>), filtrar filas (<code>filter</code>/<code>where</code>), agrupar y agregar (<code>groupBy</code>+<code>agg</code>), crear columnas nuevas a partir de otras (<code>withColumn</code>), y condicionales tipo <code>CASE WHEN</code> (<code>when</code>/<code>otherwise</code>).</p>\n\n</div>"
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch2\u003e1. Selección, filtrado, agregación y columnas calculadas\u003c/h2\u003e\n\u003cp\u003eLas operaciones básicas de cualquier consulta: elegir columnas (\u003ccode\u003eselect\u003c/code\u003e), filtrar filas (\u003ccode\u003efilter\u003c/code\u003e/\u003ccode\u003ewhere\u003c/code\u003e), agrupar y agregar (\u003ccode\u003egroupBy\u003c/code\u003e+\u003ccode\u003eagg\u003c/code\u003e), crear columnas nuevas a partir de otras (\u003ccode\u003ewithColumn\u003c/code\u003e), y condicionales tipo \u003ccode\u003eCASE WHEN\u003c/code\u003e (\u003ccode\u003ewhen\u003c/code\u003e/\u003ccode\u003eotherwise\u003c/code\u003e).\u003c/p\u003e\n\n\u003c/div\u003e"
           }
         ]
       },
@@ -56,17 +80,30 @@
       "jobName": "paragraph_1790029252533_768522332",
       "id": "paragraph_1790029252533_768522332",
       "dateCreated": "2026-09-21 22:20:52.533",
-      "dateStarted": "2026-09-21 22:20:52.550",
-      "dateFinished": "2026-09-21 22:20:52.556",
+      "dateStarted": "2026-09-22 09:05:47.846",
+      "dateFinished": "2026-09-22 09:05:47.849",
       "status": "FINISHED"
     },
     {
       "title": "columnas",
-      "text": "%pyspark\nimport pyspark.sql.functions as F\n\nclientes = spark.read.option(\"header\", \"true\").option(\"inferSchema\", \"true\").csv(\"/opt/project/files/sql.csv\")\nclientes.show()\n\n# Columna calculada con condición (CASE WHEN)\nclientes.withColumn(\n    \"categoria_edad\",\n    F.when(clientes.edad < 30, \"joven\").when(clientes.edad < 40, \"adulto\").otherwise(\"mayor\")\n).show()\n\n# Varios agregados a la vez, con alias\nclientes.groupBy(\"pais\").agg(\n    F.count(\"*\").alias(\"num_personas\"),\n    F.avg(\"edad\").alias(\"edad_media\"),\n).show()",
+      "text": "%pyspark\nimport pyspark.sql.functions as F\n\nclientes \u003d spark.read.option(\"header\", \"true\").option(\"inferSchema\", \"true\").csv(\"/opt/project/files/sql.csv\")\nclientes.show()\n\n# Columna calculada con condición (CASE WHEN)\nclientes.withColumn(\n    \"categoria_edad\",\n    F.when(clientes.edad \u003c 30, \"joven\").when(clientes.edad \u003c 40, \"adulto\").otherwise(\"mayor\")\n).show()\n\n# Varios agregados a la vez, con alias\nclientes.groupBy(\"pais\").agg(\n    F.count(\"*\").alias(\"num_personas\"),\n    F.avg(\"edad\").alias(\"edad_media\"),\n).show()",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:20:52.657",
+      "dateUpdated": "2026-09-22 09:05:47.946",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -89,22 +126,22 @@
           "group": "spark",
           "values": [
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=0"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d18"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=1"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d19"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=2"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d20"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=3"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d21"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=4"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d22"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=5"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d23"
             }
           ],
           "interpreterSettingId": "spark"
@@ -114,17 +151,29 @@
       "jobName": "paragraph_1790029252641_1720651384",
       "id": "paragraph_1790029252641_1720651384",
       "dateCreated": "2026-09-21 22:20:52.641",
-      "dateStarted": "2026-09-21 22:20:52.659",
-      "dateFinished": "2026-09-21 22:21:09.552",
+      "dateStarted": "2026-09-22 09:05:47.947",
+      "dateFinished": "2026-09-22 09:05:49.743",
       "status": "FINISHED"
     },
     {
       "title": "md_limpieza",
       "text": "%md\n## 2. Limpieza de datos\n\nEn la práctica, los datos casi nunca llegan limpios: filas duplicadas, campos en blanco, valores de tipo incorrecto, valores fuera de rango razonable. `files/datos_sucios.csv` trae los 4 problemas a propósito, para poder mostrar cómo detectar y corregir cada uno por separado en vez de descartar la fila entera a la primera.",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:21:19.725",
+      "dateUpdated": "2026-09-22 09:05:49.749",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -134,7 +183,7 @@
         "msg": [
           {
             "type": "HTML",
-            "data": "<div class=\"markdown-body\">\n<h2>2. Limpieza de datos</h2>\n<p>En la práctica, los datos casi nunca llegan limpios: filas duplicadas, campos en blanco, valores de tipo incorrecto, valores fuera de rango razonable. <code>files/datos_sucios.csv</code> trae los 4 problemas a propósito, para poder mostrar cómo detectar y corregir cada uno por separado en vez de descartar la fila entera a la primera.</p>\n\n</div>"
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch2\u003e2. Limpieza de datos\u003c/h2\u003e\n\u003cp\u003eEn la práctica, los datos casi nunca llegan limpios: filas duplicadas, campos en blanco, valores de tipo incorrecto, valores fuera de rango razonable. \u003ccode\u003efiles/datos_sucios.csv\u003c/code\u003e trae los 4 problemas a propósito, para poder mostrar cómo detectar y corregir cada uno por separado en vez de descartar la fila entera a la primera.\u003c/p\u003e\n\n\u003c/div\u003e"
           }
         ]
       },
@@ -144,17 +193,30 @@
       "jobName": "paragraph_1790029279710_523925913",
       "id": "paragraph_1790029279710_523925913",
       "dateCreated": "2026-09-21 22:21:19.710",
-      "dateStarted": "2026-09-21 22:21:19.727",
-      "dateFinished": "2026-09-21 22:21:19.731",
+      "dateStarted": "2026-09-22 09:05:49.750",
+      "dateFinished": "2026-09-22 09:05:49.754",
       "status": "FINISHED"
     },
     {
       "title": "limpieza",
-      "text": "%pyspark\ndatos = spark.read.option(\"header\", \"true\").csv(\"/opt/project/files/datos_sucios.csv\")\nprint(\"Filas originales:\", datos.count())\n\n# Duplicados exactos\nsin_duplicados = datos.dropDuplicates()\nprint(\"Filas sin duplicados exactos:\", sin_duplicados.count())\n\n# Blancos -> NULL, y detectarlos\nfor c in sin_duplicados.columns:\n    sin_duplicados = sin_duplicados.withColumn(c, F.when(F.trim(F.col(c)) == \"\", None).otherwise(F.col(c)))\nsin_duplicados.select([F.count(F.when(F.col(c).isNull(), c)).alias(c) for c in sin_duplicados.columns]).show()\n\n# try_cast detecta valores que no se pueden convertir (a diferencia de cast(), que los pone a NULL en silencio sin forma de distinguirlos de un NULL real)\ncon_edad_numerica = sin_duplicados.withColumn(\"edad_numerica\", F.expr(\"try_cast(edad as int)\"))\ncon_edad_numerica.filter(con_edad_numerica.edad.isNotNull() & con_edad_numerica.edad_numerica.isNull()).select(\"id\", \"edad\").show()",
+      "text": "%pyspark\ndatos \u003d spark.read.option(\"header\", \"true\").csv(\"/opt/project/files/datos_sucios.csv\")\nprint(\"Filas originales:\", datos.count())\n\n# Duplicados exactos\nsin_duplicados \u003d datos.dropDuplicates()\nprint(\"Filas sin duplicados exactos:\", sin_duplicados.count())\n\n# Blancos -\u003e NULL, y detectarlos\nfor c in sin_duplicados.columns:\n    sin_duplicados \u003d sin_duplicados.withColumn(c, F.when(F.trim(F.col(c)) \u003d\u003d \"\", None).otherwise(F.col(c)))\nsin_duplicados.select([F.count(F.when(F.col(c).isNull(), c)).alias(c) for c in sin_duplicados.columns]).show()\n\n# try_cast detecta valores que no se pueden convertir (a diferencia de cast(), que los pone a NULL en silencio sin forma de distinguirlos de un NULL real)\ncon_edad_numerica \u003d sin_duplicados.withColumn(\"edad_numerica\", F.expr(\"try_cast(edad as int)\"))\ncon_edad_numerica.filter(con_edad_numerica.edad.isNotNull() \u0026 con_edad_numerica.edad_numerica.isNull()).select(\"id\", \"edad\").show()",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:21:19.829",
+      "dateUpdated": "2026-09-22 09:05:49.850",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -177,37 +239,37 @@
           "group": "spark",
           "values": [
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=6"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d24"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=7"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d25"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=8"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d26"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=9"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d27"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=10"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d28"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=11"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d29"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=12"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d30"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=13"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d31"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=14"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d32"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=15"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d33"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=16"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d34"
             }
           ],
           "interpreterSettingId": "spark"
@@ -217,17 +279,29 @@
       "jobName": "paragraph_1790029279813_1078251422",
       "id": "paragraph_1790029279813_1078251422",
       "dateCreated": "2026-09-21 22:21:19.813",
-      "dateStarted": "2026-09-21 22:21:19.831",
-      "dateFinished": "2026-09-21 22:21:22.110",
+      "dateStarted": "2026-09-22 09:05:49.852",
+      "dateFinished": "2026-09-22 09:05:51.225",
       "status": "FINISHED"
     },
     {
       "title": "md_joins",
-      "text": "%md\n## 3. Joins\n\nCombinar dos DataFrames por una columna en común. `files/pedidos.csv` está pensado a propósito para que cada tipo de join dé un resultado distinto: el cliente 1 tiene 2 pedidos, los clientes 4/5/6 no tienen ninguno, y hay un pedido con `id_cliente=99` que no existe entre los clientes (un \"pedido huérfano\", un caso real habitual).",
+      "text": "%md\n## 3. Joins\n\nCombinar dos DataFrames por una columna en común. `files/pedidos.csv` está pensado a propósito para que cada tipo de join dé un resultado distinto: el cliente 1 tiene 2 pedidos, los clientes 4/5/6 no tienen ninguno, y hay un pedido con `id_cliente\u003d99` que no existe entre los clientes (un \"pedido huérfano\", un caso real habitual).",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:21:34.183",
+      "dateUpdated": "2026-09-22 09:05:51.253",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -237,7 +311,7 @@
         "msg": [
           {
             "type": "HTML",
-            "data": "<div class=\"markdown-body\">\n<h2>3. Joins</h2>\n<p>Combinar dos DataFrames por una columna en común. <code>files/pedidos.csv</code> está pensado a propósito para que cada tipo de join dé un resultado distinto: el cliente 1 tiene 2 pedidos, los clientes 4/5/6 no tienen ninguno, y hay un pedido con <code>id_cliente=99</code> que no existe entre los clientes (un &ldquo;pedido huérfano&rdquo;, un caso real habitual).</p>\n\n</div>"
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch2\u003e3. Joins\u003c/h2\u003e\n\u003cp\u003eCombinar dos DataFrames por una columna en común. \u003ccode\u003efiles/pedidos.csv\u003c/code\u003e está pensado a propósito para que cada tipo de join dé un resultado distinto: el cliente 1 tiene 2 pedidos, los clientes 4/5/6 no tienen ninguno, y hay un pedido con \u003ccode\u003eid_cliente\u003d99\u003c/code\u003e que no existe entre los clientes (un \u0026ldquo;pedido huérfano\u0026rdquo;, un caso real habitual).\u003c/p\u003e\n\n\u003c/div\u003e"
           }
         ]
       },
@@ -247,17 +321,30 @@
       "jobName": "paragraph_1790029294167_1340738329",
       "id": "paragraph_1790029294167_1340738329",
       "dateCreated": "2026-09-21 22:21:34.167",
-      "dateStarted": "2026-09-21 22:21:34.185",
-      "dateFinished": "2026-09-21 22:21:34.190",
+      "dateStarted": "2026-09-22 09:05:51.255",
+      "dateFinished": "2026-09-22 09:05:51.259",
       "status": "FINISHED"
     },
     {
       "title": "joins",
-      "text": "%pyspark\npedidos = spark.read.option(\"header\", \"true\").option(\"inferSchema\", \"true\").csv(\"/opt/project/files/pedidos.csv\")\ncondicion = clientes.id == pedidos.id_cliente\n\nprint(\"INNER: solo clientes CON pedidos\")\nclientes.join(pedidos, condicion, \"inner\").select(\"id\", \"nombre\", \"producto\").orderBy(\"id\").show()\n\nprint(\"LEFT ANTI: clientes SIN ningún pedido\")\nclientes.join(pedidos, condicion, \"left_anti\").orderBy(\"id\").show()\n\nprint(\"RIGHT: todos los pedidos, incluido el huérfano (id_cliente=99)\")\nclientes.join(pedidos, condicion, \"right\").select(\"id_cliente\", \"nombre\", \"producto\").orderBy(\"id_pedido\" if False else \"id_cliente\").show()",
+      "text": "%pyspark\npedidos \u003d spark.read.option(\"header\", \"true\").option(\"inferSchema\", \"true\").csv(\"/opt/project/files/pedidos.csv\")\ncondicion \u003d clientes.id \u003d\u003d pedidos.id_cliente\n\nprint(\"INNER: solo clientes CON pedidos\")\nclientes.join(pedidos, condicion, \"inner\").select(\"id\", \"nombre\", \"producto\").orderBy(\"id\").show()\n\nprint(\"LEFT ANTI: clientes SIN ningún pedido\")\nclientes.join(pedidos, condicion, \"left_anti\").orderBy(\"id\").show()\n\nprint(\"RIGHT: todos los pedidos, incluido el huérfano (id_cliente\u003d99)\")\nclientes.join(pedidos, condicion, \"right\").select(\"id_cliente\", \"nombre\", \"producto\").orderBy(\"id_pedido\" if False else \"id_cliente\").show()",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:21:34.290",
+      "dateUpdated": "2026-09-22 09:05:51.355",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -267,7 +354,7 @@
         "msg": [
           {
             "type": "TEXT",
-            "data": "INNER: solo clientes CON pedidos\n+---+------+--------+\n| id|nombre|producto|\n+---+------+--------+\n|  1|  Juan|Portátil|\n|  1|  Juan|   Ratón|\n|  2| María| Teclado|\n|  3| Pedro| Monitor|\n+---+------+--------+\n\nLEFT ANTI: clientes SIN ningún pedido\n+---+--------+----+---------+\n| id|  nombre|edad|     pais|\n+---+--------+----+---------+\n|  4|Patricia|  40|   España|\n|  5|    Jose|  35|Argentina|\n|  6|  Miguel|  32|   España|\n+---+--------+----+---------+\n\nRIGHT: todos los pedidos, incluido el huérfano (id_cliente=99)\n+----------+------+-----------------+\n|id_cliente|nombre|         producto|\n+----------+------+-----------------+\n|         1|  Juan|         Portátil|\n|         1|  Juan|            Ratón|\n|         2| María|          Teclado|\n|         3| Pedro|          Monitor|\n|        99|  NULL|Producto fantasma|\n+----------+------+-----------------+\n\n"
+            "data": "INNER: solo clientes CON pedidos\n+---+------+--------+\n| id|nombre|producto|\n+---+------+--------+\n|  1|  Juan|Portátil|\n|  1|  Juan|   Ratón|\n|  2| María| Teclado|\n|  3| Pedro| Monitor|\n+---+------+--------+\n\nLEFT ANTI: clientes SIN ningún pedido\n+---+--------+----+---------+\n| id|  nombre|edad|     pais|\n+---+--------+----+---------+\n|  4|Patricia|  40|   España|\n|  5|    Jose|  35|Argentina|\n|  6|  Miguel|  32|   España|\n+---+--------+----+---------+\n\nRIGHT: todos los pedidos, incluido el huérfano (id_cliente\u003d99)\n+----------+------+-----------------+\n|id_cliente|nombre|         producto|\n+----------+------+-----------------+\n|         1|  Juan|         Portátil|\n|         1|  Juan|            Ratón|\n|         2| María|          Teclado|\n|         3| Pedro|          Monitor|\n|        99|  NULL|Producto fantasma|\n+----------+------+-----------------+\n\n"
           }
         ]
       },
@@ -280,28 +367,28 @@
           "group": "spark",
           "values": [
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=17"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d35"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=18"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d36"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=19"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d37"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=20"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d38"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=21"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d39"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=22"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d40"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=23"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d41"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=24"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d42"
             }
           ],
           "interpreterSettingId": "spark"
@@ -311,17 +398,29 @@
       "jobName": "paragraph_1790029294274_1633025339",
       "id": "paragraph_1790029294274_1633025339",
       "dateCreated": "2026-09-21 22:21:34.274",
-      "dateStarted": "2026-09-21 22:21:34.291",
-      "dateFinished": "2026-09-21 22:21:35.232",
+      "dateStarted": "2026-09-22 09:05:51.357",
+      "dateFinished": "2026-09-22 09:05:52.786",
       "status": "FINISHED"
     },
     {
       "title": "md_ventanas",
       "text": "%md\n## 4. Window functions\n\nA diferencia de `groupBy()` (que colapsa varias filas en una), una *window function* calcula un valor para cada fila mirando un conjunto de filas relacionadas con ella, sin perder el detalle fila a fila — para preguntas como \"¿en qué puesto queda cada fila dentro de su grupo?\".",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:21:37.441",
+      "dateUpdated": "2026-09-22 09:05:52.858",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -331,7 +430,7 @@
         "msg": [
           {
             "type": "HTML",
-            "data": "<div class=\"markdown-body\">\n<h2>4. Window functions</h2>\n<p>A diferencia de <code>groupBy()</code> (que colapsa varias filas en una), una <em>window function</em> calcula un valor para cada fila mirando un conjunto de filas relacionadas con ella, sin perder el detalle fila a fila — para preguntas como &ldquo;¿en qué puesto queda cada fila dentro de su grupo?&rdquo;.</p>\n\n</div>"
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch2\u003e4. Window functions\u003c/h2\u003e\n\u003cp\u003eA diferencia de \u003ccode\u003egroupBy()\u003c/code\u003e (que colapsa varias filas en una), una \u003cem\u003ewindow function\u003c/em\u003e calcula un valor para cada fila mirando un conjunto de filas relacionadas con ella, sin perder el detalle fila a fila — para preguntas como \u0026ldquo;¿en qué puesto queda cada fila dentro de su grupo?\u0026rdquo;.\u003c/p\u003e\n\n\u003c/div\u003e"
           }
         ]
       },
@@ -341,17 +440,30 @@
       "jobName": "paragraph_1790029297426_43694637",
       "id": "paragraph_1790029297426_43694637",
       "dateCreated": "2026-09-21 22:21:37.426",
-      "dateStarted": "2026-09-21 22:21:37.442",
-      "dateFinished": "2026-09-21 22:21:37.447",
+      "dateStarted": "2026-09-22 09:05:52.860",
+      "dateFinished": "2026-09-22 09:05:52.864",
       "status": "FINISHED"
     },
     {
       "title": "ventanas",
-      "text": "%pyspark\nfrom pyspark.sql.window import Window\n\nventana = Window.partitionBy(\"pais\").orderBy(\"edad\")\nclientes.withColumn(\"puesto_por_pais\", F.rank().over(ventana)) \\\n    .select(\"pais\", \"nombre\", \"edad\", \"puesto_por_pais\").orderBy(\"pais\", \"edad\").show()",
+      "text": "%pyspark\nfrom pyspark.sql.window import Window\n\nventana \u003d Window.partitionBy(\"pais\").orderBy(\"edad\")\nclientes.withColumn(\"puesto_por_pais\", F.rank().over(ventana)) \\\n    .select(\"pais\", \"nombre\", \"edad\", \"puesto_por_pais\").orderBy(\"pais\", \"edad\").show()",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:21:37.546",
+      "dateUpdated": "2026-09-22 09:05:52.960",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -374,10 +486,10 @@
           "group": "spark",
           "values": [
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=25"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d43"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=26"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d44"
             }
           ],
           "interpreterSettingId": "spark"
@@ -387,17 +499,29 @@
       "jobName": "paragraph_1790029297531_832162943",
       "id": "paragraph_1790029297531_832162943",
       "dateCreated": "2026-09-21 22:21:37.531",
-      "dateStarted": "2026-09-21 22:21:37.547",
-      "dateFinished": "2026-09-21 22:21:37.945",
+      "dateStarted": "2026-09-22 09:05:52.962",
+      "dateFinished": "2026-09-22 09:05:53.298",
       "status": "FINISHED"
     },
     {
       "title": "md_fechas",
       "text": "%md\n## 5. Funciones de fecha\n\n`to_date` convierte texto a un tipo Date de verdad (imprescindible antes de poder usar `datediff`/`year`/`date_add`...). Datos generados aquí mismo, ninguno de los CSV del proyecto trae fechas reales.",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:21:40.695",
+      "dateUpdated": "2026-09-22 09:05:53.362",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -407,7 +531,7 @@
         "msg": [
           {
             "type": "HTML",
-            "data": "<div class=\"markdown-body\">\n<h2>5. Funciones de fecha</h2>\n<p><code>to_date</code> convierte texto a un tipo Date de verdad (imprescindible antes de poder usar <code>datediff</code>/<code>year</code>/<code>date_add</code>&hellip;). Datos generados aquí mismo, ninguno de los CSV del proyecto trae fechas reales.</p>\n\n</div>"
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch2\u003e5. Funciones de fecha\u003c/h2\u003e\n\u003cp\u003e\u003ccode\u003eto_date\u003c/code\u003e convierte texto a un tipo Date de verdad (imprescindible antes de poder usar \u003ccode\u003edatediff\u003c/code\u003e/\u003ccode\u003eyear\u003c/code\u003e/\u003ccode\u003edate_add\u003c/code\u003e\u0026hellip;). Datos generados aquí mismo, ninguno de los CSV del proyecto trae fechas reales.\u003c/p\u003e\n\n\u003c/div\u003e"
           }
         ]
       },
@@ -417,17 +541,30 @@
       "jobName": "paragraph_1790029300681_347351886",
       "id": "paragraph_1790029300681_347351886",
       "dateCreated": "2026-09-21 22:21:40.681",
-      "dateStarted": "2026-09-21 22:21:40.697",
-      "dateFinished": "2026-09-21 22:21:40.702",
+      "dateStarted": "2026-09-22 09:05:53.364",
+      "dateFinished": "2026-09-22 09:05:53.367",
       "status": "FINISHED"
     },
     {
       "title": "fechas",
-      "text": "%pyspark\npedidos_fecha = spark.createDataFrame([\n    (1, \"2024-01-15\", \"2024-01-18\"),\n    (2, \"2024-12-24\", \"2025-01-03\"),\n], [\"id\", \"fecha_compra\", \"fecha_entrega\"])\npedidos_fecha = pedidos_fecha.withColumn(\"fecha_compra\", F.to_date(\"fecha_compra\")) \\\n    .withColumn(\"fecha_entrega\", F.to_date(\"fecha_entrega\"))\n\npedidos_fecha.withColumn(\"dias_entrega\", F.datediff(\"fecha_entrega\", \"fecha_compra\")).show()",
+      "text": "%pyspark\npedidos_fecha \u003d spark.createDataFrame([\n    (1, \"2024-01-15\", \"2024-01-18\"),\n    (2, \"2024-12-24\", \"2025-01-03\"),\n], [\"id\", \"fecha_compra\", \"fecha_entrega\"])\npedidos_fecha \u003d pedidos_fecha.withColumn(\"fecha_compra\", F.to_date(\"fecha_compra\")) \\\n    .withColumn(\"fecha_entrega\", F.to_date(\"fecha_entrega\"))\n\npedidos_fecha.withColumn(\"dias_entrega\", F.datediff(\"fecha_entrega\", \"fecha_compra\")).show()",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:21:40.803",
+      "dateUpdated": "2026-09-22 09:05:53.464",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -450,10 +587,10 @@
           "group": "spark",
           "values": [
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=27"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d45"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=28"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d46"
             }
           ],
           "interpreterSettingId": "spark"
@@ -463,8 +600,8 @@
       "jobName": "paragraph_1790029300787_936844210",
       "id": "paragraph_1790029300787_936844210",
       "dateCreated": "2026-09-21 22:21:40.787",
-      "dateStarted": "2026-09-21 22:21:40.805",
-      "dateFinished": "2026-09-21 22:21:42.706",
+      "dateStarted": "2026-09-22 09:05:53.466",
+      "dateFinished": "2026-09-22 09:05:53.758",
       "status": "FINISHED"
     }
   ],
@@ -478,5 +615,7 @@
   "config": {
     "isZeppelinNotebookCronEnable": false
   },
-  "info": {}
+  "info": {
+    "isRunning": true
+  }
 }

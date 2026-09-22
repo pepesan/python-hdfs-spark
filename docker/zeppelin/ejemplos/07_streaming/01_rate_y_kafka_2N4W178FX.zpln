@@ -4,9 +4,21 @@
       "title": "intro",
       "text": "%md\n# Structured Streaming — fuente \"rate\" y Kafka real\n\nTrasladado desde `streaming/01_structured_streaming_rate.py`, `streaming/02_kafka_productor.py` y `streaming/03_structured_streaming_kafka.py`. **Structured Streaming** es la API moderna de streaming de Spark (sobre DataFrames) — a diferencia de la antigua API de DStream, ya en desuso, trata un flujo de datos como una tabla que no para de crecer: se escriben las mismas transformaciones que con un DataFrame normal, y Spark las aplica a los datos nuevos que van llegando, en micro-batches.",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:26:30.284",
+      "dateUpdated": "2026-09-22 09:07:33.394",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -16,7 +28,7 @@
         "msg": [
           {
             "type": "HTML",
-            "data": "<div class=\"markdown-body\">\n<h1>Structured Streaming — fuente &ldquo;rate&rdquo; y Kafka real</h1>\n<p>Trasladado desde <code>streaming/01_structured_streaming_rate.py</code>, <code>streaming/02_kafka_productor.py</code> y <code>streaming/03_structured_streaming_kafka.py</code>. <strong>Structured Streaming</strong> es la API moderna de streaming de Spark (sobre DataFrames) — a diferencia de la antigua API de DStream, ya en desuso, trata un flujo de datos como una tabla que no para de crecer: se escriben las mismas transformaciones que con un DataFrame normal, y Spark las aplica a los datos nuevos que van llegando, en micro-batches.</p>\n\n</div>"
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch1\u003eStructured Streaming — fuente \u0026ldquo;rate\u0026rdquo; y Kafka real\u003c/h1\u003e\n\u003cp\u003eTrasladado desde \u003ccode\u003estreaming/01_structured_streaming_rate.py\u003c/code\u003e, \u003ccode\u003estreaming/02_kafka_productor.py\u003c/code\u003e y \u003ccode\u003estreaming/03_structured_streaming_kafka.py\u003c/code\u003e. \u003cstrong\u003eStructured Streaming\u003c/strong\u003e es la API moderna de streaming de Spark (sobre DataFrames) — a diferencia de la antigua API de DStream, ya en desuso, trata un flujo de datos como una tabla que no para de crecer: se escriben las mismas transformaciones que con un DataFrame normal, y Spark las aplica a los datos nuevos que van llegando, en micro-batches.\u003c/p\u003e\n\n\u003c/div\u003e"
           }
         ]
       },
@@ -26,17 +38,29 @@
       "jobName": "paragraph_1790029590270_790528909",
       "id": "paragraph_1790029590270_790528909",
       "dateCreated": "2026-09-21 22:26:30.270",
-      "dateStarted": "2026-09-21 22:26:30.286",
-      "dateFinished": "2026-09-21 22:26:32.151",
+      "dateStarted": "2026-09-22 09:07:33.395",
+      "dateFinished": "2026-09-22 09:07:33.398",
       "status": "FINISHED"
     },
     {
       "title": "md_rate",
       "text": "%md\n## 1. Fuente \"rate\" (sin dependencias externas)\n\nGenera filas ella sola, a un ritmo fijo — la forma más simple de probar Structured Streaming sin montar nada aparte. Solo sirve para pruebas/demos, nunca para un caso real.",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:26:33.434",
+      "dateUpdated": "2026-09-22 09:07:33.495",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -46,7 +70,7 @@
         "msg": [
           {
             "type": "HTML",
-            "data": "<div class=\"markdown-body\">\n<h2>1. Fuente &ldquo;rate&rdquo; (sin dependencias externas)</h2>\n<p>Genera filas ella sola, a un ritmo fijo — la forma más simple de probar Structured Streaming sin montar nada aparte. Solo sirve para pruebas/demos, nunca para un caso real.</p>\n\n</div>"
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch2\u003e1. Fuente \u0026ldquo;rate\u0026rdquo; (sin dependencias externas)\u003c/h2\u003e\n\u003cp\u003eGenera filas ella sola, a un ritmo fijo — la forma más simple de probar Structured Streaming sin montar nada aparte. Solo sirve para pruebas/demos, nunca para un caso real.\u003c/p\u003e\n\n\u003c/div\u003e"
           }
         ]
       },
@@ -56,17 +80,30 @@
       "jobName": "paragraph_1790029593419_353487697",
       "id": "paragraph_1790029593419_353487697",
       "dateCreated": "2026-09-21 22:26:33.419",
-      "dateStarted": "2026-09-21 22:26:33.435",
-      "dateFinished": "2026-09-21 22:26:33.440",
+      "dateStarted": "2026-09-22 09:07:33.497",
+      "dateFinished": "2026-09-22 09:07:33.499",
       "status": "FINISHED"
     },
     {
       "title": "rate",
-      "text": "%pyspark\ndatos = spark.readStream.format(\"rate\").option(\"rowsPerSecond\", 5).load()\nconsulta = datos.writeStream.format(\"memory\").queryName(\"datos_generados\").outputMode(\"append\").start()\nconsulta.awaitTermination(5)\nconsulta.stop()\nspark.sql(\"SELECT count(*) AS num_filas FROM datos_generados\").show()",
+      "text": "%pyspark\ndatos \u003d spark.readStream.format(\"rate\").option(\"rowsPerSecond\", 5).load()\nconsulta \u003d datos.writeStream.format(\"memory\").queryName(\"datos_generados\").outputMode(\"append\").start()\nconsulta.awaitTermination(5)\nconsulta.stop()\nspark.sql(\"SELECT count(*) AS num_filas FROM datos_generados\").show()",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:26:33.542",
+      "dateUpdated": "2026-09-22 09:07:33.597",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -76,7 +113,7 @@
         "msg": [
           {
             "type": "TEXT",
-            "data": "+---------+\n|num_filas|\n+---------+\n|       25|\n+---------+\n\n"
+            "data": "+---------+\n|num_filas|\n+---------+\n|       20|\n+---------+\n\n"
           }
         ]
       },
@@ -89,10 +126,10 @@
           "group": "spark",
           "values": [
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=5"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d188"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=6"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d189"
             }
           ],
           "interpreterSettingId": "spark"
@@ -102,17 +139,29 @@
       "jobName": "paragraph_1790029593526_559246783",
       "id": "paragraph_1790029593526_559246783",
       "dateCreated": "2026-09-21 22:26:33.526",
-      "dateStarted": "2026-09-21 22:26:33.544",
-      "dateFinished": "2026-09-21 22:26:51.777",
+      "dateStarted": "2026-09-22 09:07:33.598",
+      "dateFinished": "2026-09-22 09:07:38.959",
       "status": "FINISHED"
     },
     {
       "title": "md_kafka",
       "text": "%md\n## 2. Kafka (fuente real)\n\nKafka es un sistema de mensajería distribuido: productores escriben mensajes en *topics*, y consumidores los leen a medida que llegan — es la fuente de streaming \"real\" más habitual, a diferencia de \"rate\". Desde Zeppelin (otro contenedor distinto del que usan los scripts del host) hay que usar el listener interno `kafka:29092`, no `localhost:9092` (ese es solo para clientes lanzados desde el host — ver `CLAUDE.md`, Kafka con un solo listener falla en SILENCIO desde otro contenedor).\n\nPrimero un productor sencillo (sin `pyspark`, cliente Kafka normal) que manda unas frases fijas al topic `frases_zeppelin`.",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:27:05.939",
+      "dateUpdated": "2026-09-22 09:07:39.002",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -122,7 +171,7 @@
         "msg": [
           {
             "type": "HTML",
-            "data": "<div class=\"markdown-body\">\n<h2>2. Kafka (fuente real)</h2>\n<p>Kafka es un sistema de mensajería distribuido: productores escriben mensajes en <em>topics</em>, y consumidores los leen a medida que llegan — es la fuente de streaming &ldquo;real&rdquo; más habitual, a diferencia de &ldquo;rate&rdquo;. Desde Zeppelin (otro contenedor distinto del que usan los scripts del host) hay que usar el listener interno <code>kafka:29092</code>, no <code>localhost:9092</code> (ese es solo para clientes lanzados desde el host — ver <code>CLAUDE.md</code>, Kafka con un solo listener falla en SILENCIO desde otro contenedor).</p>\n<p>Primero un productor sencillo (sin <code>pyspark</code>, cliente Kafka normal) que manda unas frases fijas al topic <code>frases_zeppelin</code>.</p>\n\n</div>"
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch2\u003e2. Kafka (fuente real)\u003c/h2\u003e\n\u003cp\u003eKafka es un sistema de mensajería distribuido: productores escriben mensajes en \u003cem\u003etopics\u003c/em\u003e, y consumidores los leen a medida que llegan — es la fuente de streaming \u0026ldquo;real\u0026rdquo; más habitual, a diferencia de \u0026ldquo;rate\u0026rdquo;. Desde Zeppelin (otro contenedor distinto del que usan los scripts del host) hay que usar el listener interno \u003ccode\u003ekafka:29092\u003c/code\u003e, no \u003ccode\u003elocalhost:9092\u003c/code\u003e (ese es solo para clientes lanzados desde el host — ver \u003ccode\u003eCLAUDE.md\u003c/code\u003e, Kafka con un solo listener falla en SILENCIO desde otro contenedor).\u003c/p\u003e\n\u003cp\u003ePrimero un productor sencillo (sin \u003ccode\u003epyspark\u003c/code\u003e, cliente Kafka normal) que manda unas frases fijas al topic \u003ccode\u003efrases_zeppelin\u003c/code\u003e.\u003c/p\u003e\n\n\u003c/div\u003e"
           }
         ]
       },
@@ -132,17 +181,30 @@
       "jobName": "paragraph_1790029625924_1605169774",
       "id": "paragraph_1790029625924_1605169774",
       "dateCreated": "2026-09-21 22:27:05.924",
-      "dateStarted": "2026-09-21 22:27:05.941",
-      "dateFinished": "2026-09-21 22:27:05.946",
+      "dateStarted": "2026-09-22 09:07:39.003",
+      "dateFinished": "2026-09-22 09:07:39.007",
       "status": "FINISHED"
     },
     {
       "title": "kafka_productor",
-      "text": "%pyspark\nfrom kafka import KafkaProducer\n\nproductor = KafkaProducer(bootstrap_servers=\"kafka:29092\")\nfor frase in [\"spark rdd example\", \"spark streaming example\", \"kafka spark ejemplo\"]:\n    productor.send(\"frases_zeppelin\", frase.encode(\"utf-8\"))\nproductor.flush()\nproductor.close()\nprint(\"mensajes enviados\")",
+      "text": "%pyspark\nfrom kafka import KafkaProducer\n\nproductor \u003d KafkaProducer(bootstrap_servers\u003d\"kafka:29092\")\nfor frase in [\"spark rdd example\", \"spark streaming example\", \"kafka spark ejemplo\"]:\n    productor.send(\"frases_zeppelin\", frase.encode(\"utf-8\"))\nproductor.flush()\nproductor.close()\nprint(\"mensajes enviados\")",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:27:06.039",
+      "dateUpdated": "2026-09-22 09:07:39.103",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -162,17 +224,29 @@
       "jobName": "paragraph_1790029626025_1039388939",
       "id": "paragraph_1790029626025_1039388939",
       "dateCreated": "2026-09-21 22:27:06.025",
-      "dateStarted": "2026-09-21 22:27:06.040",
-      "dateFinished": "2026-09-21 22:27:06.685",
+      "dateStarted": "2026-09-22 09:07:39.105",
+      "dateFinished": "2026-09-22 09:07:39.336",
       "status": "FINISHED"
     },
     {
       "title": "md_kafka_consumidor",
       "text": "%md\n### Consumo con Structured Streaming: conteo de palabras en tiempo real\n\n`outputMode(\"complete\")`: el contador de una palabra ya vista puede cambiar con cada mensaje nuevo, así que hay que reescribir la tabla de resultados entera en cada micro-batch (a diferencia de `\"append\"`, usado en el ejemplo de la fuente \"rate\", donde cada fila nueva se añade tal cual).",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:27:09.185",
+      "dateUpdated": "2026-09-22 09:07:39.405",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -182,7 +256,7 @@
         "msg": [
           {
             "type": "HTML",
-            "data": "<div class=\"markdown-body\">\n<h3>Consumo con Structured Streaming: conteo de palabras en tiempo real</h3>\n<p><code>outputMode(&quot;complete&quot;)</code>: el contador de una palabra ya vista puede cambiar con cada mensaje nuevo, así que hay que reescribir la tabla de resultados entera en cada micro-batch (a diferencia de <code>&quot;append&quot;</code>, usado en el ejemplo de la fuente &ldquo;rate&rdquo;, donde cada fila nueva se añade tal cual).</p>\n\n</div>"
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch3\u003eConsumo con Structured Streaming: conteo de palabras en tiempo real\u003c/h3\u003e\n\u003cp\u003e\u003ccode\u003eoutputMode(\u0026quot;complete\u0026quot;)\u003c/code\u003e: el contador de una palabra ya vista puede cambiar con cada mensaje nuevo, así que hay que reescribir la tabla de resultados entera en cada micro-batch (a diferencia de \u003ccode\u003e\u0026quot;append\u0026quot;\u003c/code\u003e, usado en el ejemplo de la fuente \u0026ldquo;rate\u0026rdquo;, donde cada fila nueva se añade tal cual).\u003c/p\u003e\n\n\u003c/div\u003e"
           }
         ]
       },
@@ -192,17 +266,30 @@
       "jobName": "paragraph_1790029629170_175864553",
       "id": "paragraph_1790029629170_175864553",
       "dateCreated": "2026-09-21 22:27:09.170",
-      "dateStarted": "2026-09-21 22:27:09.186",
-      "dateFinished": "2026-09-21 22:27:09.191",
+      "dateStarted": "2026-09-22 09:07:39.406",
+      "dateFinished": "2026-09-22 09:07:39.410",
       "status": "FINISHED"
     },
     {
       "title": "kafka_consumidor",
-      "text": "%pyspark\nimport pyspark.sql.functions as F\n\nmensajes = spark.readStream.format(\"kafka\") \\\n    .option(\"kafka.bootstrap.servers\", \"kafka:29092\") \\\n    .option(\"subscribe\", \"frases_zeppelin\") \\\n    .option(\"startingOffsets\", \"earliest\") \\\n    .load()\n\ntexto = mensajes.select(mensajes.value.cast(\"string\").alias(\"frase\"))\npalabras = texto.select(F.explode(F.split(texto.frase, \" \")).alias(\"palabra\"))\nconteo = palabras.groupBy(\"palabra\").count()\n\nconsulta = conteo.writeStream.format(\"memory\").queryName(\"conteo_kafka_zeppelin\").outputMode(\"complete\").start()\nconsulta.awaitTermination(15)\nconsulta.stop()\nspark.sql(\"SELECT * FROM conteo_kafka_zeppelin ORDER BY palabra\").show()",
+      "text": "%pyspark\nimport pyspark.sql.functions as F\n\nmensajes \u003d spark.readStream.format(\"kafka\") \\\n    .option(\"kafka.bootstrap.servers\", \"kafka:29092\") \\\n    .option(\"subscribe\", \"frases_zeppelin\") \\\n    .option(\"startingOffsets\", \"earliest\") \\\n    .load()\n\ntexto \u003d mensajes.select(mensajes.value.cast(\"string\").alias(\"frase\"))\npalabras \u003d texto.select(F.explode(F.split(texto.frase, \" \")).alias(\"palabra\"))\nconteo \u003d palabras.groupBy(\"palabra\").count()\n\nconsulta \u003d conteo.writeStream.format(\"memory\").queryName(\"conteo_kafka_zeppelin\").outputMode(\"complete\").start()\nconsulta.awaitTermination(15)\nconsulta.stop()\nspark.sql(\"SELECT * FROM conteo_kafka_zeppelin ORDER BY palabra\").show()",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:27:09.286",
+      "dateUpdated": "2026-09-22 09:07:39.506",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -212,7 +299,7 @@
         "msg": [
           {
             "type": "TEXT",
-            "data": "+---------+-----+\n|  palabra|count|\n+---------+-----+\n|  ejemplo|    1|\n|  example|    2|\n|    kafka|    1|\n|      rdd|    1|\n|    spark|    3|\n|streaming|    1|\n+---------+-----+\n\n"
+            "data": "+---------+-----+\n|  palabra|count|\n+---------+-----+\n|  ejemplo|    2|\n|  example|    4|\n|    kafka|    2|\n|      rdd|    2|\n|    spark|    6|\n|streaming|    2|\n+---------+-----+\n\n"
           }
         ]
       },
@@ -225,7 +312,7 @@
           "group": "spark",
           "values": [
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=8"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d191"
             }
           ],
           "interpreterSettingId": "spark"
@@ -235,8 +322,8 @@
       "jobName": "paragraph_1790029629271_343105178",
       "id": "paragraph_1790029629271_343105178",
       "dateCreated": "2026-09-21 22:27:09.271",
-      "dateStarted": "2026-09-21 22:27:09.287",
-      "dateFinished": "2026-09-21 22:27:24.655",
+      "dateStarted": "2026-09-22 09:07:39.508",
+      "dateFinished": "2026-09-22 09:07:54.645",
       "status": "FINISHED"
     }
   ],
@@ -250,5 +337,7 @@
   "config": {
     "isZeppelinNotebookCronEnable": false
   },
-  "info": {}
+  "info": {
+    "isRunning": true
+  }
 }

@@ -4,9 +4,23 @@
       "title": "intro",
       "text": "%md\n# Conexiones a fuentes de datos externas\n\nEste notebook recorre las tres formas de conectar Spark (o Python directamente) a un almacén de datos externo al propio cluster que trae este proyecto: **HDFS** (el sistema de ficheros distribuido \"de casa\"), **S3** (almacenamiento de objetos, vía SeaweedFS) y una **base de datos relacional** (PostgreSQL, vía JDBC). Cada bloque de código de aquí ya se validó antes como script independiente (`01_connect_*.py` en la raíz del proyecto) — este notebook es la versión \"para explorar y ejecutar celda a celda\" de esos mismos ejemplos, no una reescritura desde cero.",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:18:44.295",
+      "dateUpdated": "2026-09-22 09:04:44.368",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        },
+        "editorHide": true,
+        "tableHide": false
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -16,7 +30,7 @@
         "msg": [
           {
             "type": "HTML",
-            "data": "<div class=\"markdown-body\">\n<h1>Conexiones a fuentes de datos externas</h1>\n<p>Este notebook recorre las tres formas de conectar Spark (o Python directamente) a un almacén de datos externo al propio cluster que trae este proyecto: <strong>HDFS</strong> (el sistema de ficheros distribuido &ldquo;de casa&rdquo;), <strong>S3</strong> (almacenamiento de objetos, vía SeaweedFS) y una <strong>base de datos relacional</strong> (PostgreSQL, vía JDBC). Cada bloque de código de aquí ya se validó antes como script independiente (<code>01_connect_*.py</code> en la raíz del proyecto) — este notebook es la versión &ldquo;para explorar y ejecutar celda a celda&rdquo; de esos mismos ejemplos, no una reescritura desde cero.</p>\n\n</div>"
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch1\u003eConexiones a fuentes de datos externas\u003c/h1\u003e\n\u003cp\u003eEste notebook recorre las tres formas de conectar Spark (o Python directamente) a un almacén de datos externo al propio cluster que trae este proyecto: \u003cstrong\u003eHDFS\u003c/strong\u003e (el sistema de ficheros distribuido \u0026ldquo;de casa\u0026rdquo;), \u003cstrong\u003eS3\u003c/strong\u003e (almacenamiento de objetos, vía SeaweedFS) y una \u003cstrong\u003ebase de datos relacional\u003c/strong\u003e (PostgreSQL, vía JDBC). Cada bloque de código de aquí ya se validó antes como script independiente (\u003ccode\u003e01_connect_*.py\u003c/code\u003e en la raíz del proyecto) — este notebook es la versión \u0026ldquo;para explorar y ejecutar celda a celda\u0026rdquo; de esos mismos ejemplos, no una reescritura desde cero.\u003c/p\u003e\n\n\u003c/div\u003e"
           }
         ]
       },
@@ -26,17 +40,31 @@
       "jobName": "paragraph_1790029124282_1728478578",
       "id": "paragraph_1790029124282_1728478578",
       "dateCreated": "2026-09-21 22:18:44.282",
-      "dateStarted": "2026-09-21 22:18:44.297",
-      "dateFinished": "2026-09-21 22:18:46.154",
+      "dateStarted": "2026-09-22 09:04:44.369",
+      "dateFinished": "2026-09-22 09:04:44.374",
       "status": "FINISHED"
     },
     {
       "title": "md_webhdfs",
       "text": "%md\n## 1. HDFS vía WebHDFS\n\nHDFS (*Hadoop Distributed File System*) es el sistema de ficheros distribuido del cluster: los datos se reparten en bloques entre varios `datanode` y un `namenode` lleva la cuenta de dónde está cada uno. **WebHDFS** es su API REST sobre HTTP — el cliente Python `hdfs` habla con el `namenode` (puerto 9870) para listar/crear directorios y leer/escribir ficheros, sin necesitar ninguna librería nativa de Hadoop.\n\nAlternativa: el RPC nativo de Hadoop (puerto 8020, vía `pyarrow.fs.HadoopFileSystem`) es más eficiente para grandes volúmenes, pero **no funciona desde Zeppelin** — su librería nativa (`libhdfs.so`) exige una versión de `glibc` más reciente de la que trae la imagen base de Zeppelin, y actualizar la `glibc` del sistema no es seguro (ver `CLAUDE.md`). Ese ejemplo (`01_connect_hdfs_04_rpc_nativo_pyarrow.py`) solo se puede ejecutar dentro de `spark-master`, no aquí.",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:18:47.439",
+      "dateUpdated": "2026-09-22 09:04:44.469",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        },
+        "editorHide": true,
+        "tableHide": false
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -46,7 +74,7 @@
         "msg": [
           {
             "type": "HTML",
-            "data": "<div class=\"markdown-body\">\n<h2>1. HDFS vía WebHDFS</h2>\n<p>HDFS (<em>Hadoop Distributed File System</em>) es el sistema de ficheros distribuido del cluster: los datos se reparten en bloques entre varios <code>datanode</code> y un <code>namenode</code> lleva la cuenta de dónde está cada uno. <strong>WebHDFS</strong> es su API REST sobre HTTP — el cliente Python <code>hdfs</code> habla con el <code>namenode</code> (puerto 9870) para listar/crear directorios y leer/escribir ficheros, sin necesitar ninguna librería nativa de Hadoop.</p>\n<p>Alternativa: el RPC nativo de Hadoop (puerto 8020, vía <code>pyarrow.fs.HadoopFileSystem</code>) es más eficiente para grandes volúmenes, pero <strong>no funciona desde Zeppelin</strong> — su librería nativa (<code>libhdfs.so</code>) exige una versión de <code>glibc</code> más reciente de la que trae la imagen base de Zeppelin, y actualizar la <code>glibc</code> del sistema no es seguro (ver <code>CLAUDE.md</code>). Ese ejemplo (<code>01_connect_hdfs_04_rpc_nativo_pyarrow.py</code>) solo se puede ejecutar dentro de <code>spark-master</code>, no aquí.</p>\n\n</div>"
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch2\u003e1. HDFS vía WebHDFS\u003c/h2\u003e\n\u003cp\u003eHDFS (\u003cem\u003eHadoop Distributed File System\u003c/em\u003e) es el sistema de ficheros distribuido del cluster: los datos se reparten en bloques entre varios \u003ccode\u003edatanode\u003c/code\u003e y un \u003ccode\u003enamenode\u003c/code\u003e lleva la cuenta de dónde está cada uno. \u003cstrong\u003eWebHDFS\u003c/strong\u003e es su API REST sobre HTTP — el cliente Python \u003ccode\u003ehdfs\u003c/code\u003e habla con el \u003ccode\u003enamenode\u003c/code\u003e (puerto 9870) para listar/crear directorios y leer/escribir ficheros, sin necesitar ninguna librería nativa de Hadoop.\u003c/p\u003e\n\u003cp\u003eAlternativa: el RPC nativo de Hadoop (puerto 8020, vía \u003ccode\u003epyarrow.fs.HadoopFileSystem\u003c/code\u003e) es más eficiente para grandes volúmenes, pero \u003cstrong\u003eno funciona desde Zeppelin\u003c/strong\u003e — su librería nativa (\u003ccode\u003elibhdfs.so\u003c/code\u003e) exige una versión de \u003ccode\u003eglibc\u003c/code\u003e más reciente de la que trae la imagen base de Zeppelin, y actualizar la \u003ccode\u003eglibc\u003c/code\u003e del sistema no es seguro (ver \u003ccode\u003eCLAUDE.md\u003c/code\u003e). Ese ejemplo (\u003ccode\u003e01_connect_hdfs_04_rpc_nativo_pyarrow.py\u003c/code\u003e) solo se puede ejecutar dentro de \u003ccode\u003espark-master\u003c/code\u003e, no aquí.\u003c/p\u003e\n\n\u003c/div\u003e"
           }
         ]
       },
@@ -56,17 +84,30 @@
       "jobName": "paragraph_1790029127425_1057303382",
       "id": "paragraph_1790029127425_1057303382",
       "dateCreated": "2026-09-21 22:18:47.425",
-      "dateStarted": "2026-09-21 22:18:47.440",
-      "dateFinished": "2026-09-21 22:18:47.447",
+      "dateStarted": "2026-09-22 09:04:44.471",
+      "dateFinished": "2026-09-22 09:04:44.476",
       "status": "FINISHED"
     },
     {
       "title": "webhdfs",
-      "text": "%pyspark\nimport hdfs\n\nclient = hdfs.InsecureClient(\"http://namenode:9870\", user=\"hadoop\")\nclient.makedirs(\"/user/admin\")\nprint(\"listado:\", client.list(\"/user/admin\"))",
+      "text": "%pyspark\nimport hdfs\n\nclient \u003d hdfs.InsecureClient(\"http://namenode:9870\", user\u003d\"hadoop\")\nclient.makedirs(\"/user/admin\")\nprint(\"listado:\", client.list(\"/user/admin\"))",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:18:47.542",
+      "dateUpdated": "2026-09-22 09:04:44.571",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -76,7 +117,7 @@
         "msg": [
           {
             "type": "TEXT",
-            "data": "listado: ['el_quijote.txt']\n"
+            "data": "listado: [\u0027el_quijote.txt\u0027]\n"
           }
         ]
       },
@@ -86,17 +127,31 @@
       "jobName": "paragraph_1790029127528_257940721",
       "id": "paragraph_1790029127528_257940721",
       "dateCreated": "2026-09-21 22:18:47.528",
-      "dateStarted": "2026-09-21 22:18:47.545",
-      "dateFinished": "2026-09-21 22:18:59.146",
+      "dateStarted": "2026-09-22 09:04:44.573",
+      "dateFinished": "2026-09-22 09:04:44.589",
       "status": "FINISHED"
     },
     {
       "title": "md_s3",
       "text": "%md\n## 2. S3 (SeaweedFS)\n\n[SeaweedFS](https://github.com/seaweedfs/seaweedfs) es un servidor de almacenamiento de objetos compatible con la API S3 de Amazon — una alternativa a HDFS pensada para guardar ficheros sueltos, no un sistema de ficheros distribuido de propósito general: cada objeto se identifica por un *bucket* + una *clave* (no hay carpetas de verdad, aunque la clave pueda tener forma de ruta). Se usa aquí con `boto3`, el cliente oficial de AWS para Python — funciona igual contra SeaweedFS que contra el S3 real, es el mismo protocolo.\n\nLas credenciales las genera `docker/00_init.sh` de forma aleatoria en cada entorno — nunca están fijas en el repositorio (ver `.gitignore`).",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:19:11.344",
+      "dateUpdated": "2026-09-22 09:04:44.673",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        },
+        "editorHide": true,
+        "tableHide": false
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -106,7 +161,7 @@
         "msg": [
           {
             "type": "HTML",
-            "data": "<div class=\"markdown-body\">\n<h2>2. S3 (SeaweedFS)</h2>\n<p><a href=\"https://github.com/seaweedfs/seaweedfs\">SeaweedFS</a> es un servidor de almacenamiento de objetos compatible con la API S3 de Amazon — una alternativa a HDFS pensada para guardar ficheros sueltos, no un sistema de ficheros distribuido de propósito general: cada objeto se identifica por un <em>bucket</em> + una <em>clave</em> (no hay carpetas de verdad, aunque la clave pueda tener forma de ruta). Se usa aquí con <code>boto3</code>, el cliente oficial de AWS para Python — funciona igual contra SeaweedFS que contra el S3 real, es el mismo protocolo.</p>\n<p>Las credenciales las genera <code>docker/00_init.sh</code> de forma aleatoria en cada entorno — nunca están fijas en el repositorio (ver <code>.gitignore</code>).</p>\n\n</div>"
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch2\u003e2. S3 (SeaweedFS)\u003c/h2\u003e\n\u003cp\u003e\u003ca href\u003d\"https://github.com/seaweedfs/seaweedfs\"\u003eSeaweedFS\u003c/a\u003e es un servidor de almacenamiento de objetos compatible con la API S3 de Amazon — una alternativa a HDFS pensada para guardar ficheros sueltos, no un sistema de ficheros distribuido de propósito general: cada objeto se identifica por un \u003cem\u003ebucket\u003c/em\u003e + una \u003cem\u003eclave\u003c/em\u003e (no hay carpetas de verdad, aunque la clave pueda tener forma de ruta). Se usa aquí con \u003ccode\u003eboto3\u003c/code\u003e, el cliente oficial de AWS para Python — funciona igual contra SeaweedFS que contra el S3 real, es el mismo protocolo.\u003c/p\u003e\n\u003cp\u003eLas credenciales las genera \u003ccode\u003edocker/00_init.sh\u003c/code\u003e de forma aleatoria en cada entorno — nunca están fijas en el repositorio (ver \u003ccode\u003e.gitignore\u003c/code\u003e).\u003c/p\u003e\n\n\u003c/div\u003e"
           }
         ]
       },
@@ -116,17 +171,30 @@
       "jobName": "paragraph_1790029151330_303972626",
       "id": "paragraph_1790029151330_303972626",
       "dateCreated": "2026-09-21 22:19:11.330",
-      "dateStarted": "2026-09-21 22:19:11.346",
-      "dateFinished": "2026-09-21 22:19:11.354",
+      "dateStarted": "2026-09-22 09:04:44.675",
+      "dateFinished": "2026-09-22 09:04:44.680",
       "status": "FINISHED"
     },
     {
       "title": "s3_conexion",
-      "text": "%pyspark\nimport json\nimport boto3\n\nwith open(\"/opt/project/docker/seaweedfs/s3-config/s3.json\") as f:\n    credenciales = json.load(f)[\"identities\"][0][\"credentials\"][0]\n\ns3 = boto3.client(\n    \"s3\",\n    endpoint_url=\"http://seaweedfs:8333\",\n    aws_access_key_id=credenciales[\"accessKey\"],\n    aws_secret_access_key=credenciales[\"secretKey\"],\n    region_name=\"us-east-1\",\n)\n\nbucket = \"prueba\"\nif bucket not in [b[\"Name\"] for b in s3.list_buckets()[\"Buckets\"]]:\n    s3.create_bucket(Bucket=bucket)\n\ns3.put_object(Bucket=bucket, Key=\"desde_zeppelin.txt\", Body=b\"hola desde zeppelin\")\nprint(s3.get_object(Bucket=bucket, Key=\"desde_zeppelin.txt\")[\"Body\"].read())",
+      "text": "%pyspark\nimport json\nimport boto3\n\nwith open(\"/opt/project/docker/seaweedfs/s3-config/s3.json\") as f:\n    credenciales \u003d json.load(f)[\"identities\"][0][\"credentials\"][0]\n\ns3 \u003d boto3.client(\n    \"s3\",\n    endpoint_url\u003d\"http://seaweedfs:8333\",\n    aws_access_key_id\u003dcredenciales[\"accessKey\"],\n    aws_secret_access_key\u003dcredenciales[\"secretKey\"],\n    region_name\u003d\"us-east-1\",\n)\n\nbucket \u003d \"prueba\"\nif bucket not in [b[\"Name\"] for b in s3.list_buckets()[\"Buckets\"]]:\n    s3.create_bucket(Bucket\u003dbucket)\n\ns3.put_object(Bucket\u003dbucket, Key\u003d\"desde_zeppelin.txt\", Body\u003db\"hola desde zeppelin\")\nprint(s3.get_object(Bucket\u003dbucket, Key\u003d\"desde_zeppelin.txt\")[\"Body\"].read())",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:19:11.447",
+      "dateUpdated": "2026-09-22 09:04:44.775",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -136,7 +204,7 @@
         "msg": [
           {
             "type": "TEXT",
-            "data": "b'hola desde zeppelin'\n"
+            "data": "b\u0027hola desde zeppelin\u0027\n"
           }
         ]
       },
@@ -146,17 +214,29 @@
       "jobName": "paragraph_1790029151433_666565720",
       "id": "paragraph_1790029151433_666565720",
       "dateCreated": "2026-09-21 22:19:11.433",
-      "dateStarted": "2026-09-21 22:19:11.448",
-      "dateFinished": "2026-09-21 22:19:11.621",
+      "dateStarted": "2026-09-22 09:04:44.777",
+      "dateFinished": "2026-09-22 09:04:44.799",
       "status": "FINISHED"
     },
     {
       "title": "md_s3_modificar",
       "text": "%md\n### Ciclo subir → descargar → modificar → resubir\n\nUn patrón muy habitual: coger un objeto que ya existe, transformarlo, y guardar el resultado **sobrescribiendo el mismo objeto** (misma clave) — no crear uno nuevo aparte. `put_object` con una clave que ya existe simplemente reemplaza el contenido entero (S3 no tiene \"edición parcial\": para cambiar un byte hay que volver a subir el objeto completo).",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:19:14.594",
+      "dateUpdated": "2026-09-22 09:04:44.877",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -166,7 +246,7 @@
         "msg": [
           {
             "type": "HTML",
-            "data": "<div class=\"markdown-body\">\n<h3>Ciclo subir → descargar → modificar → resubir</h3>\n<p>Un patrón muy habitual: coger un objeto que ya existe, transformarlo, y guardar el resultado <strong>sobrescribiendo el mismo objeto</strong> (misma clave) — no crear uno nuevo aparte. <code>put_object</code> con una clave que ya existe simplemente reemplaza el contenido entero (S3 no tiene &ldquo;edición parcial&rdquo;: para cambiar un byte hay que volver a subir el objeto completo).</p>\n\n</div>"
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch3\u003eCiclo subir → descargar → modificar → resubir\u003c/h3\u003e\n\u003cp\u003eUn patrón muy habitual: coger un objeto que ya existe, transformarlo, y guardar el resultado \u003cstrong\u003esobrescribiendo el mismo objeto\u003c/strong\u003e (misma clave) — no crear uno nuevo aparte. \u003ccode\u003eput_object\u003c/code\u003e con una clave que ya existe simplemente reemplaza el contenido entero (S3 no tiene \u0026ldquo;edición parcial\u0026rdquo;: para cambiar un byte hay que volver a subir el objeto completo).\u003c/p\u003e\n\n\u003c/div\u003e"
           }
         ]
       },
@@ -176,17 +256,30 @@
       "jobName": "paragraph_1790029154580_829991183",
       "id": "paragraph_1790029154580_829991183",
       "dateCreated": "2026-09-21 22:19:14.580",
-      "dateStarted": "2026-09-21 22:19:14.595",
-      "dateFinished": "2026-09-21 22:19:14.600",
+      "dateStarted": "2026-09-22 09:04:44.879",
+      "dateFinished": "2026-09-22 09:04:44.883",
       "status": "FINISHED"
     },
     {
       "title": "s3_modificar",
-      "text": "%pyspark\nclave = \"desde_zeppelin.txt\"\noriginal = s3.get_object(Bucket=bucket, Key=clave)[\"Body\"].read()\nmodificado = original.decode(\"utf-8\").upper().encode(\"utf-8\")\ns3.put_object(Bucket=bucket, Key=clave, Body=modificado)\n\nreleido = s3.get_object(Bucket=bucket, Key=clave)[\"Body\"].read()\nprint(\"Original: \", original)\nprint(\"Modificado:\", releido)\nassert releido != original\n\ns3.delete_object(Bucket=bucket, Key=clave)",
+      "text": "%pyspark\nclave \u003d \"desde_zeppelin.txt\"\noriginal \u003d s3.get_object(Bucket\u003dbucket, Key\u003dclave)[\"Body\"].read()\nmodificado \u003d original.decode(\"utf-8\").upper().encode(\"utf-8\")\ns3.put_object(Bucket\u003dbucket, Key\u003dclave, Body\u003dmodificado)\n\nreleido \u003d s3.get_object(Bucket\u003dbucket, Key\u003dclave)[\"Body\"].read()\nprint(\"Original: \", original)\nprint(\"Modificado:\", releido)\nassert releido !\u003d original\n\ns3.delete_object(Bucket\u003dbucket, Key\u003dclave)",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:19:14.696",
+      "dateUpdated": "2026-09-22 09:04:44.979",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -196,7 +289,7 @@
         "msg": [
           {
             "type": "TEXT",
-            "data": "Original:  b'hola desde zeppelin'\nModificado: b'HOLA DESDE ZEPPELIN'\n{'ResponseMetadata': {'RequestId': '18D776084020D881A15BEF1F', 'HostId': '', 'HTTPStatusCode': 204, 'HTTPHeaders': {'server': 'SeaweedFS 30GB 4.47', 'vary': 'Origin', 'x-amz-request-id': '18D776084020D881A15BEF1F', 'date': 'Mon, 21 Sep 2026 22:19:14 GMT'}, 'RetryAttempts': 0}}\n"
+            "data": "Original:  b\u0027hola desde zeppelin\u0027\nModificado: b\u0027HOLA DESDE ZEPPELIN\u0027\n{\u0027ResponseMetadata\u0027: {\u0027RequestId\u0027: \u002718D79941D9056A23B4C63F86\u0027, \u0027HostId\u0027: \u0027\u0027, \u0027HTTPStatusCode\u0027: 204, \u0027HTTPHeaders\u0027: {\u0027server\u0027: \u0027SeaweedFS 30GB 4.47\u0027, \u0027vary\u0027: \u0027Origin\u0027, \u0027x-amz-request-id\u0027: \u002718D79941D9056A23B4C63F86\u0027, \u0027date\u0027: \u0027Tue, 22 Sep 2026 09:04:44 GMT\u0027}, \u0027RetryAttempts\u0027: 0}}\n"
           }
         ]
       },
@@ -206,17 +299,29 @@
       "jobName": "paragraph_1790029154682_561243135",
       "id": "paragraph_1790029154682_561243135",
       "dateCreated": "2026-09-21 22:19:14.682",
-      "dateStarted": "2026-09-21 22:19:14.697",
-      "dateFinished": "2026-09-21 22:19:14.712",
+      "dateStarted": "2026-09-22 09:04:44.982",
+      "dateFinished": "2026-09-22 09:04:44.997",
       "status": "FINISHED"
     },
     {
       "title": "md_postgres",
       "text": "%md\n## 3. Base de datos relacional (PostgreSQL, vía JDBC)\n\nA diferencia de HDFS/S3 (ficheros), aquí la fuente de datos es una tabla de una base de datos, y Spark habla con ella usando **JDBC**, el protocolo estándar que usaría cualquier cliente SQL (DBeaver, DataGrip, `beeline`...). El conector JDBC de PostgreSQL es un jar Java que no viene incluido con Spark — está añadido a este intérprete vía `spark.jars.packages` (Interpreter settings), igual que los de GraphFrames/Delta/Kafka/Avro que se usan en otros notebooks.\n\n`docker/postgres/init/01_empleados.sql` crea la tabla `empleados` (8 filas fijas) la primera vez que arranca el contenedor `postgres`.",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:19:23.150",
+      "dateUpdated": "2026-09-22 09:04:45.083",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -226,7 +331,7 @@
         "msg": [
           {
             "type": "HTML",
-            "data": "<div class=\"markdown-body\">\n<h2>3. Base de datos relacional (PostgreSQL, vía JDBC)</h2>\n<p>A diferencia de HDFS/S3 (ficheros), aquí la fuente de datos es una tabla de una base de datos, y Spark habla con ella usando <strong>JDBC</strong>, el protocolo estándar que usaría cualquier cliente SQL (DBeaver, DataGrip, <code>beeline</code>&hellip;). El conector JDBC de PostgreSQL es un jar Java que no viene incluido con Spark — está añadido a este intérprete vía <code>spark.jars.packages</code> (Interpreter settings), igual que los de GraphFrames/Delta/Kafka/Avro que se usan en otros notebooks.</p>\n<p><code>docker/postgres/init/01_empleados.sql</code> crea la tabla <code>empleados</code> (8 filas fijas) la primera vez que arranca el contenedor <code>postgres</code>.</p>\n\n</div>"
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch2\u003e3. Base de datos relacional (PostgreSQL, vía JDBC)\u003c/h2\u003e\n\u003cp\u003eA diferencia de HDFS/S3 (ficheros), aquí la fuente de datos es una tabla de una base de datos, y Spark habla con ella usando \u003cstrong\u003eJDBC\u003c/strong\u003e, el protocolo estándar que usaría cualquier cliente SQL (DBeaver, DataGrip, \u003ccode\u003ebeeline\u003c/code\u003e\u0026hellip;). El conector JDBC de PostgreSQL es un jar Java que no viene incluido con Spark — está añadido a este intérprete vía \u003ccode\u003espark.jars.packages\u003c/code\u003e (Interpreter settings), igual que los de GraphFrames/Delta/Kafka/Avro que se usan en otros notebooks.\u003c/p\u003e\n\u003cp\u003e\u003ccode\u003edocker/postgres/init/01_empleados.sql\u003c/code\u003e crea la tabla \u003ccode\u003eempleados\u003c/code\u003e (8 filas fijas) la primera vez que arranca el contenedor \u003ccode\u003epostgres\u003c/code\u003e.\u003c/p\u003e\n\n\u003c/div\u003e"
           }
         ]
       },
@@ -236,17 +341,30 @@
       "jobName": "paragraph_1790029163135_1655934465",
       "id": "paragraph_1790029163135_1655934465",
       "dateCreated": "2026-09-21 22:19:23.135",
-      "dateStarted": "2026-09-21 22:19:23.151",
-      "dateFinished": "2026-09-21 22:19:23.157",
+      "dateStarted": "2026-09-22 09:04:45.087",
+      "dateFinished": "2026-09-22 09:04:45.092",
       "status": "FINISHED"
     },
     {
       "title": "postgres_jdbc",
-      "text": "%pyspark\npassword = open(\"/opt/project/docker/postgres/.env\").read().split(\"=\")[1].strip()\n\nempleados = spark.read.format(\"jdbc\") \\\n    .option(\"url\", \"jdbc:postgresql://postgres:5432/pyhdfsspark\") \\\n    .option(\"dbtable\", \"empleados\") \\\n    .option(\"user\", \"pyhdfsspark\") \\\n    .option(\"password\", password) \\\n    .option(\"driver\", \"org.postgresql.Driver\") \\\n    .load()\n\nempleados.show()",
+      "text": "%pyspark\npassword \u003d open(\"/opt/project/docker/postgres/.env\").read().split(\"\u003d\")[1].strip()\n\nempleados \u003d spark.read.format(\"jdbc\") \\\n    .option(\"url\", \"jdbc:postgresql://postgres:5432/pyhdfsspark\") \\\n    .option(\"dbtable\", \"empleados\") \\\n    .option(\"user\", \"pyhdfsspark\") \\\n    .option(\"password\", password) \\\n    .option(\"driver\", \"org.postgresql.Driver\") \\\n    .load()\n\nempleados.show()",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:19:23.257",
+      "dateUpdated": "2026-09-22 09:04:45.187",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -269,7 +387,7 @@
           "group": "spark",
           "values": [
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=0"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d15"
             }
           ],
           "interpreterSettingId": "spark"
@@ -279,17 +397,30 @@
       "jobName": "paragraph_1790029163242_526743187",
       "id": "paragraph_1790029163242_526743187",
       "dateCreated": "2026-09-21 22:19:23.243",
-      "dateStarted": "2026-09-21 22:19:23.259",
-      "dateFinished": "2026-09-21 22:19:26.152",
+      "dateStarted": "2026-09-22 09:04:45.189",
+      "dateFinished": "2026-09-22 09:04:45.281",
       "status": "FINISHED"
     },
     {
       "title": "postgres_agregacion",
       "text": "%pyspark\n# Una vez cargada la tabla como DataFrame, se trabaja con ella exactamente\n# igual que con cualquier otra fuente (CSV, JSON, HDFS...)\nempleados.groupBy(\"departamento\").avg(\"salario\").orderBy(\"departamento\").show()",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:19:26.409",
+      "dateUpdated": "2026-09-22 09:04:45.288",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -312,10 +443,10 @@
           "group": "spark",
           "values": [
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=1"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d16"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=2"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d17"
             }
           ],
           "interpreterSettingId": "spark"
@@ -325,8 +456,8 @@
       "jobName": "paragraph_1790029166394_1304925474",
       "id": "paragraph_1790029166394_1304925474",
       "dateCreated": "2026-09-21 22:19:26.394",
-      "dateStarted": "2026-09-21 22:19:26.411",
-      "dateFinished": "2026-09-21 22:19:28.374",
+      "dateStarted": "2026-09-22 09:04:45.290",
+      "dateFinished": "2026-09-22 09:04:45.439",
       "status": "FINISHED"
     }
   ],
@@ -340,5 +471,7 @@
   "config": {
     "isZeppelinNotebookCronEnable": false
   },
-  "info": {}
+  "info": {
+    "isRunning": true
+  }
 }
