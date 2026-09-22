@@ -8,6 +8,14 @@
 # contenedor), para no dejar ninguna contraseña en un fichero versionado.
 
 [desktop]
+  # gunicorn_number_of_workers=1: por defecto Hue lanza varios workers
+  # gunicorn en paralelo (2*CPUs+1), todos escribiendo contra la misma BBDD
+  # sqlite3 de abajo — sqlite no soporta bien escrituras concurrentes desde
+  # varios procesos, así que con más de un worker aparece "database is
+  # locked" en el Editor (Hive) al primer uso algo intensivo. Con un solo
+  # worker desaparece el problema; para un Hue de un solo usuario de
+  # desarrollo no hace falta más concurrencia.
+  gunicorn_number_of_workers=1
   [[database]]
     engine=sqlite3
     name=/usr/share/hue/desktop/db.sqlite3
