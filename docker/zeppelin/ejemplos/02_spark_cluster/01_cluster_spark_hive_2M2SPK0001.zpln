@@ -4,7 +4,7 @@
       "title": "intro",
       "text": "%md\n# Zeppelin contra el cluster Spark de este proyecto\n\nEste notebook prueba los tres intérpretes que trae la imagen `zeppelin` de `docker/`:\n- `%spark` (Scala): habla directo con `spark://spark-master:7077`.\n- `%pyspark`: igual, pero en Python (mismo intérprete `/opt/venv-project/bin/python` que usan driver y executors).\n- `%python`: Python plano, sin Spark, con las mismas librerías de `pyproject.toml`.",
       "user": "anonymous",
-      "dateUpdated": "2026-09-22 09:00:21.298",
+      "dateUpdated": "2026-09-22 09:36:56.796",
       "progress": 0,
       "config": {
         "editorSetting": {
@@ -36,15 +36,15 @@
       "jobName": "paragraph_1789907683179_704537",
       "id": "paragraph_1789907683179_704537",
       "dateCreated": "2026-09-20 12:34:43.179",
-      "dateStarted": "2026-09-22 09:00:21.301",
-      "dateFinished": "2026-09-22 09:00:21.307",
+      "dateStarted": "2026-09-22 09:36:56.807",
+      "dateFinished": "2026-09-22 09:36:58.803",
       "status": "FINISHED"
     },
     {
       "title": "spark-scala",
       "text": "%spark\nval rdd \u003d sc.parallelize(List(\"spark\", \"rdd\", \"example\", \"sample\", \"example\"))\nprintln(rdd.collect().mkString(\",\"))\nprintln(\"master: \" + sc.master)",
       "user": "anonymous",
-      "dateUpdated": "2026-09-22 09:00:21.401",
+      "dateUpdated": "2026-09-22 09:36:58.807",
       "progress": 0,
       "config": {
         "editorSetting": {
@@ -90,15 +90,15 @@
       "jobName": "paragraph_1789907683179_82987484",
       "id": "paragraph_1789907683179_82987484",
       "dateCreated": "2026-09-20 12:34:43.179",
-      "dateStarted": "2026-09-22 09:00:21.405",
-      "dateFinished": "2026-09-22 09:00:32.383",
+      "dateStarted": "2026-09-22 09:36:58.811",
+      "dateFinished": "2026-09-22 09:37:35.229",
       "status": "FINISHED"
     },
     {
       "title": "pyspark-df",
       "text": "%pyspark\n# DataFrame + pandas_udf: prueba que el executor (spark-worker) tiene las\n# mismas librerias que el driver (necesario para pandas_udf/applyInPandas).\nimport pandas as pd\nfrom pyspark.sql.functions import pandas_udf\n\ndf \u003d spark.createDataFrame([(1, \"a\"), (2, \"b\"), (3, \"c\")], [\"id\", \"letra\"])\ndf.show()\n\n@pandas_udf(\"long\")\ndef mas_uno(s: pd.Series) -\u003e pd.Series:\n    return s + 1\n\ndf.select(mas_uno(df.id)).show()\nprint(\"master:\", spark.sparkContext.master)",
       "user": "anonymous",
-      "dateUpdated": "2026-09-22 09:00:32.414",
+      "dateUpdated": "2026-09-22 09:37:35.238",
       "progress": 0,
       "config": {
         "editorSetting": {
@@ -153,15 +153,15 @@
       "jobName": "paragraph_1789907683179_132659676",
       "id": "paragraph_1789907683179_132659676",
       "dateCreated": "2026-09-20 12:34:43.179",
-      "dateStarted": "2026-09-22 09:00:32.416",
-      "dateFinished": "2026-09-22 09:00:39.548",
+      "dateStarted": "2026-09-22 09:37:35.241",
+      "dateFinished": "2026-09-22 09:37:43.103",
       "status": "FINISHED"
     },
     {
       "title": "pyspark-hive",
       "text": "%pyspark\n# Spark habla con el mismo metastore Hive del proyecto (zeppelin.spark.useHiveContext\u003dtrue)\nspark.sql(\"SHOW DATABASES\").show()",
       "user": "anonymous",
-      "dateUpdated": "2026-09-22 09:00:39.621",
+      "dateUpdated": "2026-09-22 09:37:43.146",
       "progress": 0,
       "config": {
         "editorSetting": {
@@ -194,15 +194,15 @@
       "jobName": "paragraph_1789907683179_1375606627",
       "id": "paragraph_1789907683179_1375606627",
       "dateCreated": "2026-09-20 12:34:43.179",
-      "dateStarted": "2026-09-22 09:00:39.623",
-      "dateFinished": "2026-09-22 09:00:39.730",
+      "dateStarted": "2026-09-22 09:37:43.148",
+      "dateFinished": "2026-09-22 09:37:43.254",
       "status": "FINISHED"
     },
     {
       "title": "python-plain",
       "text": "%python\n# Python plano (sin Spark), con pandas/matplotlib/etc. del venv del proyecto\nimport pandas as pd\npd.DataFrame({\"a\": [1, 2, 3], \"b\": [4, 5, 6]}).describe()",
       "user": "anonymous",
-      "dateUpdated": "2026-09-22 09:00:39.823",
+      "dateUpdated": "2026-09-22 09:37:43.348",
       "progress": 0,
       "config": {
         "editorSetting": {
@@ -234,8 +234,8 @@
       "jobName": "paragraph_1789907683179_1848699465",
       "id": "paragraph_1789907683179_1848699465",
       "dateCreated": "2026-09-20 12:34:43.179",
-      "dateStarted": "2026-09-22 09:00:39.825",
-      "dateFinished": "2026-09-22 09:00:40.028",
+      "dateStarted": "2026-09-22 09:37:43.351",
+      "dateFinished": "2026-09-22 09:37:45.879",
       "status": "FINISHED"
     }
   ],
