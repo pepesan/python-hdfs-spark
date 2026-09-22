@@ -193,12 +193,15 @@ contexto antes del código, no solo código suelto):
   DataFrames: selección/agregación, limpieza de datos, joins, window
   functions, fechas, funciones de texto, datos anidados, pivot,
   operaciones de conjuntos, escritura/particionado, Avro y Delta Lake.
-- `05_mllib/01_clustering_anomalias_recomendacion` — clusterización
-  (K-Means sobre Iris), detección de anomalías (distancia al centro de la
-  normalidad) y sistemas de recomendación (ALS, filtrado colaborativo).
-  Junto con `06_spark_mllib.py`/`_cancer.py` (clasificación) y
-  `06_spark_mllib_boston.py` (regresión) cubre los 5 tipos de problema de
-  ML más habituales.
+- `05_mllib/01_clustering_anomalias_recomendacion` — los 5 tipos de
+  problema de ML más habituales: clasificación (árbol de decisión sobre
+  Iris), regresión (comparativa de 3 algoritmos sobre Boston Housing),
+  clusterización (K-Means sobre Iris), detección de anomalías (distancia
+  al centro de la normalidad) y sistemas de recomendación (ALS, filtrado
+  colaborativo). Trasladado desde `06_spark_mllib.py`/`_cancer.py`
+  (clasificación), `06_spark_mllib_boston.py` (regresión),
+  `06_spark_mllib_clustering.py`, `06_spark_mllib_anomalias.py` y
+  `06_spark_mllib_recomendacion.py`.
 - `06_graph/01_graphframes` — GraphFrames (label propagation, PageRank).
 - `07_streaming/01_rate_y_kafka` — Structured Streaming con la fuente
   "rate" y con Kafka real (productor + consumidor).

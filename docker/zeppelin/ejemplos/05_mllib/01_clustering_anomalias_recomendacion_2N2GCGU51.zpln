@@ -2,11 +2,23 @@
   "paragraphs": [
     {
       "title": "intro",
-      "text": "%md\n# MLlib: clusterización, detección de anomalías y recomendación\n\nTrasladado desde `06_spark_mllib_clustering.py`, `06_spark_mllib_anomalias.py` y `06_spark_mllib_recomendacion.py`. Completa los 5 tipos de problema de ML más habituales junto con `06_spark_mllib.py`/`_cancer.py` (clasificación) y `06_spark_mllib_boston.py` (regresión, no traídos aquí por ser prácticamente iguales a los de clusterización/anomalías en estructura).",
+      "text": "%md\n# MLlib: los 5 tipos de problema de ML más habituales\n\nTrasladado desde `06_spark_mllib.py`/`_cancer.py` (clasificación), `06_spark_mllib_boston.py` (regresión), `06_spark_mllib_clustering.py`, `06_spark_mllib_anomalias.py` y `06_spark_mllib_recomendacion.py`. Clasificación y regresión comparten estructura con clusterización/anomalías (VectorAssembler → split train/test → fit → evaluador) — se incluyen igualmente aquí por completitud, aunque no aporten patrones nuevos respecto a los otros ejemplos.",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:39:20.143",
+      "dateUpdated": "2026-09-22 09:11:18.458",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -16,7 +28,7 @@
         "msg": [
           {
             "type": "HTML",
-            "data": "<div class=\"markdown-body\">\n<h1>MLlib: clusterización, detección de anomalías y recomendación</h1>\n<p>Trasladado desde <code>06_spark_mllib_clustering.py</code>, <code>06_spark_mllib_anomalias.py</code> y <code>06_spark_mllib_recomendacion.py</code>. Completa los 5 tipos de problema de ML más habituales junto con <code>06_spark_mllib.py</code>/<code>_cancer.py</code> (clasificación) y <code>06_spark_mllib_boston.py</code> (regresión, no traídos aquí por ser prácticamente iguales a los de clusterización/anomalías en estructura).</p>\n\n</div>"
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch1\u003eMLlib: los 5 tipos de problema de ML más habituales\u003c/h1\u003e\n\u003cp\u003eTrasladado desde \u003ccode\u003e06_spark_mllib.py\u003c/code\u003e/\u003ccode\u003e_cancer.py\u003c/code\u003e (clasificación), \u003ccode\u003e06_spark_mllib_boston.py\u003c/code\u003e (regresión), \u003ccode\u003e06_spark_mllib_clustering.py\u003c/code\u003e, \u003ccode\u003e06_spark_mllib_anomalias.py\u003c/code\u003e y \u003ccode\u003e06_spark_mllib_recomendacion.py\u003c/code\u003e. Clasificación y regresión comparten estructura con clusterización/anomalías (VectorAssembler → split train/test → fit → evaluador) — se incluyen igualmente aquí por completitud, aunque no aporten patrones nuevos respecto a los otros ejemplos.\u003c/p\u003e\n\n\u003c/div\u003e"
           }
         ]
       },
@@ -26,17 +38,29 @@
       "jobName": "paragraph_1790030360123_92262047",
       "id": "paragraph_1790030360123_92262047",
       "dateCreated": "2026-09-21 22:39:20.123",
-      "dateStarted": "2026-09-21 22:39:20.148",
-      "dateFinished": "2026-09-21 22:39:22.129",
+      "dateStarted": "2026-09-22 09:11:18.472",
+      "dateFinished": "2026-09-22 09:11:20.415",
       "status": "FINISHED"
     },
     {
-      "title": "md_clustering",
-      "text": "%md\n## 1. Clusterización (K-Means) — aprendizaje NO supervisado\n\nA diferencia de clasificación/regresión, aquí no se le da al algoritmo ninguna etiqueta: K-Means agrupa por su cuenta las flores del dataset Iris que se parecen entre sí, y solo al final se compara con la especie real (que el modelo nunca vio) para evaluar qué tal ha acertado \"a ciegas\".",
+      "title": "md_clasificacion",
+      "text": "%md\n## 1. Clasificación (árbol de decisión) — aprendizaje SUPERVISADO, predice una categoría\n\nEl dataset trae la respuesta correcta para cada fila (la especie de cada flor, `target`) y el modelo aprende a predecirla a partir de sus características (medidas del sépalo/pétalo). Mismo dataset Iris que la clusterización de más abajo, para poder comparar los dos enfoques: aquí SÍ se usan las etiquetas para entrenar; en clusterización se esconden a propósito.",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:39:30.840",
+      "dateUpdated": "2026-09-22 09:11:20.472",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -46,7 +70,440 @@
         "msg": [
           {
             "type": "HTML",
-            "data": "<div class=\"markdown-body\">\n<h2>1. Clusterización (K-Means) — aprendizaje NO supervisado</h2>\n<p>A diferencia de clasificación/regresión, aquí no se le da al algoritmo ninguna etiqueta: K-Means agrupa por su cuenta las flores del dataset Iris que se parecen entre sí, y solo al final se compara con la especie real (que el modelo nunca vio) para evaluar qué tal ha acertado &ldquo;a ciegas&rdquo;.</p>\n\n</div>"
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch2\u003e1. Clasificación (árbol de decisión) — aprendizaje SUPERVISADO, predice una categoría\u003c/h2\u003e\n\u003cp\u003eEl dataset trae la respuesta correcta para cada fila (la especie de cada flor, \u003ccode\u003etarget\u003c/code\u003e) y el modelo aprende a predecirla a partir de sus características (medidas del sépalo/pétalo). Mismo dataset Iris que la clusterización de más abajo, para poder comparar los dos enfoques: aquí SÍ se usan las etiquetas para entrenar; en clusterización se esconden a propósito.\u003c/p\u003e\n\n\u003c/div\u003e"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790068134165_1487444953",
+      "id": "paragraph_1790068134165_1487444953",
+      "dateCreated": "2026-09-22 09:08:54.166",
+      "dateStarted": "2026-09-22 09:11:20.477",
+      "dateFinished": "2026-09-22 09:11:20.485",
+      "status": "FINISHED"
+    },
+    {
+      "title": "clasificacion",
+      "text": "%pyspark\nimport pandas as pd\nfrom sklearn import datasets\nfrom pyspark.ml.feature import VectorAssembler\nfrom pyspark.ml.classification import DecisionTreeClassifier\nfrom pyspark.ml.evaluation import MulticlassClassificationEvaluator\n\niris \u003d datasets.load_iris()\niris_df \u003d pd.DataFrame(iris.data, columns\u003diris.feature_names)\niris_df[\"target\"] \u003d iris.target\ndf_iris \u003d spark.createDataFrame(iris_df)\n\nva_clasif \u003d VectorAssembler(inputCols\u003diris.feature_names, outputCol\u003d\"features\")\ndf_iris \u003d va_clasif.transform(df_iris).select(\"features\", \"target\")\n\ntrainingData, testData \u003d df_iris.randomSplit([0.7, 0.3], seed\u003d42)\ndt \u003d DecisionTreeClassifier(labelCol\u003d\"target\", featuresCol\u003d\"features\", maxDepth\u003d8)\nmodelo_dt \u003d dt.fit(trainingData)\npredicciones \u003d modelo_dt.transform(testData)\n\nevaluador_clasif \u003d MulticlassClassificationEvaluator(labelCol\u003d\"target\", predictionCol\u003d\"prediction\", metricName\u003d\"accuracy\")\naccuracy \u003d evaluador_clasif.evaluate(predicciones)\nprint(f\"Accuracy: {accuracy:.3f}\")\npredicciones.select(\"prediction\", \"target\").show(5)",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-22 09:11:20.577",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        }
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "/opt/spark/python/pyspark/sql/pandas/conversion.py:659: FutureWarning: PySpark does not yet fully support pandas \u003e\u003d 3.0.0. Some features may not work correctly. It is recommended to use pandas \u003c 3.0.0 for now.\n  require_minimum_pandas_version()\n/opt/spark/python/pyspark/sql/pandas/conversion.py:936: FutureWarning: PySpark does not yet fully support pandas \u003e\u003d 3.0.0. Some features may not work correctly. It is recommended to use pandas \u003c 3.0.0 for now.\n  require_minimum_pandas_version()\nAccuracy: 0.982\n+----------+------+\n|prediction|target|\n+----------+------+\n|       0.0|     0|\n|       0.0|     0|\n|       0.0|     0|\n|       0.0|     0|\n|       0.0|     0|\n+----------+------+\nonly showing top 5 rows\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d0"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d1"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d2"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d3"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d4"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d5"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d6"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d7"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d8"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d9"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d10"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d11"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d12"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790068140850_931563171",
+      "id": "paragraph_1790068140850_931563171",
+      "dateCreated": "2026-09-22 09:09:00.850",
+      "dateStarted": "2026-09-22 09:11:20.584",
+      "dateFinished": "2026-09-22 09:11:38.990",
+      "status": "FINISHED"
+    },
+    {
+      "title": "md_regresion",
+      "text": "%md\n## 2. Regresión — aprendizaje SUPERVISADO, predice un número\n\nIgual que la clasificación pero prediciendo un número real en vez de una categoría: el precio medio de una vivienda (columna `MV`) a partir de sus características (dataset Boston Housing). Se comparan 3 algoritmos de regresión de más simple a más sofisticado — normalmente `GBTRegressor` da el mejor RMSE de los tres, a costa de ser el más lento de entrenar.",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-22 09:11:38.998",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        }
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch2\u003e2. Regresión — aprendizaje SUPERVISADO, predice un número\u003c/h2\u003e\n\u003cp\u003eIgual que la clasificación pero prediciendo un número real en vez de una categoría: el precio medio de una vivienda (columna \u003ccode\u003eMV\u003c/code\u003e) a partir de sus características (dataset Boston Housing). Se comparan 3 algoritmos de regresión de más simple a más sofisticado — normalmente \u003ccode\u003eGBTRegressor\u003c/code\u003e da el mejor RMSE de los tres, a costa de ser el más lento de entrenar.\u003c/p\u003e\n\n\u003c/div\u003e"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790068145421_1256762993",
+      "id": "paragraph_1790068145421_1256762993",
+      "dateCreated": "2026-09-22 09:09:05.421",
+      "dateStarted": "2026-09-22 09:11:39.001",
+      "dateFinished": "2026-09-22 09:11:39.010",
+      "status": "FINISHED"
+    },
+    {
+      "title": "regresion",
+      "text": "%pyspark\nfrom pyspark.ml.feature import VectorAssembler\nfrom pyspark.ml.regression import LinearRegression, DecisionTreeRegressor, GBTRegressor\nfrom pyspark.ml.evaluation import RegressionEvaluator\n\nhouse_df \u003d spark.read.csv(\"/opt/project/files/boston.csv\", header\u003dTrue, inferSchema\u003dTrue)\n\ncolumnas_features \u003d [\"CRIM\", \"ZN\", \"INDUS\", \"CHAS\", \"NOX\", \"RM\", \"AGE\", \"DIS\", \"RAD\", \"TAX\", \"PT\", \"B\", \"LSTAT\"]\nva_regr \u003d VectorAssembler(inputCols\u003dcolumnas_features, outputCol\u003d\"features\")\nvhouse_df \u003d va_regr.transform(house_df).select(\"features\", \"MV\")\n\ntrain_df, test_df \u003d vhouse_df.randomSplit([0.7, 0.3], seed\u003d3)\n\nevaluador_rmse \u003d RegressionEvaluator(labelCol\u003d\"MV\", predictionCol\u003d\"prediction\", metricName\u003d\"rmse\")\n\nfor nombre, modelo_regresor in [\n    (\"LinearRegression\", LinearRegression(featuresCol\u003d\"features\", labelCol\u003d\"MV\", maxIter\u003d10, regParam\u003d0.3, elasticNetParam\u003d0.8)),\n    (\"DecisionTreeRegressor\", DecisionTreeRegressor(featuresCol\u003d\"features\", labelCol\u003d\"MV\")),\n    (\"GBTRegressor\", GBTRegressor(featuresCol\u003d\"features\", labelCol\u003d\"MV\", maxIter\u003d10)),\n]:\n    modelo_entrenado \u003d modelo_regresor.fit(train_df)\n    predicciones_regr \u003d modelo_entrenado.transform(test_df)\n    rmse \u003d evaluador_rmse.evaluate(predicciones_regr)\n    print(f\"{nombre}: RMSE \u003d {rmse:.3f}\")",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-22 09:11:39.101",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        }
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "LinearRegression: RMSE \u003d 4.388\nDecisionTreeRegressor: RMSE \u003d 3.350\nGBTRegressor: RMSE \u003d 3.087\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d13"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d14"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d15"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d16"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d17"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d18"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d19"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d20"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d21"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d22"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d23"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d24"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d25"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d26"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d27"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d28"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d29"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d30"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d31"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d32"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d33"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d34"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d35"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d36"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d37"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d38"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d39"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d40"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d41"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d42"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d43"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d44"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d45"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d46"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d47"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d48"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d49"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d50"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d51"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d52"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d53"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d54"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d55"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d56"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d57"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d58"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d59"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d60"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d61"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d62"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d63"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d64"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d65"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d66"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d67"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d68"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d69"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d70"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d71"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d72"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d73"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d74"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d75"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d76"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d77"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d78"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d79"
+            },
+            {
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d80"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1790068153206_1098645689",
+      "id": "paragraph_1790068153206_1098645689",
+      "dateCreated": "2026-09-22 09:09:13.206",
+      "dateStarted": "2026-09-22 09:11:39.103",
+      "dateFinished": "2026-09-22 09:11:46.169",
+      "status": "FINISHED"
+    },
+    {
+      "title": "md_clustering",
+      "text": "%md\n## 3. Clusterización (K-Means) — aprendizaje NO supervisado\n\nA diferencia de clasificación/regresión (arriba), aquí no se le da al algoritmo ninguna etiqueta: K-Means agrupa por su cuenta las flores del dataset Iris que se parecen entre sí, y solo al final se compara con la especie real (que el modelo nunca vio) para evaluar qué tal ha acertado \"a ciegas\".",
+      "user": "anonymous",
+      "dateUpdated": "2026-09-22 09:11:46.209",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        }
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch2\u003e3. Clusterización (K-Means) — aprendizaje NO supervisado\u003c/h2\u003e\n\u003cp\u003eA diferencia de clasificación/regresión (arriba), aquí no se le da al algoritmo ninguna etiqueta: K-Means agrupa por su cuenta las flores del dataset Iris que se parecen entre sí, y solo al final se compara con la especie real (que el modelo nunca vio) para evaluar qué tal ha acertado \u0026ldquo;a ciegas\u0026rdquo;.\u003c/p\u003e\n\n\u003c/div\u003e"
           }
         ]
       },
@@ -56,17 +513,30 @@
       "jobName": "paragraph_1790030370824_1351624706",
       "id": "paragraph_1790030370824_1351624706",
       "dateCreated": "2026-09-21 22:39:30.824",
-      "dateStarted": "2026-09-21 22:39:30.841",
-      "dateFinished": "2026-09-21 22:39:30.848",
+      "dateStarted": "2026-09-22 09:11:46.211",
+      "dateFinished": "2026-09-22 09:11:46.216",
       "status": "FINISHED"
     },
     {
       "title": "clustering",
-      "text": "%pyspark\nfrom sklearn import datasets\nimport pandas as pd\nfrom pyspark.ml.feature import VectorAssembler\nfrom pyspark.ml.clustering import KMeans\nfrom pyspark.ml.evaluation import ClusteringEvaluator\n\niris = datasets.load_iris()\niris_df = pd.DataFrame(iris.data, columns=iris.feature_names)\niris_df[\"especie_real\"] = iris.target\ndf = spark.createDataFrame(iris_df)\n\nva = VectorAssembler(inputCols=iris.feature_names, outputCol=\"features\")\ndf_features = va.transform(df)\n\nkmeans = KMeans(featuresCol=\"features\", predictionCol=\"cluster\", k=3, seed=42)\nmodelo = kmeans.fit(df_features)\nresultado = modelo.transform(df_features)\n\nevaluador = ClusteringEvaluator(featuresCol=\"features\", predictionCol=\"cluster\")\nprint(f\"Silhouette score: {evaluador.evaluate(resultado):.3f}\")\nresultado.groupBy(\"especie_real\", \"cluster\").count().orderBy(\"especie_real\", \"cluster\").show()",
+      "text": "%pyspark\nfrom sklearn import datasets\nimport pandas as pd\nfrom pyspark.ml.feature import VectorAssembler\nfrom pyspark.ml.clustering import KMeans\nfrom pyspark.ml.evaluation import ClusteringEvaluator\n\niris \u003d datasets.load_iris()\niris_df \u003d pd.DataFrame(iris.data, columns\u003diris.feature_names)\niris_df[\"especie_real\"] \u003d iris.target\ndf \u003d spark.createDataFrame(iris_df)\n\nva \u003d VectorAssembler(inputCols\u003diris.feature_names, outputCol\u003d\"features\")\ndf_features \u003d va.transform(df)\n\nkmeans \u003d KMeans(featuresCol\u003d\"features\", predictionCol\u003d\"cluster\", k\u003d3, seed\u003d42)\nmodelo \u003d kmeans.fit(df_features)\nresultado \u003d modelo.transform(df_features)\n\nevaluador \u003d ClusteringEvaluator(featuresCol\u003d\"features\", predictionCol\u003d\"cluster\")\nprint(f\"Silhouette score: {evaluador.evaluate(resultado):.3f}\")\nresultado.groupBy(\"especie_real\", \"cluster\").count().orderBy(\"especie_real\", \"cluster\").show()",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:39:30.945",
+      "dateUpdated": "2026-09-22 09:11:46.311",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -76,7 +546,7 @@
         "msg": [
           {
             "type": "TEXT",
-            "data": "/opt/spark/python/pyspark/sql/pandas/conversion.py:659: FutureWarning: PySpark does not yet fully support pandas >= 3.0.0. Some features may not work correctly. It is recommended to use pandas < 3.0.0 for now.\n  require_minimum_pandas_version()\n/opt/spark/python/pyspark/sql/pandas/conversion.py:936: FutureWarning: PySpark does not yet fully support pandas >= 3.0.0. Some features may not work correctly. It is recommended to use pandas < 3.0.0 for now.\n  require_minimum_pandas_version()\nSilhouette score: 0.734\n+------------+-------+-----+\n|especie_real|cluster|count|\n+------------+-------+-----+\n|           0|      1|   50|\n|           1|      0|   47|\n|           1|      2|    3|\n|           2|      0|   14|\n|           2|      2|   36|\n+------------+-------+-----+\n\n"
+            "data": "/opt/spark/python/pyspark/sql/pandas/conversion.py:659: FutureWarning: PySpark does not yet fully support pandas \u003e\u003d 3.0.0. Some features may not work correctly. It is recommended to use pandas \u003c 3.0.0 for now.\n  require_minimum_pandas_version()\n/opt/spark/python/pyspark/sql/pandas/conversion.py:936: FutureWarning: PySpark does not yet fully support pandas \u003e\u003d 3.0.0. Some features may not work correctly. It is recommended to use pandas \u003c 3.0.0 for now.\n  require_minimum_pandas_version()\nSilhouette score: 0.734\n+------------+-------+-----+\n|especie_real|cluster|count|\n+------------+-------+-----+\n|           0|      1|   50|\n|           1|      0|   47|\n|           1|      2|    3|\n|           2|      0|   14|\n|           2|      2|   36|\n+------------+-------+-----+\n\n"
           }
         ]
       },
@@ -89,82 +559,82 @@
           "group": "spark",
           "values": [
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=0"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d81"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=1"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d82"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=2"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d83"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=3"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d84"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=4"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d85"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=5"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d86"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=6"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d87"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=7"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d88"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=8"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d89"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=9"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d90"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=10"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d91"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=11"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d92"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=12"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d93"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=13"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d94"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=14"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d95"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=15"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d96"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=16"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d97"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=17"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d98"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=18"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d99"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=19"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d100"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=20"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d101"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=21"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d102"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=22"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d103"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=23"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d104"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=24"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d105"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=25"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d106"
             }
           ],
           "interpreterSettingId": "spark"
@@ -174,17 +644,29 @@
       "jobName": "paragraph_1790030370930_93528188",
       "id": "paragraph_1790030370930_93528188",
       "dateCreated": "2026-09-21 22:39:30.930",
-      "dateStarted": "2026-09-21 22:39:30.947",
-      "dateFinished": "2026-09-21 22:39:51.020",
+      "dateStarted": "2026-09-22 09:11:46.313",
+      "dateFinished": "2026-09-22 09:11:48.346",
       "status": "FINISHED"
     },
     {
       "title": "md_anomalias",
-      "text": "%md\n## 2. Detección de anomalías\n\nMLlib no trae un algoritmo específico para esto — se construye con una técnica real y muy usada: la distancia de cada punto al \"centro de la normalidad\" (la media) como puntuación de rareza. Datos sintéticos (lecturas de temperatura/vibración de una máquina) con 3 anomalías inyectadas a propósito.",
+      "text": "%md\n## 4. Detección de anomalías\n\nMLlib no trae un algoritmo específico para esto — se construye con una técnica real y muy usada: la distancia de cada punto al \"centro de la normalidad\" (la media) como puntuación de rareza. Datos sintéticos (lecturas de temperatura/vibración de una máquina) con 3 anomalías inyectadas a propósito.",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:40:00.347",
+      "dateUpdated": "2026-09-22 09:11:48.415",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -194,7 +676,7 @@
         "msg": [
           {
             "type": "HTML",
-            "data": "<div class=\"markdown-body\">\n<h2>2. Detección de anomalías</h2>\n<p>MLlib no trae un algoritmo específico para esto — se construye con una técnica real y muy usada: la distancia de cada punto al &ldquo;centro de la normalidad&rdquo; (la media) como puntuación de rareza. Datos sintéticos (lecturas de temperatura/vibración de una máquina) con 3 anomalías inyectadas a propósito.</p>\n\n</div>"
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch2\u003e4. Detección de anomalías\u003c/h2\u003e\n\u003cp\u003eMLlib no trae un algoritmo específico para esto — se construye con una técnica real y muy usada: la distancia de cada punto al \u0026ldquo;centro de la normalidad\u0026rdquo; (la media) como puntuación de rareza. Datos sintéticos (lecturas de temperatura/vibración de una máquina) con 3 anomalías inyectadas a propósito.\u003c/p\u003e\n\n\u003c/div\u003e"
           }
         ]
       },
@@ -204,17 +686,30 @@
       "jobName": "paragraph_1790030400332_464448457",
       "id": "paragraph_1790030400332_464448457",
       "dateCreated": "2026-09-21 22:40:00.332",
-      "dateStarted": "2026-09-21 22:40:00.349",
-      "dateFinished": "2026-09-21 22:40:00.354",
+      "dateStarted": "2026-09-22 09:11:48.417",
+      "dateFinished": "2026-09-22 09:11:48.422",
       "status": "FINISHED"
     },
     {
       "title": "anomalias",
-      "text": "%pyspark\nimport numpy as np\nimport pyspark.sql.functions as F\n\nrng = np.random.default_rng(42)\nnormales = rng.normal(loc=[50.0, 2.0], scale=[3.0, 0.3], size=(200, 2))\nanomalias_reales = np.array([[95.0, 2.1], [51.0, 9.0], [88.0, 8.5]])\ndatos = np.vstack([normales, anomalias_reales])\nes_anomalia_real = np.array([False] * len(normales) + [True] * len(anomalias_reales))\n\npdf = pd.DataFrame(datos, columns=[\"temperatura\", \"vibracion\"])\npdf[\"es_anomalia_real\"] = es_anomalia_real\ndf_sensores = spark.createDataFrame(pdf)\n\ncentro = df_sensores.select(F.mean(\"temperatura\").alias(\"t\"), F.mean(\"vibracion\").alias(\"v\")).first()\ndistancia = F.sqrt(F.pow(df_sensores.temperatura - centro[\"t\"], 2) + F.pow(df_sensores.vibracion - centro[\"v\"], 2))\nresultado_an = df_sensores.withColumn(\"distancia_al_centro\", distancia)\n\nstats = resultado_an.select(F.mean(\"distancia_al_centro\").alias(\"media\"), F.stddev(\"distancia_al_centro\").alias(\"sd\")).first()\numbral = stats[\"media\"] + 3 * stats[\"sd\"]\nresultado_an = resultado_an.withColumn(\"es_anomalia_detectada\", resultado_an.distancia_al_centro > umbral)\n\nresultado_an.filter(resultado_an.es_anomalia_detectada) \\\n    .select(\"temperatura\", \"vibracion\", \"distancia_al_centro\", \"es_anomalia_real\") \\\n    .orderBy(F.desc(\"distancia_al_centro\")).show()",
+      "text": "%pyspark\nimport numpy as np\nimport pyspark.sql.functions as F\n\nrng \u003d np.random.default_rng(42)\nnormales \u003d rng.normal(loc\u003d[50.0, 2.0], scale\u003d[3.0, 0.3], size\u003d(200, 2))\nanomalias_reales \u003d np.array([[95.0, 2.1], [51.0, 9.0], [88.0, 8.5]])\ndatos \u003d np.vstack([normales, anomalias_reales])\nes_anomalia_real \u003d np.array([False] * len(normales) + [True] * len(anomalias_reales))\n\npdf \u003d pd.DataFrame(datos, columns\u003d[\"temperatura\", \"vibracion\"])\npdf[\"es_anomalia_real\"] \u003d es_anomalia_real\ndf_sensores \u003d spark.createDataFrame(pdf)\n\ncentro \u003d df_sensores.select(F.mean(\"temperatura\").alias(\"t\"), F.mean(\"vibracion\").alias(\"v\")).first()\ndistancia \u003d F.sqrt(F.pow(df_sensores.temperatura - centro[\"t\"], 2) + F.pow(df_sensores.vibracion - centro[\"v\"], 2))\nresultado_an \u003d df_sensores.withColumn(\"distancia_al_centro\", distancia)\n\nstats \u003d resultado_an.select(F.mean(\"distancia_al_centro\").alias(\"media\"), F.stddev(\"distancia_al_centro\").alias(\"sd\")).first()\numbral \u003d stats[\"media\"] + 3 * stats[\"sd\"]\nresultado_an \u003d resultado_an.withColumn(\"es_anomalia_detectada\", resultado_an.distancia_al_centro \u003e umbral)\n\nresultado_an.filter(resultado_an.es_anomalia_detectada) \\\n    .select(\"temperatura\", \"vibracion\", \"distancia_al_centro\", \"es_anomalia_real\") \\\n    .orderBy(F.desc(\"distancia_al_centro\")).show()",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:40:00.452",
+      "dateUpdated": "2026-09-22 09:11:48.517",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -224,7 +719,7 @@
         "msg": [
           {
             "type": "TEXT",
-            "data": "/opt/spark/python/pyspark/sql/pandas/conversion.py:659: FutureWarning: PySpark does not yet fully support pandas >= 3.0.0. Some features may not work correctly. It is recommended to use pandas < 3.0.0 for now.\n  require_minimum_pandas_version()\n/opt/spark/python/pyspark/sql/pandas/conversion.py:936: FutureWarning: PySpark does not yet fully support pandas >= 3.0.0. Some features may not work correctly. It is recommended to use pandas < 3.0.0 for now.\n  require_minimum_pandas_version()\n+-----------+---------+-------------------+----------------+\n|temperatura|vibracion|distancia_al_centro|es_anomalia_real|\n+-----------+---------+-------------------+----------------+\n|       95.0|      2.1| 44.521072652978354|            true|\n|       88.0|      8.5|  38.07014950348721|            true|\n+-----------+---------+-------------------+----------------+\n\n"
+            "data": "/opt/spark/python/pyspark/sql/pandas/conversion.py:659: FutureWarning: PySpark does not yet fully support pandas \u003e\u003d 3.0.0. Some features may not work correctly. It is recommended to use pandas \u003c 3.0.0 for now.\n  require_minimum_pandas_version()\n/opt/spark/python/pyspark/sql/pandas/conversion.py:936: FutureWarning: PySpark does not yet fully support pandas \u003e\u003d 3.0.0. Some features may not work correctly. It is recommended to use pandas \u003c 3.0.0 for now.\n  require_minimum_pandas_version()\n+-----------+---------+-------------------+----------------+\n|temperatura|vibracion|distancia_al_centro|es_anomalia_real|\n+-----------+---------+-------------------+----------------+\n|       95.0|      2.1| 44.521072652978354|            true|\n|       88.0|      8.5|  38.07014950348721|            true|\n+-----------+---------+-------------------+----------------+\n\n"
           }
         ]
       },
@@ -237,25 +732,25 @@
           "group": "spark",
           "values": [
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=26"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d107"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=27"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d108"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=28"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d109"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=29"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d110"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=30"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d111"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=31"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d112"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=32"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d113"
             }
           ],
           "interpreterSettingId": "spark"
@@ -265,17 +760,29 @@
       "jobName": "paragraph_1790030400438_1990182115",
       "id": "paragraph_1790030400438_1990182115",
       "dateCreated": "2026-09-21 22:40:00.438",
-      "dateStarted": "2026-09-21 22:40:00.453",
-      "dateFinished": "2026-09-21 22:40:01.125",
+      "dateStarted": "2026-09-22 09:11:48.519",
+      "dateFinished": "2026-09-22 09:11:49.013",
       "status": "FINISHED"
     },
     {
       "title": "md_als",
-      "text": "%md\n## 3. Sistemas de recomendación (ALS)\n\nFiltrado colaborativo: rellenar los huecos de una matriz usuario × producto a partir de las valoraciones que SÍ existen — \"a usuarios que se parecen les gustan cosas parecidas\", sin saber nada del contenido de cada producto. Películas de ciencia ficción vs. romance, con gustos claramente diferenciados por usuario a propósito.",
+      "text": "%md\n## 5. Sistemas de recomendación (ALS)\n\nFiltrado colaborativo: rellenar los huecos de una matriz usuario × producto a partir de las valoraciones que SÍ existen — \"a usuarios que se parecen les gustan cosas parecidas\", sin saber nada del contenido de cada producto. Películas de ciencia ficción vs. romance, con gustos claramente diferenciados por usuario a propósito.",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:40:12.256",
+      "dateUpdated": "2026-09-22 09:11:49.020",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -285,7 +792,7 @@
         "msg": [
           {
             "type": "HTML",
-            "data": "<div class=\"markdown-body\">\n<h2>3. Sistemas de recomendación (ALS)</h2>\n<p>Filtrado colaborativo: rellenar los huecos de una matriz usuario × producto a partir de las valoraciones que SÍ existen — &ldquo;a usuarios que se parecen les gustan cosas parecidas&rdquo;, sin saber nada del contenido de cada producto. Películas de ciencia ficción vs. romance, con gustos claramente diferenciados por usuario a propósito.</p>\n\n</div>"
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch2\u003e5. Sistemas de recomendación (ALS)\u003c/h2\u003e\n\u003cp\u003eFiltrado colaborativo: rellenar los huecos de una matriz usuario × producto a partir de las valoraciones que SÍ existen — \u0026ldquo;a usuarios que se parecen les gustan cosas parecidas\u0026rdquo;, sin saber nada del contenido de cada producto. Películas de ciencia ficción vs. romance, con gustos claramente diferenciados por usuario a propósito.\u003c/p\u003e\n\n\u003c/div\u003e"
           }
         ]
       },
@@ -295,17 +802,30 @@
       "jobName": "paragraph_1790030412241_408073321",
       "id": "paragraph_1790030412241_408073321",
       "dateCreated": "2026-09-21 22:40:12.241",
-      "dateStarted": "2026-09-21 22:40:12.258",
-      "dateFinished": "2026-09-21 22:40:12.262",
+      "dateStarted": "2026-09-22 09:11:49.022",
+      "dateFinished": "2026-09-22 09:11:49.026",
       "status": "FINISHED"
     },
     {
       "title": "als",
-      "text": "%pyspark\nfrom pyspark.ml.recommendation import ALS\nfrom pyspark.ml.evaluation import RegressionEvaluator\n\npeliculas = {0: \"Matrix\", 1: \"Inception\", 2: \"Interstellar\", 3: \"Titanic\", 4: \"El Diario de Noa\", 5: \"La La Land\"}\n\nvaloraciones = spark.createDataFrame([\n    (0, 0, 5.0), (0, 1, 4.0),\n    (1, 0, 4.0), (1, 1, 5.0), (1, 2, 5.0),\n    (2, 0, 5.0), (2, 2, 4.0),\n    (0, 3, 1.0), (1, 4, 2.0), (2, 5, 1.0),\n    (3, 3, 5.0), (3, 4, 4.0),\n    (4, 4, 5.0), (4, 5, 5.0), (4, 3, 4.0),\n    (5, 5, 4.0), (5, 3, 5.0),\n    (3, 0, 1.0), (4, 1, 2.0), (5, 2, 1.0),\n], [\"usuario\", \"pelicula\", \"valoracion\"])\n\n(entrenamiento, prueba) = valoraciones.randomSplit([0.8, 0.2], seed=42)\nals = ALS(userCol=\"usuario\", itemCol=\"pelicula\", ratingCol=\"valoracion\", rank=4, maxIter=10, regParam=0.1, seed=42, coldStartStrategy=\"drop\")\nmodelo_als = als.fit(entrenamiento)\n\nevaluador_als = RegressionEvaluator(metricName=\"rmse\", labelCol=\"valoracion\", predictionCol=\"prediction\")\nprint(f\"RMSE: {evaluador_als.evaluate(modelo_als.transform(prueba)):.3f}\")\n\nrecs = modelo_als.recommendForAllUsers(2)\nprint(\"Recomendaciones para el usuario 0 (fan de ciencia ficcion, nunca valoro Interstellar):\")\nfor r in recs.filter(recs.usuario == 0).first().recommendations:\n    nombre_pelicula = peliculas[r[\"pelicula\"]]\n    print(\"  \" + nombre_pelicula + \": \" + str(round(r[\"rating\"], 2)))",
+      "text": "%pyspark\nfrom pyspark.ml.recommendation import ALS\nfrom pyspark.ml.evaluation import RegressionEvaluator\n\npeliculas \u003d {0: \"Matrix\", 1: \"Inception\", 2: \"Interstellar\", 3: \"Titanic\", 4: \"El Diario de Noa\", 5: \"La La Land\"}\n\nvaloraciones \u003d spark.createDataFrame([\n    (0, 0, 5.0), (0, 1, 4.0),\n    (1, 0, 4.0), (1, 1, 5.0), (1, 2, 5.0),\n    (2, 0, 5.0), (2, 2, 4.0),\n    (0, 3, 1.0), (1, 4, 2.0), (2, 5, 1.0),\n    (3, 3, 5.0), (3, 4, 4.0),\n    (4, 4, 5.0), (4, 5, 5.0), (4, 3, 4.0),\n    (5, 5, 4.0), (5, 3, 5.0),\n    (3, 0, 1.0), (4, 1, 2.0), (5, 2, 1.0),\n], [\"usuario\", \"pelicula\", \"valoracion\"])\n\n(entrenamiento, prueba) \u003d valoraciones.randomSplit([0.8, 0.2], seed\u003d42)\nals \u003d ALS(userCol\u003d\"usuario\", itemCol\u003d\"pelicula\", ratingCol\u003d\"valoracion\", rank\u003d4, maxIter\u003d10, regParam\u003d0.1, seed\u003d42, coldStartStrategy\u003d\"drop\")\nmodelo_als \u003d als.fit(entrenamiento)\n\nevaluador_als \u003d RegressionEvaluator(metricName\u003d\"rmse\", labelCol\u003d\"valoracion\", predictionCol\u003d\"prediction\")\nprint(f\"RMSE: {evaluador_als.evaluate(modelo_als.transform(prueba)):.3f}\")\n\nrecs \u003d modelo_als.recommendForAllUsers(2)\nprint(\"Recomendaciones para el usuario 0 (fan de ciencia ficcion, nunca valoro Interstellar):\")\nfor r in recs.filter(recs.usuario \u003d\u003d 0).first().recommendations:\n    nombre_pelicula \u003d peliculas[r[\"pelicula\"]]\n    print(\"  \" + nombre_pelicula + \": \" + str(round(r[\"rating\"], 2)))",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:40:21.805",
+      "dateUpdated": "2026-09-22 09:11:49.122",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -328,43 +848,43 @@
           "group": "spark",
           "values": [
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=33"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d114"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=34"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d115"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=35"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d116"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=36"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d117"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=37"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d118"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=38"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d119"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=39"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d120"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=40"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d121"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=41"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d122"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=42"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d123"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=43"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d124"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=44"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d125"
             },
             {
-              "jobUrl": "http://zeppelin:4040/jobs/job?id=45"
+              "jobUrl": "http://zeppelin:4040/jobs/job?id\u003d126"
             }
           ],
           "interpreterSettingId": "spark"
@@ -374,17 +894,29 @@
       "jobName": "paragraph_1790030421791_661175761",
       "id": "paragraph_1790030421791_661175761",
       "dateCreated": "2026-09-21 22:40:21.791",
-      "dateStarted": "2026-09-21 22:40:21.807",
-      "dateFinished": "2026-09-21 22:40:28.452",
+      "dateStarted": "2026-09-22 09:11:49.124",
+      "dateFinished": "2026-09-22 09:11:54.483",
       "status": "FINISHED"
     },
     {
       "title": "md_als_nota",
       "text": "%md\n**Nota real**: el resultado exacto (qué 2 películas concretas salen recomendadas) puede variar entre ejecuciones en clusters con distinto número de particiones/executors — `randomSplit()` con una `seed` fija es determinista DENTRO del mismo plan de particionado, pero no está garantizado que dé exactamente la misma partición entrenamiento/prueba en un cluster real (varios executors) que en local (`local[*]`, un solo proceso) — el script `.py` equivalente, ejecutado en local, sí da siempre las mismas 2 películas. Lo que SÍ es constante en cualquier ejecución: las recomendaciones para el usuario 0 son siempre de ciencia ficción, nunca de romance — el patrón de gustos aprendido es el mismo, aunque el orden/particionado interno cambie el resultado exacto del split.",
       "user": "anonymous",
-      "dateUpdated": "2026-09-21 22:40:48.028",
+      "dateUpdated": "2026-09-22 09:11:54.528",
       "progress": 0,
-      "config": {},
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "params": {},
+          "forms": {},
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionSupport": false
+        }
+      },
       "settings": {
         "params": {},
         "forms": {}
@@ -394,7 +926,7 @@
         "msg": [
           {
             "type": "HTML",
-            "data": "<div class=\"markdown-body\">\n<p><strong>Nota real</strong>: el resultado exacto (qué 2 películas concretas salen recomendadas) puede variar entre ejecuciones en clusters con distinto número de particiones/executors — <code>randomSplit()</code> con una <code>seed</code> fija es determinista DENTRO del mismo plan de particionado, pero no está garantizado que dé exactamente la misma partición entrenamiento/prueba en un cluster real (varios executors) que en local (<code>local[*]</code>, un solo proceso) — el script <code>.py</code> equivalente, ejecutado en local, sí da siempre las mismas 2 películas. Lo que SÍ es constante en cualquier ejecución: las recomendaciones para el usuario 0 son siempre de ciencia ficción, nunca de romance — el patrón de gustos aprendido es el mismo, aunque el orden/particionado interno cambie el resultado exacto del split.</p>\n\n</div>"
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003cp\u003e\u003cstrong\u003eNota real\u003c/strong\u003e: el resultado exacto (qué 2 películas concretas salen recomendadas) puede variar entre ejecuciones en clusters con distinto número de particiones/executors — \u003ccode\u003erandomSplit()\u003c/code\u003e con una \u003ccode\u003eseed\u003c/code\u003e fija es determinista DENTRO del mismo plan de particionado, pero no está garantizado que dé exactamente la misma partición entrenamiento/prueba en un cluster real (varios executors) que en local (\u003ccode\u003elocal[*]\u003c/code\u003e, un solo proceso) — el script \u003ccode\u003e.py\u003c/code\u003e equivalente, ejecutado en local, sí da siempre las mismas 2 películas. Lo que SÍ es constante en cualquier ejecución: las recomendaciones para el usuario 0 son siempre de ciencia ficción, nunca de romance — el patrón de gustos aprendido es el mismo, aunque el orden/particionado interno cambie el resultado exacto del split.\u003c/p\u003e\n\n\u003c/div\u003e"
           }
         ]
       },
@@ -404,8 +936,8 @@
       "jobName": "paragraph_1790030448013_1766909003",
       "id": "paragraph_1790030448013_1766909003",
       "dateCreated": "2026-09-21 22:40:48.014",
-      "dateStarted": "2026-09-21 22:40:48.030",
-      "dateFinished": "2026-09-21 22:40:48.036",
+      "dateStarted": "2026-09-22 09:11:54.530",
+      "dateFinished": "2026-09-22 09:11:54.537",
       "status": "FINISHED"
     }
   ],
@@ -419,5 +951,9 @@
   "config": {
     "isZeppelinNotebookCronEnable": false
   },
-  "info": {}
+  "info": {
+    "inIsolatedMode": false,
+    "startTime": "2026-09-22_09-09-16",
+    "isRunning": true
+  }
 }
