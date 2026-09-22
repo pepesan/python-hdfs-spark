@@ -1,43 +1,38 @@
 # Requiere: ninguno (Spark local, sin servicios docker).
-import pyspark
-import pyspark.sql.functions as F
+#
+# Introducción a Spark SQL / DataFrames: cargar datos (aquí desde pandas,
+# con un schema definido a mano), y las operaciones más básicas —
+# filtrar, agrupar y agregar. Ver `05_spark_sql_02.py` en adelante para
+# leer directamente de CSV/JSON y operaciones más avanzadas.
 from pyspark.sql import SparkSession
+import pyspark.sql.functions as F
 
-# Crear un SparkSession
-spark = pyspark.sql.SparkSession.builder.appName("Ejemplo 1").getOrCreate()
+spark = SparkSession.builder.appName('spark-sql-intro').getOrCreate()
 
-# Load the Pandas libraries with alias 'pd'
+# Cargamos el CSV con pandas primero (en vez de spark.read.csv) solo para
+# poder mostrar cómo se pasa un pandas DataFrame ya existente a Spark con
+# un schema explícito, en vez de dejar que Spark lo infiera solo.
 import pandas as pd
-# Read data from file 'filename.csv'
-# (in the same directory that your python process is based)
-# Control delimiters, rows, column names with read_csv (see later)
-# leo los datos del csv con pandas
 data = pd.read_csv("files/sql.csv")
 
-from pyspark.sql.types import *
-# como no se que datos van en casa sitio me monto yo la estructura
-# aqui van los campos del DF
-mySchema = StructType([ StructField("id", IntegerType(), True)\
-                       ,StructField("nombre", StringType(), True)\
-                       ,StructField("edad", IntegerType(), True)\
-                       ,StructField("pais", StringType(), True)\
-                    ])
-# creo la sesión de spark
-sparkSession = SparkSession.builder.appName('pandasToSparkDF').getOrCreate()
-#uso la sesión para crear un DF desde los datos de pandas
-df = sparkSession.createDataFrame(data, schema=mySchema)
+from pyspark.sql.types import StructType, StructField, IntegerType, StringType
+
+schema = StructType([
+    StructField("id", IntegerType(), True),
+    StructField("nombre", StringType(), True),
+    StructField("edad", IntegerType(), True),
+    StructField("pais", StringType(), True),
+])
+df = spark.createDataFrame(data, schema=schema)
 print(df.head())
-# Mostrar los datos
 df.show()
 
-# Filtrar los datos
+# Filtrar: igual que un WHERE de SQL, se queda solo con las filas que
+# cumplen la condición.
 df = df.filter(df.edad >= 30)
-
-# Mostrar los datos
 df.show()
 
-# Agregar los datos
+# Agregar: media de "edad" por cada valor distinto de "pais" — equivalente
+# a un GROUP BY ... AVG(edad) de SQL.
 df = df.groupBy("pais").agg(F.avg("edad"))
-
-# Mostrar los datos
 df.show()

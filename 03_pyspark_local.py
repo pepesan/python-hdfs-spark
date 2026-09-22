@@ -1,6 +1,10 @@
 # Requiere: ninguno (Spark local, sin servicios docker).
-import pyspark
-# conexión a spark "local"
-# sólo se usa la biblioteca para acceder a las funciones de spark
-from pyspark import SparkContext
-sc = SparkContext("local", "First App")
+#
+# Primer ejemplo del proyecto: crear una sesión de Spark en modo "local"
+# (todo corre en un único proceso, sin cluster real) y usarla mínimamente
+# — solo para comprobar que la instalación funciona antes de pasar a
+# ejemplos con datos de verdad.
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.appName('First App').master('local').getOrCreate()
+print(spark)

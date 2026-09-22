@@ -1,49 +1,38 @@
 # Requiere: docker/01_launch.sh (namenode, datanode) y la entrada
-# "127.0.0.1 datanode" en /etc/hosts (ver README.md).
+# "127.0.0.1 datanode" en /etc/hosts (ver README.md) — a diferencia de
+# 01_connect_hdfs.py (solo listado de metadatos, vía namenode), aquí se
+# sube/lee/escribe CONTENIDO de ficheros, y eso exige que el datanode sea
+# resoluble desde el host (ver la nota del README sobre el redirect 307).
 #
-# Documentación de acceso a HDFS desde Python3
-# https://hdfscli.readthedocs.io/
+# Ciclo de vida completo de un fichero en HDFS desde Python: subir uno
+# local, listar, leer su contenido, borrarlo, y crear/leer/borrar uno
+# nuevo directamente en HDFS (sin partir de un fichero local). Ver
+# 01_connect_hdfs.py para la lista de métodos del cliente.
 import hdfs
 
-# Conexión a HDFS
-# revisar la configuración de docker/compose.yaml
-# 9870 es el puerto HTTP del namenode (WebHDFS), no el RPC (8020)
-# "hadoop" es el usuario dueño de /user en el cluster del docker-compose
 client = hdfs.InsecureClient('http://localhost:9870', user='hadoop')
-
-# nos aseguramos de que la carpeta exista (idempotente)
 client.makedirs('/user/admin')
 
-# Subida de ficheros
-# origen y destino
-# se sube para luego trabajar dentro del cluster
-# puede ser cualquier tipo de fichero: txt,csv,json...
-# estos ficheros son los datos inicales con los que se trabaja
-# podría ser una exportación de un excel por ejemplo en csv
-# es como hacer un upload a un servidor
+# Subir un fichero local a HDFS (podría ser cualquier tipo: txt, csv,
+# json... el uso típico es cargar datos de origen para procesarlos luego
+# en el cluster, p. ej. una exportación de un CSV).
 client.upload('/user/admin/remote-file.txt', './files/local-file.txt', overwrite=True)
 
-# Coger listado de ficheros
 filenames = ['/user/admin/' + name for name in client.list('/user/admin')]
-# Cabecera del 1º fichero
 if len(filenames) > 0:
     print("Primer fichero: " + filenames[0])
     with client.read(filenames[0]) as f:
         print(f.read())
 
-# borramos el fichero
 client.delete('/user/admin/remote-file.txt')
 
-# con esto abrimos un fichero alojado en hdfs
-# con permisos de escritura y en binario
-# es decir creamos un fichero con un contenido
+# También se puede escribir un fichero directamente en HDFS, sin que
+# exista antes en local — client.write() es un context manager en modo
+# binario, igual que open(..., 'wb') pero contra HDFS.
 with client.write('/user/admin/myfile.txt', overwrite=True) as f:
-    # una vez abierto el fichero escribimos un contenido
     f.write(b'Hello, world!')
-# abrimos un fichero en lectura
+
 with client.read('/user/admin/myfile.txt') as f:
-    # leemos el contenido/recorremos el fichero
     print(f.read())
 
-# borramos el fichero
 client.delete('/user/admin/myfile.txt')

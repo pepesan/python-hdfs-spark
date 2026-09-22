@@ -1,143 +1,79 @@
 # Requiere: ninguno (Spark local, sin servicios docker).
-from pyspark import SparkContext
-sc =SparkContext()
-# cargamos los datos de cancerDataSet
+#
+# Clasificación (aprendizaje SUPERVISADO) — mismo tipo de problema que
+# `06_spark_mllib.py` (Iris), pero aquí con un caso binario real:
+# clasificar tumores de mama como malignos o benignos ("target") a partir
+# de 30 medidas del tumor (radio, textura, perímetro...). Dataset clásico
+# "Breast Cancer Wisconsin" de scikit-learn.
+#
+# A diferencia de `06_spark_mllib.py`, aquí además se barre un rango de
+# hiperparámetros a mano (una búsqueda en rejilla muy simple) para ver
+# cómo cambia la precisión del árbol de decisión según:
+#   - random: qué proporción de datos se usa para entrenar (0.7/0.8/0.9)
+#     frente a probar (el resto).
+#   - maxDepth: la profundidad máxima del árbol — más profundidad capta
+#     patrones más finos, pero también aumenta el riesgo de sobreajustar
+#     (memorizar el ruido del conjunto de entrenamiento en vez de aprender
+#     el patrón real).
 from sklearn import datasets
-# esto es un dataset que cargamos desde sklearn
-cancerDataSet = datasets.load_breast_cancer()
-#print("Características: " + str(cancerDataSet.data))
-#print("Nombre de Características: " + str(cancerDataSet.feature_names))
-#print("Etiquetas: " + str(cancerDataSet.target))
-#print("Nombres de etiquetas: " + str(cancerDataSet.target_names))
-#print("Descripción: "+cancerDataSet.DESCR)
-
-# invocamos pandas para crear un array de datos y un DF
-# un DF de pandas XD
 import pandas as pd
-# cancerDataSet.data son los datos de las características
-# las medidas de las flores
-# feature_name son los nombres de cada medida
-cancer_df = pd.DataFrame(
-    cancerDataSet.data, columns = cancerDataSet.feature_names)
-
-# imprimimos los primeros registros del DF, las primeras rows
-#print(cancer_df.head())
-#print(cancerDataSet.target)
-cancer_df['target'] = cancerDataSet.target
-#print(cancer_df)
-#print(cancer_df.show())
-"""
-import matplotlib.pyplot as plt   #Load the pyplot visualization library
-cancer_df['mean radius'].hist(bins=90)
-plt.show()
-
-data = cancerDataSet.data
-target = cancerDataSet.target
-# Resize the figure for better viewing
-plt.figure(figsize=(12,5))
-
-# First subplot
-plt.subplot(131)
-
-# Visualize the first two columns of data:
-plt.scatter(data[:,0], data[:,1], c=target)
-# Second subplot
-plt.subplot(132)
-
-# Visualize the last two columns of data:
-plt.scatter(data[:,0], data[:,2], c=target)
-# Second subplot
-plt.subplot(133)
-
-# Visualize the last two columns of data:
-plt.scatter(data[:,0], data[:,3], c=target)
-plt.show()
-"""
-
-#Haciendo transformaciones
-from pyspark.ml.linalg import Vectors
-from pyspark.ml.feature import VectorAssembler
-# esto es una vectorización
-# es meter todas las características en un sólo campo de tipo array
-# así funciona más rápido
-#Creando campos de entrada y salida
-vector_assembler = VectorAssembler(
-    inputCols=[
-'mean radius' ,'mean texture' ,'mean perimeter' ,'mean area',
- 'mean smoothness', 'mean compactness', 'mean concavity',
- 'mean concave points', 'mean symmetry' ,'mean fractal dimension',
- 'radius error', 'texture error', 'perimeter error', 'area error',
- 'smoothness error' ,'compactness error', 'concavity error',
- 'concave points error' ,'symmetry error' ,'fractal dimension error',
- 'worst radius', 'worst texture' ,'worst perimeter', 'worst area',
- 'worst smoothness' ,'worst compactness', 'worst concavity',
- 'worst concave points' ,'worst symmetry' ,'worst fractal dimension'
-    ],
-    outputCol="features")
 
 from pyspark.sql import SparkSession
-sparkSession =SparkSession.builder.appName('pandasToSparkDF').getOrCreate()
-#creado el DF de Spark
-df = sparkSession.createDataFrame(cancer_df)
-#aplicando transformación
-df_temp = vector_assembler.transform(df)
-#mostrando 3
-#df_temp.show(3)
-#Quitamos las columnas no interesantes
-df = df_temp.drop('mean radius' ,'mean texture' ,'mean perimeter' ,'mean area',
- 'mean smoothness', 'mean compactness', 'mean concavity',
- 'mean concave points', 'mean symmetry' ,'mean fractal dimension',
- 'radius error', 'texture error', 'perimeter error', 'area error',
- 'smoothness error' ,'compactness error', 'concavity error',
- 'concave points error' ,'symmetry error' ,'fractal dimension error',
- 'worst radius', 'worst texture' ,'worst perimeter', 'worst area',
- 'worst smoothness' ,'worst compactness', 'worst concavity',
- 'worst concave points' ,'worst symmetry' ,'worst fractal dimension')
-#df.show(3)
+from pyspark.ml.feature import VectorAssembler
+from pyspark.ml.classification import DecisionTreeClassifier
+from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 
-def prueba(random,maxDepth):
-    print("Depth: " + str(maxDepth) + ", Random: " + str(random))
-    #Dividimos los datos en entrenamiento y pruebas
-    (trainingData, testData) = df.randomSplit([random, 1-random], seed=3)
-    #trainingData.show(3)
-    #testData.show(3)
-    # en este caso escogemos el algoritmo de clasificación de árboles de decision
-    from pyspark.ml.classification import DecisionTreeClassifier
-    from pyspark.ml.evaluation import MulticlassClassificationEvaluator
-    #Creamos el modelo con un clasificador de árboles de decisión
-    # Escogemos un algoritmo, en este caso DecisionTreeClassifier
-    # pero podría ser otro por ejemplo regresión linear
-    # target son las etiquetas, features son las características
+cancer = datasets.load_breast_cancer()
+cancer_df = pd.DataFrame(cancer.data, columns=cancer.feature_names)
+cancer_df['target'] = cancer.target  # 0 = maligno, 1 = benigno
+
+spark = SparkSession.builder.appName('clasificacion-cancer').getOrCreate()
+df = spark.createDataFrame(cancer_df)
+
+# MLlib exige juntar todas las columnas de entrada en una sola columna
+# "features" (un vector) antes de entrenar cualquier algoritmo — aquí son
+# las 30 medidas del tumor.
+columnas_features = list(cancer.feature_names)
+vector_assembler = VectorAssembler(inputCols=columnas_features, outputCol="features")
+df = vector_assembler.transform(df).select("features", "target")
+df.show(3)
+
+
+def entrena_y_evalua(proporcion_train: float, max_depth: int) -> float:
+    """Entrena un árbol de decisión con un split y una profundidad
+    concretos, y devuelve el accuracy sobre el conjunto de prueba."""
+    print(f"Depth: {max_depth}, Random: {proporcion_train}")
+    train_df, test_df = df.randomSplit([proporcion_train, 1 - proporcion_train], seed=3)
+
     dt = DecisionTreeClassifier(
-        labelCol="target",
-        featuresCol="features", seed=3, maxDepth=maxDepth)
-    # creamos o entrenamos el modelo
-    model = dt.fit(trainingData)
-    # probamos el modelo a ver si es bueno o no
-    predictions = model.transform(testData)
-    # mostramos las 5 primeras predicciones, como ejemplo
-    #predictions.select("prediction", "target").show(5)
-    # lo importante es que usamos un evaluador de esas predicciones
-    evaluator = MulticlassClassificationEvaluator(
-        labelCol="target",
-        predictionCol="prediction",
-        metricName="accuracy")
-    accuracy = evaluator.evaluate(predictions)
-    error_precision=1.0 - accuracy
-    print("Test Acierto = " + str(accuracy))
-    #print("Test Error = " + str(error_precision))
-    return accuracy
-    #guardar modelo
-    #dt.save("dt_model.model")
-    #cargar modelo
-    #model2 = DecisionTreeClassifier.load("dt_model.model")
+        labelCol="target", featuresCol="features", seed=3, maxDepth=max_depth,
+    )
+    modelo = dt.fit(train_df)
+    predicciones = modelo.transform(test_df)
 
-randomArray = [0.7, 0.8, 0.9]
-maxDepthArray = [3, 4, 5, 6, 7, 8, 9, 10, 11]
-acierto = 0
-for random in randomArray:
-    for depth in maxDepthArray:
-        aciertoD = prueba(random,depth)
-        if (aciertoD>acierto):
-            acierto = aciertoD
-            print("Se ha encontrado un modelo mejor maxDepth=" + str(acierto) + " y random: " + str(random))
+    evaluador = MulticlassClassificationEvaluator(
+        labelCol="target", predictionCol="prediction", metricName="accuracy",
+    )
+    accuracy = evaluador.evaluate(predicciones)
+    print("Test Acierto = " + str(accuracy))
+    return accuracy
+
+
+# Búsqueda en rejilla simple: prueba todas las combinaciones de las dos
+# listas de abajo y se queda con la de mejor accuracy — el equivalente
+# manual de lo que haría `pyspark.ml.tuning.ParamGridBuilder` con más
+# ceremonia (aquí se deja explícito el bucle para que se vea qué hace por
+# debajo).
+proporciones_train = [0.7, 0.8, 0.9]
+profundidades = [3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+mejor_accuracy = 0.0
+for proporcion in proporciones_train:
+    for profundidad in profundidades:
+        accuracy = entrena_y_evalua(proporcion, profundidad)
+        if accuracy > mejor_accuracy:
+            mejor_accuracy = accuracy
+            print(
+                f"Se ha encontrado un modelo mejor: maxDepth={profundidad}, "
+                f"random={proporcion}, accuracy={mejor_accuracy}"
+            )

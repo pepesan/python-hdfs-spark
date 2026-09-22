@@ -1,116 +1,98 @@
 # Requiere: ninguno (Spark local, sin servicios docker). Abre ventanas de
 # matplotlib (plt.show()); en un entorno sin pantalla usar MPLBACKEND=Agg.
-from pyspark import SparkContext
-sc =SparkContext()
-# cargamos los datos de cancerDataSet
+#
+# Clasificación (aprendizaje SUPERVISADO) — el dataset trae la respuesta
+# correcta para cada fila (la especie de cada flor, "target") y el modelo
+# aprende a predecirla a partir de sus características (medidas del
+# sépalo y del pétalo). Dataset clásico Iris de scikit-learn: 3 especies,
+# 4 medidas por flor. Ver `06_spark_mllib_clustering.py` para el mismo
+# dataset resuelto SIN usar las etiquetas (aprendizaje no supervisado).
 from sklearn import datasets
-# esto es un dataset que cargamos desde sklearn
+
 iris = datasets.load_iris()
-print("Características: "+str(iris.data))
-print("Nombre de Características: " + str(iris.feature_names))
+print("Características: " + str(iris.data))
+print("Nombre de características: " + str(iris.feature_names))
 print("Etiquetas: " + str(iris.target))
 print("Nombres de etiquetas: " + str(iris.target_names))
 
-# invocamos pandas para crear un array de datos y un DF
-# un DF de pandas XD
+# pandas es solo para explorar los datos cómodamente antes de pasarlos a
+# Spark — el DataFrame "de verdad" (el que entrena el modelo) es el de
+# Spark, creado más abajo a partir de este.
 import pandas as pd
-# cancerDataSet.data son los datos de las características
-# las medidas de las flores
-# feature_name son los nombres de cada medida
-iris_df = pd.DataFrame(iris.data, columns = iris.feature_names)
 
-# imprimimos los primeros registros del DF, las primeras rows
-print(iris_df.head())
-print(iris.target)
+iris_df = pd.DataFrame(iris.data, columns=iris.feature_names)
 iris_df['target'] = iris.target
-print(iris_df)
-#print(cancer_df.show())
+print(iris_df.head())
 
+# Un histograma por medida, para ver cómo se distribuye cada una antes de
+# entrenar nada — puramente exploratorio, no afecta al modelo.
+import matplotlib.pyplot as plt
 
-import matplotlib.pyplot as plt   #Load the pyplot visualization library
-iris_df['sepal length (cm)'].hist(bins=90)
-plt.show()
-iris_df['sepal width (cm)'].hist(bins=90)
-plt.show()
-iris_df['petal length (cm)'].hist(bins=90)
-plt.show()
-iris_df['petal width (cm)'].hist(bins=90)
-plt.show()
+for columna in iris.feature_names:
+    iris_df[columna].hist(bins=90)
+    plt.title(columna)
+    plt.show()
 
-data = iris.data
-target = iris.target
-# Resize the figure for better viewing
-plt.figure(figsize=(12,5))
-
-# First subplot
-plt.subplot(131)
-
-# Visualize the first two columns of data:
-plt.scatter(data[:,0], data[:,1], c=target)
-# Second subplot
-plt.subplot(132)
-
-# Visualize the last two columns of data:
-plt.scatter(data[:,0], data[:,2], c=target)
-# Second subplot
-plt.subplot(133)
-
-# Visualize the last two columns of data:
-plt.scatter(data[:,0], data[:,3], c=target)
+# Dispersión de la primera medida (longitud del sépalo) contra cada una
+# de las otras tres, coloreada por especie (c=target) — sirve para ver a
+# ojo qué combinaciones de medidas separan mejor las 3 especies.
+plt.figure(figsize=(12, 5))
+for i, columna in enumerate(iris.feature_names[1:], start=1):
+    plt.subplot(1, 3, i)
+    plt.scatter(iris.data[:, 0], iris.data[:, i], c=iris.target)
+    plt.xlabel(iris.feature_names[0])
+    plt.ylabel(columna)
 plt.show()
 
-
-#Haciendo transformaciones
-from pyspark.ml.linalg import Vectors
+# MLlib exige juntar todas las columnas de entrada en una sola columna
+# "features" (un vector) antes de entrenar cualquier algoritmo — es el
+# formato que espera toda la librería, no una particularidad de este
+# clasificador en concreto.
 from pyspark.ml.feature import VectorAssembler
-# esto es una vectorización
-# es meter todas las características en un sólo campo de tipo array
-# así funciona más rápido
-#Creando campos de entrada y salida
-vector_assembler = VectorAssembler(
-    inputCols=["sepal length (cm)", "sepal width (cm)", "petal length (cm)", "petal width (cm)"],
-    outputCol="features")
-
 from pyspark.sql import SparkSession
-sparkSession =SparkSession.builder.appName('pandasToSparkDF').getOrCreate()
-#creado el DF de Spark
-df = sparkSession.createDataFrame(iris_df)
-#aplicando transformación
-df_temp = vector_assembler.transform(df)
-#mostrando 3
-df_temp.show(3)
-#Quitamos las columnas no interesantes
-df = df_temp.drop("sepal length (cm)", "sepal width (cm)", "petal length (cm)", "petal width (cm)")
+
+spark = SparkSession.builder.appName('clasificacion-iris').getOrCreate()
+df = spark.createDataFrame(iris_df)
+
+vector_assembler = VectorAssembler(
+    inputCols=iris.feature_names,
+    outputCol="features")
+df = vector_assembler.transform(df).select("features", "target")
 df.show(3)
-#Dividimos los datos en entrenamiento y pruebas
-(trainingData, testData) = df.randomSplit([0.7, 0.3])
-trainingData.show(3)
-testData.show(3)
-# en este caso escogemos el algoritmo de clasificación de árboles de decision
+
+# Split train/test: se entrena SOLO con trainingData y se evalúa SOLO con
+# testData, que el modelo no ha visto durante el entrenamiento — es la
+# única forma honesta de saber si ha aprendido el patrón general o si
+# solo ha memorizado los datos de entrenamiento.
+trainingData, testData = df.randomSplit([0.7, 0.3])
+
+# Árbol de decisión: parte el espacio de características con preguntas
+# tipo "¿petal length < 2.5?" hasta separar bien las 3 especies —
+# elegible entre otros muchos algoritmos de clasificación de MLlib
+# (regresión logística, random forest...); este es de los más fáciles de
+# interpretar (se puede dibujar el árbol de decisiones resultante).
 from pyspark.ml.classification import DecisionTreeClassifier
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
-#Creamos el modelo con un clasificador de árboles de decisión
-# Escogemos un algoritmo, en este caso DecisionTreeClassifier
-# pero podría ser otro por ejemplo regresión linear
-# target son las etiquetas, features son las características
+
 dt = DecisionTreeClassifier(labelCol="target", featuresCol="features", maxDepth=8)
-# creamos o entrenamos el modelo
-model = dt.fit(trainingData)
-# probamos el modelo a ver si es bueno o no
-predictions = model.transform(testData)
-# mostramos las 5 primeras predicciones, como ejemplo
-predictions.select("prediction", "target").show(5)
-# lo importante es que usamos un evaluador de esas predicciones
+modelo = dt.fit(trainingData)
+predicciones = modelo.transform(testData)
+predicciones.select("prediction", "target").show(5)
+
+# El accuracy (proporción de aciertos) es la métrica de evaluación
+# estándar en clasificación con clases equilibradas (aquí las 3 especies
+# tienen 50 flores cada una) — con clases muy desequilibradas haría falta
+# otra métrica (precision/recall/F1), porque un modelo que siempre
+# predijera la clase mayoritaria tendría un accuracy engañosamente alto.
 evaluator = MulticlassClassificationEvaluator(
     labelCol="target",
     predictionCol="prediction",
     metricName="accuracy")
-accuracy = evaluator.evaluate(predictions)
-error_precision=1.0 - accuracy
+accuracy = evaluator.evaluate(predicciones)
+error = 1.0 - accuracy
 print("Test Acierto = " + str(accuracy))
-print("Test Error = " + str(error_precision))
+print("Test Error = " + str(error))
 
-#guardar modelo
-#dt.save("dt_model.model")
-#cargar modelo
-#model2 = DecisionTreeClassifier.load("dt_model.model")
+# Guardar/cargar el modelo entrenado (para reutilizarlo sin reentrenar):
+# dt.save("dt_model.model")
+# modelo_cargado = DecisionTreeClassifier.load("dt_model.model")
